@@ -592,7 +592,7 @@ export default function App() {
                   <span className="text-[10px] bg-slate-800 text-slate-400 px-3 py-1 rounded-full font-bold uppercase border border-slate-700">Official Forms</span>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                <div className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative z-10">
                   {[
                     { title: 'Farm Activity Record', type: 'XLSX / PDF', desc: 'Official template for logging daily inputs and harvest data.' },
                     { title: 'Grant Application Form', type: 'PDF', desc: 'Required documentation for regional agricultural subsidies.' },
@@ -601,14 +601,16 @@ export default function App() {
                     <div 
                       key={idx} 
                       onClick={() => handleDownload(doc.title, `FORM: ${doc.title}\nTYPE: ${doc.type}\nUSER: Digital Climate Response Partner`)}
-                      className="p-6 bg-slate-900/60 rounded-[2rem] border border-slate-800 hover:border-emerald-500/40 transition-all group cursor-pointer"
+                      className="min-w-[280px] md:min-w-[320px] shrink-0 snap-start p-6 bg-slate-900/60 rounded-[2rem] border border-slate-800 hover:border-emerald-500/40 hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col justify-between"
                     >
-                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
-                        <Download size={24} />
+                      <div>
+                        <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
+                          <Download size={24} />
+                        </div>
+                        <h3 className="font-bold text-white mb-1">{doc.title}</h3>
+                        <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest">{doc.type}</span>
+                        <p className="text-xs text-slate-500 mt-3 leading-relaxed">{doc.desc}</p>
                       </div>
-                      <h3 className="font-bold text-white mb-1">{doc.title}</h3>
-                      <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest">{doc.type}</span>
-                      <p className="text-xs text-slate-500 mt-3 leading-relaxed">{doc.desc}</p>
                       <div className="mt-6 flex items-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                         Download Now <ChevronRight size={12} className="text-emerald-400" />
                       </div>
@@ -643,21 +645,23 @@ export default function App() {
                   </h2>
                   <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Request Access</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                <div className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative z-10">
                   {FARMING_TOOLS.map((tool, idx) => (
                     <button 
                       key={idx} 
                       onClick={() => setSelectedTool(tool)}
-                      className="p-6 rounded-[2rem] border border-slate-800 bg-slate-900/40 hover:bg-slate-800/60 transition-all text-left group relative overflow-hidden"
+                      className="min-w-[260px] md:min-w-[280px] shrink-0 snap-start p-6 rounded-[2rem] border border-slate-800 bg-slate-900/40 hover:bg-slate-800/60 hover:-translate-y-1 transition-all duration-300 text-left group relative overflow-hidden flex flex-col justify-between"
                     >
                       <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Sparkles size={16} className="text-emerald-400" />
                       </div>
-                      <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 text-emerald-400 group-hover:scale-110 transition-transform">
-                        <tool.icon size={24} />
+                      <div>
+                        <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 text-emerald-400 group-hover:scale-110 transition-transform">
+                          <tool.icon size={24} />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-100">{tool.name}</h3>
+                        <p className="text-xs text-slate-400 mt-2 leading-relaxed">{tool.desc}</p>
                       </div>
-                      <h3 className="text-lg font-bold text-slate-100">{tool.name}</h3>
-                      <p className="text-xs text-slate-400 mt-2 leading-relaxed">{tool.desc}</p>
                       <div className="mt-6 w-full py-2.5 rounded-xl border border-slate-800 hover:border-emerald-500/50 text-[10px] font-bold text-slate-500 group-hover:text-emerald-400 transition-all uppercase flex items-center justify-center gap-2">
                         View Details <ChevronRight size={12} />
                       </div>
@@ -760,37 +764,53 @@ export default function App() {
               <section id="applications-list" className="glass-panel p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold flex items-center gap-3">
-                    <Users className="text-emerald-400" /> Farmer Partner Applications
+                    <Users className="text-emerald-400" /> Application Management Area
                   </h2>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-xs font-bold border border-emerald-500/20">
-                    <Activity size={14} /> {applications.filter(a => a.status === 'Pending').length} Pending
+                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 rounded-xl text-xs font-bold border border-amber-500/20">
+                    <Activity size={14} /> {applications.filter(a => a.status === 'Pending').length} Action Required
                   </div>
                 </div>
-                <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-800">
-                        <th className="px-8 py-4">Farmer Name</th>
-                        <th className="px-8 py-4">Crop Focus</th>
-                        <th className="px-8 py-4">Monitoring Status</th>
-                        <th className="px-8 py-4 text-right">Yield (Auto-Check)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800">
-                      {applications.map(app => (
-                        <tr key={app.id} className="hover:bg-slate-800/30 transition-colors">
-                          <td className="px-8 py-6 font-bold text-slate-100">{app.name}</td>
-                          <td className="px-8 py-6 text-sm text-slate-400">{app.crop}</td>
-                          <td className="px-8 py-6">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                              {app.status}
-                            </span>
-                          </td>
-                          <td className="px-8 py-6 text-right font-mono text-emerald-400 font-bold">{app.yield}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                
+                <div className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {applications.map(app => (
+                    <div key={app.id} className="min-w-[300px] md:min-w-[340px] shrink-0 snap-start p-6 bg-slate-900/50 rounded-3xl border border-slate-800 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full group relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                        <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'} />
+                      </div>
+                      
+                      <div className="relative z-10 space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="text-lg font-bold text-white">{app.name}</h3>
+                            <p className="text-xs text-slate-400">Crop Focus: {app.crop}</p>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                            app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          }`}>
+                            {app.status}
+                          </span>
+                        </div>
+                        
+                        <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800">
+                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Yield Tracking</p>
+                          <p className="font-mono font-bold text-emerald-400">{app.yield}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-6 flex gap-3 relative z-10">
+                        {app.status === 'Pending' && (
+                          <button onClick={() => {
+                            setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Approved', yield: '1.2t/ha (Est)'} : a));
+                          }} className="flex-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 font-bold py-2 rounded-xl text-xs transition-all uppercase tracking-wider">
+                            Approve
+                          </button>
+                        )}
+                        <button className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-xs transition-all border border-slate-700 uppercase tracking-wider">
+                          Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </section>
 
