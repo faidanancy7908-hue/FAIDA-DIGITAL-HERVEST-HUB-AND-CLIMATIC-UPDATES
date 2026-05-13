@@ -260,7 +260,7 @@ export default function App() {
               <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col items-center gap-4 text-center">
                 <div className="w-40 h-40 rounded-3xl overflow-hidden border-8 border-white shadow-2xl bg-white p-2 transform hover:scale-105 transition-transform duration-500">
                   <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}&bgcolor=ffffff&color=0f172a&margin=10`} 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://faidanancy7908-hue.github.io/digital-farmers-farmers-hervest-hub-and-climatic-updated/")}&bgcolor=ffffff&color=0f172a&margin=10`} 
                     alt="Web Portal QR Code" 
                     className="w-full h-full object-contain" 
                   />
