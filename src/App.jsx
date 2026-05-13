@@ -480,7 +480,7 @@ export default function App() {
                   {/* Market Overview for General View */}
                   <section className="glass-panel p-8 space-y-8">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-bold flex items-center gap-3">
+                      <h2 className="text-xl font-bold flex items-center gap-3">
                         <Activity className="text-emerald-400" /> Ecosystem Pulse
                       </h2>
                       <div className="flex gap-2">
@@ -559,7 +559,7 @@ export default function App() {
               {/* Farmer Guidelines (Moved here as requested) */}
               <section id="guidelines-section" className="glass-panel p-8 space-y-8 border-l-4 border-l-emerald-500 col-span-full">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold flex items-center gap-3">
+                  <h2 className="text-xl font-bold flex items-center gap-3">
                     <Leaf size={28} className="text-emerald-400" /> Farmer Guidelines for High Yield
                   </h2>
                   <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Expert Intelligence</span>
@@ -576,7 +576,7 @@ export default function App() {
                         <g.icon size={28} />
                       </div>
                       <div className="space-y-2">
-                        <h4 className="text-lg font-bold text-slate-100">{g.title}</h4>
+                        <h4 className="text-base font-bold text-slate-100">{g.title}</h4>
                         <p className="text-sm text-slate-400 leading-relaxed">{g.desc}</p>
                       </div>
                     </div>
@@ -588,7 +588,7 @@ export default function App() {
               <section id="resource-center" className="glass-panel p-8 space-y-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
                 <div className="flex items-center justify-between relative z-10">
-                  <h2 className="text-2xl font-bold flex items-center gap-3">
+                  <h2 className="text-xl font-bold flex items-center gap-3">
                     <Download size={28} className="text-emerald-400" /> Resource & Application Center
                   </h2>
                   <span className="text-[10px] bg-slate-800 text-slate-400 px-3 py-1 rounded-full font-bold uppercase border border-slate-700">Official Forms</span>
@@ -624,7 +624,7 @@ export default function App() {
               <section className="glass-panel p-8 bg-emerald-600/10 border-emerald-500/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
                       <Heart className="text-emerald-400" /> Professional NGO Support
                     </h2>
                     <p className="text-slate-400 text-sm">Apply for direct yield monitoring and equipment subsidies from our NGO partners.</p>
@@ -642,7 +642,7 @@ export default function App() {
               <section id="tools-section" className="glass-panel p-8 space-y-8 scroll-mt-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                 <div className="flex items-center justify-between relative z-10">
-                  <h2 className="text-2xl font-bold flex items-center gap-3">
+                  <h2 className="text-xl font-bold flex items-center gap-3">
                     <Wrench size={28} className="text-emerald-400" /> Equipment & Farming Tools
                   </h2>
                   <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Request Access</span>
@@ -661,7 +661,7 @@ export default function App() {
                         <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 text-emerald-400 group-hover:scale-110 transition-transform">
                           <tool.icon size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-100">{tool.name}</h3>
+                        <h3 className="text-base font-bold text-slate-100">{tool.name}</h3>
                         <p className="text-xs text-slate-400 mt-2 leading-relaxed">{tool.desc}</p>
                       </div>
                       <div className="mt-6 w-full py-2.5 rounded-xl border border-slate-800 hover:border-emerald-500/50 text-[10px] font-bold text-slate-500 group-hover:text-emerald-400 transition-all uppercase flex items-center justify-center gap-2">
@@ -765,7 +765,7 @@ export default function App() {
               {/* NGO Application Monitoring List */}
               <section id="applications-list" className="glass-panel p-8 space-y-8">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold flex items-center gap-3">
+                  <h2 className="text-xl font-bold flex items-center gap-3">
                     <Users className="text-emerald-400" /> Application Management Area
                   </h2>
                   <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 rounded-xl text-xs font-bold border border-amber-500/20">
@@ -783,7 +783,7 @@ export default function App() {
                       <div className="relative z-10 space-y-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="text-lg font-bold text-white">{app.name}</h3>
+                            <h3 className="text-base font-bold text-white">{app.name}</h3>
                             <p className="text-xs text-slate-400">Crop Focus: {app.crop}</p>
                           </div>
                           <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
