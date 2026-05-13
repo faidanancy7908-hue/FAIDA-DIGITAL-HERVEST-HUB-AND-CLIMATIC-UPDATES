@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import heroLogo from './assets/hero.png';
 import { 
   CloudRain, 
   Wind, 
@@ -328,8 +329,8 @@ export default function App() {
                       <Sparkles size={14} /> {activeRole} Portal
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
-                        <img src="/farm_logo.png" alt="Logo" className="w-full h-full object-cover" />
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg bg-emerald-500/10">
+                        <img src={heroLogo} alt="Logo" className="w-full h-full object-cover" />
                       </div>
                       <h1 className="text-4xl font-bold">
                         {activeRole === 'Farmer' && "Partner Farmer Hub"}
@@ -382,8 +383,8 @@ export default function App() {
                   <div className="glass-panel p-10 relative overflow-hidden border-l-4 border-l-emerald-500 shadow-2xl">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                      <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20 shrink-0 transform hover:rotate-3 transition-transform duration-500">
-                        <img src="/farm_logo.png" alt="Farm Logo" className="w-full h-full object-cover scale-110" />
+                      <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20 shrink-0 transform hover:rotate-3 transition-transform duration-500 bg-emerald-500/10">
+                        <img src={heroLogo} alt="Farm Logo" className="w-full h-full object-cover scale-110" />
                       </div>
                       <div className="space-y-4 text-center md:text-left flex-1">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
