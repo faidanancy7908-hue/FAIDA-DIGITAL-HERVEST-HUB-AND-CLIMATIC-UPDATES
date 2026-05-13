@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAIDA DIGITAL HARVEST HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              'fast-fade': 'fadeIn 0.3s ease-out forwards',
+              'marquee': 'marquee 35s linear infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 3s ease-in-out infinite',
+            },
+            keyframes: {
+              fadeIn: { '0%': { opacity: '0', transform: 'scale(0.99) translateY(10px)' }, '100%': { opacity: '1', transform: 'scale(1) translateY(0)' } },
+              marquee: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(-100%)' } },
+              float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        body { background: #010409; color: #f0f6fc; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 2.5rem; 
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
+        }
+        .gradient-text { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-premium { transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .btn-premium:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.25); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const Icon = ({ name, size = 24, className = '', color = 'currentColor' }) => {
+            const iconRef = React.useRef(null);
+            React.useEffect(() => {
+                if (iconRef.current && window.lucide) {
+                    iconRef.current.innerHTML = '';
+                    const icon = window.lucide.icons[name] || window.lucide.icons.AlertCircle;
+                    const svg = window.lucide.createElement(icon);
+                    svg.setAttribute('width', size);
+                    svg.setAttribute('height', size);
+                    svg.setAttribute('class', className);
+                    svg.setAttribute('stroke', color);
+                    iconRef.current.appendChild(svg);
+                }
+            }, [name, size, className, color]);
+            return <span ref={iconRef} className={className} style={{ display: 'inline-flex' }} />;
+        };
+
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [page, setPage] = useState('landing');
+            const [userRole, setUserRole] = useState(null);
+            const [isLoading, setIsLoading] = useState(false);
+            const [marketData] = useState([
+                { id: 'maize', name: 'Maize', price: 242.50, trend: '+2.4%', cap: '4.2B' },
+                { id: 'cocoa', name: 'Cocoa', price: 2890.00, trend: '+5.1%', cap: '1.8B' },
+                { id: 'soy', name: 'Soybeans', price: 512.20, trend: '-0.8%', cap: '2.5B' }
+            ]);
+
+            useEffect(() => {
+                const saved = localStorage.getItem('faida_session');
+                if (saved) {
+                    setIsLoggedIn(true);
+                    setUserRole(saved);
+                    setPage(saved);
+                }
+            }, []);
+
+            const handleLogin = (role) => {
+                setIsLoading(true);
+                setTimeout(() => {
+                    localStorage.setItem('faida_session', role);
+                    setUserRole(role);
+                    setIsLoggedIn(true);
+                    setPage(role);
+                    setIsLoading(false);
+                }, 400);
+            };
+
+            const handleLogout = () => {
+                localStorage.removeItem('faida_session');
+                setIsLoggedIn(false);
+                setPage('landing');
+            };
+
+            // --- COMPONENTS ---
+
+            const Nav = ({ title }) => (
+                <nav className="max-w-7xl mx-auto px-6 pt-12 pb-6 flex items-center justify-between sticky top-0 z-50 backdrop-blur-3xl border-b border-white/5">
+                    <button onClick={() => setPage('landing')} className="flex items-center gap-3 text-slate-500 hover:text-emerald-400 font-black uppercase text-[10px] tracking-[0.3em] transition-all">
+                        <div className="p-2.5 rounded-2xl bg-slate-900/50 border border-slate-800 shadow-xl"><Icon name="ArrowLeft" size={16} /></div>
+                        Portal
+                    </button>
+                    <h2 className="text-2xl font-black text-white flex items-center gap-4">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_#10b981]"></div>
+                        {title}
+                    </h2>
+                    <button onClick={handleLogout} className="text-[10px] font-black uppercase text-rose-500 hover:text-rose-400 tracking-widest px-4 py-2 rounded-xl bg-rose-500/5 border border-rose-500/20 hover:border-rose-500/40 transition-all">Logout Session</button>
+                </nav>
+            );
+
+            const SectionTitle = ({ t, i, c="#10b981" }) => (
+                <h3 className="text-xl font-bold mb-8 flex items-center gap-4 text-white">
+                    <div className="p-3 rounded-2xl shadow-lg" style={{ backgroundColor: `${c}10`, border: `1px solid ${c}20` }}>
+                        <Icon name={i} color={c} size={22} />
+                    </div>
+                    {t}
+                </h3>
+            );
+
+            // --- PAGES ---
+
+            const Farmer = () => (
+                <div className="max-w-7xl mx-auto px-6 py-8 animate-fast-fade space-y-12 pb-20">
+                    <Nav title="Farmer Precision Hub" />
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <section className="glass-card p-10 lg:col-span-1">
+                            <SectionTitle t="Crop Health Sensor" i="Activity" c="#10b981" />
+                            <div className="flex flex-col items-center gap-8 py-6">
+                                <div className="w-40 h-40 relative animate-float">
+                                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                                        <path d="M50 80 Q 50 40 50 10" stroke="#10b981" strokeWidth="2" fill="none" />
+                                        <path d="M50 50 Q 70 30 50 10 Q 30 30 50 50" fill="#34d399" />
+                                        <path d="M50 70 Q 80 50 50 30 Q 20 50 50 70" fill="#059669" />
+                                    </svg>
+                                    <div className="absolute top-0 right-0 p-2 bg-emerald-500 rounded-full shadow-[0_0_20px_#10b981] animate-pulse"></div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-4xl font-black text-white">94%</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-2">Overall Vitality Score</div>
+                                </div>
+                            </div>
+                        </section>
+                        <section className="glass-card p-10 lg:col-span-2">
+                            <SectionTitle t="Environmental Matrix" i="FlaskConical" c="#10b981" />
+                            <div className="grid grid-cols-3 gap-6">
+                                {[
+                                    { l: 'Soil PH', v: '6.8', s: 'Optimal' },
+                                    { l: 'Moisture', v: '42%', s: 'Balanced' },
+                                    { l: 'Nitrogen', v: 'High', s: 'Stable' }
+                                ].map((stat, i) => (
+                                    <div key={i} className="p-8 bg-slate-950 rounded-[2.5rem] border border-slate-800 text-center relative group">
+                                        <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="text-[10px] text-slate-500 uppercase font-black mb-3">{stat.l}</div>
+                                        <div className="text-4xl font-black text-emerald-400 mb-1">{stat.v}</div>
+                                        <div className="text-[10px] text-slate-400 font-bold uppercase">{stat.s}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            );
+
+            const Seller = () => (
+                <div className="max-w-7xl mx-auto px-6 py-8 animate-fast-fade space-y-12 pb-20">
+                    <Nav title="Market Seller Terminal" />
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <section className="glass-card p-10 lg:col-span-2">
+                            <SectionTitle t="Real-Time Market Pulse" i="TrendingUp" c="#3b82f6" />
+                            <div className="space-y-6">
+                                {marketData.map(item => (
+                                    <div key={item.id} className="p-8 bg-slate-950 rounded-[2.5rem] border border-slate-800 flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                                                <Icon name="Activity" color="#3b82f6" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-2xl font-black text-white">{item.name}</h4>
+                                                <p className="text-[10px] text-slate-500 uppercase font-black">Market Cap: {item.cap}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-3xl font-black text-white font-mono">${item.price.toFixed(2)}</div>
+                                            <div className="text-emerald-400 font-bold text-sm">{item.trend} today</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                        <section className="glass-card p-10">
+                            <SectionTitle t="Logistics Node" i="Truck" c="#3b82f6" />
+                            <div className="space-y-6">
+                                {[
+                                    { id: 'HUB-202', r: 'North → Mill', s: 'In Transit', p: 75 },
+                                    { id: 'HUB-401', r: 'South → Port', s: 'Loading', p: 20 }
+                                ].map((t, i) => (
+                                    <div key={i} className="p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
+                                        <div className="flex justify-between text-[10px] font-black uppercase mb-3">
+                                            <span className="text-blue-400">{t.id}</span>
+                                            <span className="text-slate-500">{t.s}</span>
+                                        </div>
+                                        <div className="text-md font-bold mb-4">{t.r}</div>
+                                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                            <div className="bg-blue-500 h-full animate-pulse" style={{ width: `${t.p}%` }}></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            );
+
+            const Ministry = () => (
+                <div className="max-w-7xl mx-auto px-6 py-8 animate-fast-fade space-y-12 pb-20">
+                    <Nav title="Ministry Command Hub" />
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <section className="glass-card p-10 lg:col-span-2">
+                            <SectionTitle t="Regional Productivity Map" i="Map" c="#a855f7" />
+                            <div className="aspect-[21/9] bg-slate-950 rounded-[3rem] border border-slate-800 relative flex items-center justify-center overflow-hidden">
+                                <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+                                <svg viewBox="0 0 800 300" className="w-full h-full p-12">
+                                    <circle cx="200" cy="100" r="12" className="fill-purple-500 animate-pulse shadow-[0_0_30px_purple]" />
+                                    <circle cx="500" cy="180" r="12" className="fill-purple-300 opacity-60" />
+                                    <circle cx="650" cy="80" r="12" className="fill-purple-700 opacity-40" />
+                                    <path d="M200 100 L500 180 L650 80" className="fill-none stroke-purple-500/20 stroke-2 border-dashed" />
+                                    <text x="220" y="105" className="fill-slate-400 text-[10px] font-black uppercase tracking-widest">Zone Alpha: +18% Yield</text>
+                                </svg>
+                            </div>
+                        </section>
+                        <section className="glass-card p-10 lg:col-span-1">
+                            <SectionTitle t="Strategic Policy" i="ShieldCheck" c="#a855f7" />
+                            <div className="space-y-6">
+                                {[
+                                    { t: 'Irrigation Q4', d: 'Expanding automated water access for 2k farms.' },
+                                    { t: 'Silo Optimization', d: 'New climate-controlled storage hubs approved.' }
+                                ].map((p, i) => (
+                                    <div key={i} className="p-6 bg-slate-900/50 rounded-[2rem] border border-slate-800">
+                                        <h4 className="text-md font-bold text-white mb-2">{p.t}</h4>
+                                        <p className="text-sm text-slate-500 leading-relaxed">{p.d}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            );
+
+            const LoginPage = () => (
+                <div className="min-h-screen flex items-center justify-center p-6 animate-fast-fade">
+                    <div className="glass-card p-12 max-w-lg w-full text-center space-y-10 relative overflow-hidden">
+                        <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px]"></div>
+                        <div className="relative z-10 space-y-8">
+                            <div className="w-20 h-20 bg-slate-900 rounded-[2rem] mx-auto flex items-center justify-center border border-slate-800 shadow-2xl">
+                                <Icon name="Lock" size={40} color="#10b981" />
+                            </div>
+                            <h1 className="text-5xl font-black tracking-tighter">Fast<span className="text-emerald-400">Login</span></h1>
+                            <p className="text-slate-400 text-lg font-light">Select your identity for instant data pre-fetching.</p>
+                            
+                            <div className="grid grid-cols-1 gap-4 mt-10">
+                                {[
+                                    { id: 'farmer', name: 'Farmer Dashboard', icon: 'Leaf', c: '#10b981' },
+                                    { id: 'seller', name: 'Market Hub', icon: 'ShoppingCart', c: '#3b82f6' },
+                                    { id: 'ministry', name: 'Ministry Command', icon: 'Building2', c: '#a855f7' }
+                                ].map(r => (
+                                    <button 
+                                        key={r.id}
+                                        onClick={() => handleLogin(r.id)}
+                                        className="w-full flex items-center gap-6 p-6 bg-slate-950 border border-slate-800 rounded-3xl btn-premium text-left"
+                                    >
+                                        <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 group-hover:scale-110 transition-transform">
+                                            <Icon name={r.icon} size={24} color={r.c} />
+                                        </div>
+                                        <span className="text-xl font-bold text-slate-200">{r.name}</span>
+                                        <Icon name="ChevronRight" size={20} className="ml-auto text-slate-600" />
+                                    </button>
+                                ))}
+                            </div>
+                            <button onClick={() => setPage('landing')} className="text-[10px] font-black uppercase text-slate-500 hover:text-slate-200 tracking-[0.4em] transition-colors">Guest Access Portal</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Landing = () => (
+                <div className="max-w-7xl mx-auto px-6 py-24 animate-fast-fade space-y-24 min-h-screen flex flex-col justify-center">
+                    <header className="text-center space-y-8">
+                        <div className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black tracking-[0.4em] uppercase">
+                            <Icon name="Sparkles" size={18} /> High-Speed Intelligence v3.0
+                        </div>
+                        <h1 className="text-8xl md:text-[11rem] font-black tracking-tighter text-white leading-none">
+                            Faida<span className="gradient-text"> Digital</span> Harvest Hub
+                        </h1>
+                        <p className="text-2xl md:text-3xl text-slate-400 max-w-4xl mx-auto leading-relaxed font-light">
+                            Precision agriculture re-imagined for the digital age. Multi-tenant, secure, and ultra-fast.
+                        </p>
+                        <div className="flex justify-center gap-6 pt-10">
+                            <button onClick={() => setPage('login')} className="px-12 py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] rounded-[2rem] shadow-2xl shadow-emerald-600/30 btn-premium">Secure Login</button>
+                            <button className="px-12 py-5 bg-slate-900/50 border border-slate-800 text-slate-300 font-black uppercase tracking-[0.2em] rounded-[2rem] hover:bg-slate-800 transition-all">Documentation</button>
+                        </div>
+                    </header>
+                    <div className="flex justify-center gap-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 pb-10">
+                        <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-amber-500"></div> MTN: *672*001#</div>
+                        <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-red-500"></div> Airtel: *818*3*5#</div>
+                    </div>
+                    <div className="glass-card py-6 px-12 border-none bg-slate-900/40">
+                        <div className="flex items-center gap-12">
+                            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.5em] whitespace-nowrap border-r border-slate-800 pr-12">Live Network Status</span>
+                            <div className="flex-1 overflow-hidden h-6 relative">
+                                <div className="absolute inset-y-0 flex items-center animate-marquee whitespace-nowrap text-sm text-slate-500 font-medium">
+                                    <span className="mx-12">• Global node sync completed at 0.04ms.</span>
+                                    <span className="mx-12">• Regional yield data for Zone Alpha surge by 18.2%.</span>
+                                    <span className="mx-12">• Secure encrypted gateway established. Session persistent.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            if (isLoading) return (
+                <div className="min-h-screen flex flex-col items-center justify-center gap-6">
+                    <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+                    <span className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.5em]">Synchronizing Identity...</span>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen">
+                    {page === 'landing' && <Landing />}
+                    {page === 'login' && <LoginPage />}
+                    {page === 'farmer' && <Farmer />}
+                    {page === 'seller' && <Seller />}
+                    {page === 'ministry' && <Ministry />}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
