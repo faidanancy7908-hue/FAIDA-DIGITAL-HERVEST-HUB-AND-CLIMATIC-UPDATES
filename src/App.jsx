@@ -23,7 +23,10 @@ import {
   MessageCircle,
   Wrench,
   ChevronRight,
-  Code
+  Code,
+  Camera,
+  UploadCloud,
+  CheckCircle2
 } from 'lucide-react';
 
 
@@ -82,6 +85,29 @@ export default function App() {
   ]);
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [imageAnalysis, setImageAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedImage(URL.createObjectURL(file));
+      setIsAnalyzing(true);
+      setImageAnalysis(null);
+      
+      // Simulate AI IoT Analysis delay
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setImageAnalysis({
+          issue: "Mild Nitrogen Deficiency Detected",
+          confidence: "94%",
+          solution: "Apply 50kg of Urea per hectare within the next 48 hours. Ensure application is done during evening hours to prevent evaporation.",
+          status: "warning"
+        });
+      }, 3000);
+    }
+  };
 
   const [applications, setApplications] = useState([
     { id: 'app1', name: 'John Doe', crop: 'Maize', status: 'Approved', yield: '4.2t/ha' },
@@ -678,6 +704,88 @@ export default function App() {
                   </div>
                 </div>
               </section>
+
+              {/* Visual AI Diagnostics Section */}
+              <section className="glass-panel p-8 lg:col-span-3 border-l-4 border-l-purple-500 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors"></div>
+                <div className="relative z-10 flex flex-col md:flex-row gap-8">
+                  <div className="flex-1 space-y-6">
+                    <div>
+                      <h2 className="text-xl font-bold flex items-center gap-3 text-white mb-2">
+                        <Camera className="text-purple-400" size={24} /> Visual Crop & Soil AI Analysis
+                      </h2>
+                      <p className="text-slate-400 text-sm">Upload a photo of your soil, crop leaves, or garden for instant AI IoT diagnostics.</p>
+                    </div>
+
+                    {!uploadedImage ? (
+                      <div className="border-2 border-dashed border-slate-700 rounded-2xl p-8 text-center hover:bg-slate-800/50 hover:border-purple-500/50 transition-all cursor-pointer relative">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleImageUpload} 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                        <UploadCloud size={48} className="text-slate-500 mx-auto mb-4" />
+                        <h3 className="text-lg font-bold text-slate-300 mb-1">Tap to Upload Image</h3>
+                        <p className="text-xs text-slate-500">Supports JPG, PNG (Max 5MB)</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="relative h-48 rounded-2xl overflow-hidden border border-slate-700">
+                          <img src={uploadedImage} alt="Uploaded for analysis" className="w-full h-full object-cover" />
+                          {isAnalyzing && (
+                            <div className="absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center">
+                              <Activity size={32} className="text-purple-400 animate-bounce mb-2" />
+                              <div className="text-sm font-bold text-purple-400 tracking-widest uppercase animate-pulse">Running AI IoT Scan...</div>
+                            </div>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => { setUploadedImage(null); setImageAnalysis(null); }}
+                          className="text-xs text-slate-400 hover:text-white transition-colors"
+                        >
+                          Clear & Upload New Image
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 flex flex-col justify-center">
+                      {!uploadedImage ? (
+                        <div className="text-center text-slate-500 flex flex-col items-center gap-3">
+                          <ShieldCheck size={40} className="opacity-20" />
+                          <p className="text-sm">Analysis results will appear here after image processing.</p>
+                        </div>
+                      ) : isAnalyzing ? (
+                        <div className="space-y-4">
+                          <div className="h-4 bg-slate-800 rounded animate-pulse"></div>
+                          <div className="h-4 bg-slate-800 rounded animate-pulse w-3/4"></div>
+                          <div className="h-4 bg-slate-800 rounded animate-pulse w-1/2"></div>
+                        </div>
+                      ) : imageAnalysis ? (
+                        <div className="space-y-6 animate-fade-in">
+                          <div className="flex items-center gap-3 text-amber-400">
+                            <AlertTriangle size={24} />
+                            <h3 className="font-bold">{imageAnalysis.issue}</h3>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Recommended Solution</div>
+                            <p className="text-slate-300 text-sm leading-relaxed p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+                              {imageAnalysis.solution}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Confidence Score</span>
+                            <span className="text-emerald-400 font-bold flex items-center gap-1"><CheckCircle2 size={14}/> {imageAnalysis.confidence}</span>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
 
               <section className="glass-panel p-6 lg:col-span-1 flex flex-col justify-between relative overflow-hidden group">
                 <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
