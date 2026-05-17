@@ -63,7 +63,7 @@ const WEATHER_CONDITIONS = [
   { condition: 'Cloudy', temp: 25, humidity: 60, alert: 'Monitor Soil Moisture' }
 ];
 
-const PORTAL_URL = 'https://faidanancy7908-hue.github.io/digital-farmers-farmers-hervest-hub-and-climatic-updated/';
+const PORTAL_URL = 'https://faidanancy7908-hue.github.io/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/';
 
 const AUDIO_LANGUAGES = [
   { id: 'en-US', name: 'English' },
