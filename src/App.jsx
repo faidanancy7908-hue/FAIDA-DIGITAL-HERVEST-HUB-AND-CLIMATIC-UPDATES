@@ -45,6 +45,8 @@ const WEATHER_CONDITIONS = [
   { condition: 'Cloudy', temp: 25, humidity: 60, alert: 'Monitor Soil Moisture' }
 ];
 
+const PORTAL_URL = 'https://faidanancy7908-hue.github.io/digital-farmers-farmers-hervest-hub-and-climatic-updated/';
+
 export default function App() {
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -243,10 +245,10 @@ export default function App() {
 
               <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-700/50">
                 <div className="rounded-xl overflow-hidden border border-slate-700/50 shadow-xl relative group/img aspect-video">
-                  <img src="/farmer_garden_yield.png" alt="Farmer" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 opacity-60" />
+                  <img src="farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" />
                 </div>
                 <div className="rounded-xl overflow-hidden border border-slate-700/50 shadow-xl relative group/img aspect-video">
-                  <img src="/bountiful_harvest.png" alt="Harvest" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 opacity-60" />
+                  <img src="bountiful_harvest.png" alt="Bountiful Harvest" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" />
                 </div>
               </div>
             </div>
@@ -258,31 +260,45 @@ export default function App() {
                 <p className="text-xs text-slate-400">Offline & Quick Entry</p>
               </div>
               <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col items-center gap-4 text-center">
-                <div className="w-40 h-40 rounded-3xl overflow-hidden border-8 border-white shadow-2xl bg-white p-2 transform hover:scale-105 transition-transform duration-500">
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://faidanancy7908-hue.github.io/digital-farmers-farmers-hervest-hub-and-climatic-updated/")}&bgcolor=ffffff&color=0f172a&margin=10`} 
-                    alt="Web Portal QR Code" 
-                    className="w-full h-full object-contain" 
-                  />
-                </div>
+                <a 
+                  href={PORTAL_URL} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-40 h-40 rounded-3xl overflow-hidden border-8 border-white shadow-2xl bg-white p-2 transform hover:scale-105 transition-transform duration-500 block group/qr relative"
+                >
+                    <img 
+                      src={`https://quickchart.io/qr?text=${encodeURIComponent(PORTAL_URL)}&size=160&centerImageUrl=https://img.icons8.com/color/48/000000/sprout.png`} 
+                      alt="FAIDA Portal QR Code" 
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover/qr:opacity-100 transition-opacity flex items-center justify-center">
+                      <Sparkles className="text-emerald-600 animate-pulse" size={24} />
+                    </div>
+                </a>
                 <div className="space-y-4 w-full">
                   <div className="space-y-3 w-full">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest">
+                    <a 
+                      href={PORTAL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
+                    >
                       <Layout size={12} /> Public Portal Access
-                    </div>
+                    </a>
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+                      <a href="tel:*672*001#" className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 hover:border-amber-500/50 transition-all">
                         <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
                         <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
-                      </div>
-                      <div className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+                      </a>
+                      <a href="tel:*818*3*5#" className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 hover:border-red-500/50 transition-all">
                         <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
                         <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
-                      </div>
+                      </a>
                     </div>
                   </div>
                   <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                    Scan the QR code to grant immediate access to this intelligence hub on any smartphone.
+                    Scan the QR code or click the links above to grant immediate access to this intelligence hub.
                   </p>
                 </div>
               </div>
@@ -328,16 +344,23 @@ export default function App() {
                       <Sparkles size={14} /> {activeRole} Portal
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg bg-white/5 flex items-center justify-center">
-                        <img src="/faida_basket_logo.png" alt="FAIDA Logo" className="w-full h-full object-cover" onError={(e) => e.target.style.display='none'} />
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg relative group/logo bg-slate-900/50">
+                        <img 
+                          src="farm_logo.png" 
+                          alt="FAIDA Logo" 
+                          className="w-full h-full object-contain p-1"
+                        />
                       </div>
 
-                      <h1 className="text-4xl font-bold">
-                        {activeRole === 'Farmer' && "Partner Farmer Hub"}
-                        {activeRole === 'Seller' && "Market Seller Terminal"}
-                        {activeRole === 'Ministry' && "Ministry Command Hub"}
-                        {activeRole === 'NGO' && "Initiative Resource Center"}
-                      </h1>
+                      <div className="flex flex-col">
+                        <h1 className="text-3xl font-black tracking-tighter text-white uppercase leading-none">
+                          {activeRole === 'Farmer' && "Partner Farmer Hub"}
+                          {activeRole === 'Seller' && "Market Seller Terminal"}
+                          {activeRole === 'Ministry' && "Ministry Command Hub"}
+                          {activeRole === 'NGO' && "Initiative Resource Center"}
+                        </h1>
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.3em] mt-1">FAIDA DIGITAL HARVEST HUB</span>
+                      </div>
                     </div>
                     <p className="text-slate-400 text-sm max-w-xl">
                       {activeRole === 'Farmer' && "Optimize your yield with precision tools and direct NGO support. USSD: *672*001#"}
@@ -383,8 +406,15 @@ export default function App() {
                   <div className="glass-panel p-10 relative overflow-hidden border-l-4 border-l-emerald-500 shadow-2xl">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                      <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20 shrink-0 transform hover:rotate-3 transition-transform duration-500 bg-white/5 flex items-center justify-center">
-                        <img src="/faida_basket_logo.png" alt="FAIDA Basket Logo" className="w-full h-full object-cover scale-110" onError={(e) => e.target.style.display='none'} />
+                      <div className="w-56 h-56 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] border-2 border-white/10 shrink-0 transform hover:scale-105 transition-all duration-700 relative group/mainlogo bg-slate-900/50">
+                        <img 
+                          src="farm_logo.png" 
+                          alt="FAIDA Digital Harvest Hub" 
+                          className="w-full h-full object-contain p-4"
+                        />
+                        <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-[1px] flex flex-col items-center justify-center text-center p-4 opacity-0 group-hover/mainlogo:opacity-100 transition-opacity">
+                          <span className="text-2xl font-black text-white leading-tight uppercase tracking-tighter">FAIDA<br/>DIGITAL<br/><span className="text-emerald-400">HARVEST</span></span>
+                        </div>
                       </div>
 
                       <div className="space-y-4 text-center md:text-left flex-1">
@@ -842,10 +872,10 @@ export default function App() {
                   ))}
                 </div>
                 <div className="flex gap-4 pt-4 border-t border-slate-800">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-slate-800 hover:bg-slate-700 rounded-xl transition-all">
+                  <button onClick={() => handleDownload('Ecosystem Report')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-slate-800 hover:bg-slate-700 rounded-xl transition-all">
                     <Download size={16} /> Download Report
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all">
+                  <button onClick={() => alert('API Key Generation: Access restricted to authorized stakeholders.')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all">
                     <Code size={16} /> Generate API Key
                   </button>
                 </div>
