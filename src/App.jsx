@@ -348,7 +348,7 @@ export default function App() {
                         <img 
                           src="farm_logo.png" 
                           alt="FAIDA Logo" 
-                          className="w-full h-full object-contain p-1"
+                          className="w-full h-full object-cover object-bottom transition-all duration-500 hover:scale-110"
                         />
                       </div>
 
@@ -406,11 +406,11 @@ export default function App() {
                   <div className="glass-panel p-10 relative overflow-hidden border-l-4 border-l-emerald-500 shadow-2xl">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                      <div className="w-56 h-56 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] border-2 border-white/10 shrink-0 transform hover:scale-105 transition-all duration-700 relative group/mainlogo bg-slate-900/50">
+                      <div className="w-56 h-56 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.15)] border-2 border-amber-500/20 shrink-0 transform hover:scale-105 transition-all duration-700 relative group/mainlogo bg-slate-900/50">
                         <img 
                           src="farm_logo.png" 
                           alt="FAIDA Digital Harvest Hub" 
-                          className="w-full h-full object-contain p-4"
+                          className="w-full h-full object-cover object-bottom transition-all duration-500 hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-[1px] flex flex-col items-center justify-center text-center p-4 opacity-0 group-hover/mainlogo:opacity-100 transition-opacity">
                           <span className="text-2xl font-black text-white leading-tight uppercase tracking-tighter">FAIDA<br/>DIGITAL<br/><span className="text-emerald-400">HARVEST</span></span>
