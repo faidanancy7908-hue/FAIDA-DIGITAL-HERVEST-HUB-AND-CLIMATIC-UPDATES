@@ -62,10 +62,78 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState(null);
   const [userRole, setUserRole] = useState('Admin'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
   
+  const [iotData] = useState({
+    ph: 5.2,
+    nitrogen: 'Low',
+    phosphorus: 'Optimal',
+    potassium: 'Low',
+    temp: 29.5,
+    moisture: 35
+  });
+
+  const [weeklyForecast] = useState([
+    { day: 'Mon', condition: 'Sunny', temp: 32, rainProb: 0 },
+    { day: 'Tue', condition: 'Sunny', temp: 33, rainProb: 0 },
+    { day: 'Wed', condition: 'Clear', temp: 31, rainProb: 5 },
+    { day: 'Thu', condition: 'Sunny', temp: 34, rainProb: 0 },
+    { day: 'Fri', condition: 'Sunny', temp: 35, rainProb: 0 },
+    { day: 'Sat', condition: 'Clear', temp: 33, rainProb: 0 },
+    { day: 'Sun', condition: 'Sunny', temp: 32, rainProb: 0 },
+  ]);
+
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
   const [applications, setApplications] = useState([
     { id: 'app1', name: 'John Doe', crop: 'Maize', status: 'Approved', yield: '4.2t/ha' },
     { id: 'app2', name: 'Jane Smith', crop: 'Cocoa', status: 'Pending', yield: '0.8t/ha' }
   ]);
+
+  const playIoTAudioReport = () => {
+    if (!('speechSynthesis' in window)) {
+      alert("Your browser does not support audio responses.");
+      return;
+    }
+    
+    window.speechSynthesis.cancel();
+    setIsPlayingAudio(true);
+
+    let script = "FAIDA IoT Audio Diagnostic Report initiated. ";
+    
+    script += `Current soil pH is ${iotData.ph}. `;
+    if (iotData.ph < 6.0) {
+      script += "Alert: Soil pH is below normal. The soil is too acidic. We recommend applying agricultural lime immediately to neutralize the acidity and improve nutrient uptake. ";
+    }
+
+    const missingNutrients = [];
+    if (iotData.nitrogen === 'Low') missingNutrients.push('Nitrogen');
+    if (iotData.phosphorus === 'Low') missingNutrients.push('Phosphorus');
+    if (iotData.potassium === 'Low') missingNutrients.push('Potassium');
+    
+    if (missingNutrients.length > 0) {
+      script += `Alert: The soil is lacking vital nutrients, specifically: ${missingNutrients.join(' and ')}. Please apply an N P K fertilizer blend tailored to these deficiencies to ensure proper crop development. `;
+    }
+
+    script += `Current soil temperature is ${iotData.temp} degrees Celsius. `;
+
+    const willRain = weeklyForecast.some(day => day.rainProb > 30);
+    if (!willRain) {
+      script += "Critical Weather Alert: There is no significant rainfall expected for the next seven days. Please deploy advanced irrigation systems and mulch your fields immediately to preserve soil moisture and prevent severe crop drought stress. ";
+    } else {
+      script += "Weather focus for the next week shows favorable rainfall. ";
+    }
+
+    script += "End of diagnostic report. Please take immediate action to secure your harvest.";
+
+    const utterance = new SpeechSynthesisUtterance(script);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-US';
+    
+    utterance.onend = () => setIsPlayingAudio(false);
+    utterance.onerror = () => setIsPlayingAudio(false);
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleApply = (name, crop) => {
     const newApp = {
@@ -558,6 +626,59 @@ export default function App() {
           
           {(activeRole === 'Farmer') && (
             <div id="weather-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-8">
+              {/* NEW IoT Audio Assistant Dashboard */}
+              <section className="glass-panel p-8 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
+                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
+                
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
+                      <Activity className="text-amber-400" size={28} /> Real-Time IoT Soil Diagnostics
+                    </h2>
+                    <p className="text-slate-400 text-sm mt-2">Active sensors detecting critical soil deficiencies and impending drought conditions.</p>
+                  </div>
+                  
+                  <button 
+                    onClick={playIoTAudioReport}
+                    disabled={isPlayingAudio}
+                    className={`flex items-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shrink-0 ${
+                      isPlayingAudio 
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-amber-500/10 animate-pulse'
+                        : 'bg-amber-500 hover:bg-amber-400 text-slate-900 shadow-amber-500/20 active:scale-95'
+                    }`}
+                  >
+                    {isPlayingAudio ? (
+                      <><Activity size={20} className="animate-bounce" /> Playing Audio Alert...</>
+                    ) : (
+                      <><Sparkles size={20} /> Run Audio Diagnostics</>
+                    )}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
+                    <div className="text-[10px] text-red-400 font-black uppercase tracking-widest mb-1">Soil pH</div>
+                    <div className="text-3xl font-bold text-white">{iotData.ph}</div>
+                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Below Normal</div>
+                  </div>
+                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
+                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">Nitrogen / Potassium</div>
+                    <div className="text-2xl font-bold text-white">Depleted</div>
+                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Critical Need</div>
+                  </div>
+                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-amber-500/30">
+                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">Soil Temp</div>
+                    <div className="text-3xl font-bold text-white">{iotData.temp}°C</div>
+                    <div className="text-xs text-amber-400 mt-1">Elevated</div>
+                  </div>
+                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
+                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">7-Day Rain Prob.</div>
+                    <div className="text-3xl font-bold text-white">0%</div>
+                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Drought Warning</div>
+                  </div>
+                </div>
+              </section>
+
               <section className="glass-panel p-6 lg:col-span-1 flex flex-col justify-between relative overflow-hidden group">
                 <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
                 <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
