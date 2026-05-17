@@ -361,7 +361,7 @@ export default function App() {
                           {activeRole === 'Ministry' && "Ministry Command Hub"}
                           {activeRole === 'NGO' && "Initiative Resource Center"}
                         </h1>
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.25em] mt-1">Digital Climate Hub</span>
+                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.15em] mt-1">FAIDA Digital Climate Response Hub</span>
                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-0.5">Agriculture and Climate Resolution</span>
                       </div>
                     </div>
@@ -421,9 +421,9 @@ export default function App() {
                           <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_60s_linear_infinite]" style={{ transformOrigin: 'center' }}>
                             <path id="textCircleTop" d="M 20,100 A 80,80 0 0,1 180,100" fill="none" />
                             <path id="textCircleBottom" d="M 180,100 A 80,80 0 0,1 20,100" fill="none" />
-                            <text fill="#fbbf24" className="text-[12px] font-black uppercase tracking-[0.2em]" textAnchor="middle">
+                            <text fill="#fbbf24" className="text-[8px] font-black uppercase tracking-[0.1em]" textAnchor="middle">
                               <textPath href="#textCircleTop" startOffset="50%">
-                                Digital Climate Hub
+                                FAIDA Digital Climate Response Hub
                               </textPath>
                             </text>
                             <text fill="#fbbf24" className="text-[9px] font-black uppercase tracking-[0.15em] opacity-90" textAnchor="middle">
@@ -441,8 +441,8 @@ export default function App() {
                           <Sparkles size={14} /> {greeting}, System {userRole}
                         </div>
                         <div>
-                          <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white uppercase leading-none">
-                            Digital Climate <span className="text-amber-400">Hub</span>
+                          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase leading-none">
+                            FAIDA Digital Climate <br/><span className="text-amber-400">Response Hub</span>
                           </h1>
                           <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-2">
                             Agriculture & Climate Resolution
