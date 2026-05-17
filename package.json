@@ -2,6 +2,7 @@
   "name": "faida-digital-harvest-hub",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://faidanancy7908-hue.github.io/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/",
   "type": "module",
   "scripts": {
     "dev": "vite",
