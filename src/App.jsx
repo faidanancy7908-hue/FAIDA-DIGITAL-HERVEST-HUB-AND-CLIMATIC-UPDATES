@@ -47,138 +47,7 @@ const WEATHER_CONDITIONS = [
 
 const PORTAL_URL = 'https://faidanancy7908-hue.github.io/digital-farmers-farmers-hervest-hub-and-climatic-updated/';
 
-function DigitalClimateHubLogo({ className = "w-full h-full" }) {
-  return (
-    <svg viewBox="0 0 200 200" className={className}>
-      <defs>
-        <radialGradient id="tomatoGrad" cx="35%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="#ef4444" />
-          <stop offset="75%" stopColor="#dc2626" />
-          <stop offset="100%" stopColor="#991b1b" />
-        </radialGradient>
-        <linearGradient id="maizeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#fbbf24" />
-          <stop offset="60%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#d97706" />
-        </linearGradient>
-        <radialGradient id="sorghumGrad" cx="40%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#f97316" />
-          <stop offset="80%" stopColor="#c2410c" />
-          <stop offset="100%" stopColor="#7c2d12" />
-        </radialGradient>
-        <linearGradient id="huskGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="100%" stopColor="#059669" />
-        </linearGradient>
-        <linearGradient id="basketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#d97706" />
-          <stop offset="100%" stopColor="#78350f" />
-        </linearGradient>
-        <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
-          <stop offset="0%" stopColor="#1e293b" />
-          <stop offset="100%" stopColor="#0f172a" />
-        </radialGradient>
-      </defs>
 
-      {/* Rotating outer dash circle */}
-      <circle 
-        cx="100" 
-        cy="100" 
-        r="95" 
-        fill="none" 
-        stroke="#fbbf24" 
-        strokeWidth="1.5" 
-        strokeDasharray="6 4" 
-        className="origin-center"
-        style={{ transformOrigin: 'center', animation: 'spin 100s linear infinite' }}
-      />
-      
-      {/* Outer circular container */}
-      <circle cx="100" cy="100" r="88" fill="url(#bgGrad)" stroke="rgba(251, 191, 36, 0.35)" strokeWidth="2.5" />
-      <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-
-      {/* Crops inside the basket */}
-      {/* Sorghum Stalk & grains (positioned left-back) */}
-      <g>
-        <path d="M 85,120 L 74,62" stroke="#9a3412" strokeWidth="2" strokeLinecap="round" fill="none" />
-        <path d="M 85,120 L 80,55" stroke="#7c2d12" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        
-        {/* Rich red-orange sorghum grains */}
-        <circle cx="74" cy="62" r="4" fill="url(#sorghumGrad)" />
-        <circle cx="70" cy="66" r="3.5" fill="url(#sorghumGrad)" />
-        <circle cx="78" cy="59" r="3.5" fill="url(#sorghumGrad)" />
-        <circle cx="80" cy="55" r="3.5" fill="url(#sorghumGrad)" />
-        <circle cx="76" cy="51" r="3.2" fill="url(#sorghumGrad)" />
-        <circle cx="84" cy="53" r="3.2" fill="url(#sorghumGrad)" />
-        <circle cx="72" cy="57" r="3" fill="url(#sorghumGrad)" />
-        <circle cx="77" cy="46" r="2.8" fill="url(#sorghumGrad)" />
-        <circle cx="82" cy="48" r="2.8" fill="url(#sorghumGrad)" />
-      </g>
-
-      {/* Maize (Corn) Stalk & golden grains (positioned right-back) */}
-      <g transform="rotate(10, 120, 85)">
-        {/* Maize Cob */}
-        <rect x="111" y="52" width="18" height="48" rx="9" fill="url(#maizeGrad)" />
-        {/* Kernel detail dots */}
-        <circle cx="115" cy="59" r="1.5" fill="#fef08a" />
-        <circle cx="120" cy="58" r="1.5" fill="#fef08a" />
-        <circle cx="125" cy="60" r="1.5" fill="#fef08a" />
-        <circle cx="114" cy="67" r="1.5" fill="#fef08a" />
-        <circle cx="120" cy="66" r="1.5" fill="#fef08a" />
-        <circle cx="126" cy="68" r="1.5" fill="#fef08a" />
-        <circle cx="115" cy="75" r="1.5" fill="#fef08a" />
-        <circle cx="121" cy="74" r="1.5" fill="#fef08a" />
-        <circle cx="125" cy="76" r="1.5" fill="#fef08a" />
-        <circle cx="116" cy="83" r="1.5" fill="#fef08a" />
-        <circle cx="121" cy="82" r="1.5" fill="#fef08a" />
-        {/* Peeled Husks (Partially Open) */}
-        <path d="M 110,95 C 100,80 107,62 112,57 C 112,62 114,80 114,90 Z" fill="url(#huskGrad)" />
-        <path d="M 128,95 C 138,80 131,62 126,57 C 126,62 124,80 124,90 Z" fill="url(#huskGrad)" />
-      </g>
-
-      {/* Tomato (positioned front-left) */}
-      <g>
-        <circle cx="94" cy="98" r="17" fill="url(#tomatoGrad)" />
-        {/* Stem */}
-        <path d="M 94,81 L 94,77 M 94,81 L 90,78 M 94,81 L 98,78 M 94,81 L 91,83 M 94,81 L 97,83" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" />
-        {/* Gloss highlight */}
-        <ellipse cx="87" cy="91" rx="4" ry="2" fill="#ffffff" opacity="0.35" transform="rotate(-30, 87, 91)" />
-      </g>
-
-      {/* Open Basket (placed at the front-bottom) */}
-      <g>
-        {/* Basket base */}
-        <path d="M 68,102 C 72,135 128,135 132,102 Z" fill="url(#basketGrad)" stroke="#5c2e0b" strokeWidth="2" />
-        {/* Weave details */}
-        <path d="M 72,109 C 80,120 120,120 128,109" stroke="#92400e" strokeWidth="1.5" fill="none" />
-        <path d="M 76,117 C 85,126 115,126 124,117" stroke="#92400e" strokeWidth="1.5" fill="none" />
-        <path d="M 85,105 L 88,127" stroke="#92400e" strokeWidth="1.5" />
-        <path d="M 100,105 L 100,130" stroke="#92400e" strokeWidth="1.5" />
-        <path d="M 115,105 L 112,127" stroke="#92400e" strokeWidth="1.5" />
-        {/* Basket rim */}
-        <ellipse cx="100" cy="102" rx="33" ry="5.5" fill="#78350f" stroke="#5c2e0b" strokeWidth="2" />
-        <ellipse cx="100" cy="102" rx="30" ry="4" fill="#92400e" />
-      </g>
-
-      {/* Circular text branding and motto */}
-      {/* Top Arc for Brand */}
-      <path id="topBrandArc" d="M 28,100 A 72,72 0 0,1 172,100" fill="none" />
-      <text fill="#fbbf24" className="text-[8.5px] font-black uppercase tracking-[0.24em] fill-amber-400" textAnchor="middle">
-        <textPath href="#topBrandArc" startOffset="50%">
-          Digital Climate Hub
-        </textPath>
-      </text>
-
-      {/* Bottom Arc for Motto */}
-      <path id="bottomMottoArc" d="M 172,100 A 72,72 0 0,1 28,100" fill="none" />
-      <text fill="#fbbf24" className="text-[7.5px] font-black uppercase tracking-[0.16em] fill-amber-500/90" textAnchor="middle">
-        <textPath href="#bottomMottoArc" startOffset="50%">
-          Agriculture & Climate Resolution
-        </textPath>
-      </text>
-    </svg>
-  );
-}
 
 export default function App() {
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
@@ -477,8 +346,12 @@ export default function App() {
                       <Sparkles size={14} /> {activeRole} Portal
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10 shrink-0 shadow-lg relative group/logo bg-slate-900/50 p-1">
-                        <DigitalClimateHubLogo />
+                      <div className="w-16 h-16 rounded-[1rem] overflow-hidden border border-white/10 shrink-0 shadow-lg relative bg-slate-900/50">
+                        <img 
+                          src="farm_logo.png" 
+                          alt="Digital Climate Hub Logo" 
+                          className="absolute inset-0 w-full h-full object-cover object-bottom"
+                        />
                       </div>
 
                       <div className="flex flex-col">
@@ -536,10 +409,30 @@ export default function App() {
                   <div className="glass-panel p-10 relative overflow-hidden border-l-4 border-l-emerald-500 shadow-2xl">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                      <div className="w-56 h-56 rounded-full overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)] border-2 border-amber-500/30 shrink-0 transform hover:scale-105 transition-all duration-700 relative group/mainlogo bg-slate-900/50 p-1">
-                        <DigitalClimateHubLogo />
-                        <div className="absolute inset-0 bg-amber-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center text-center p-4 opacity-0 group-hover/mainlogo:opacity-100 transition-opacity rounded-full">
-                          <span className="text-sm font-black text-amber-400 leading-tight uppercase tracking-widest">DIGITAL<br/>CLIMATE<br/><span className="text-white">HUB</span></span>
+                      <div className="w-56 h-56 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)] border-2 border-amber-500/30 shrink-0 relative bg-slate-900/50">
+                        <img 
+                          src="farm_logo.png" 
+                          alt="Digital Climate Hub" 
+                          className="absolute inset-0 w-full h-full object-cover object-bottom"
+                        />
+                        {/* Branding inside the image area around the center */}
+                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)]"></div>
+                          <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_60s_linear_infinite]" style={{ transformOrigin: 'center' }}>
+                            <path id="textCircleTop" d="M 20,100 A 80,80 0 0,1 180,100" fill="none" />
+                            <path id="textCircleBottom" d="M 180,100 A 80,80 0 0,1 20,100" fill="none" />
+                            <text fill="#fbbf24" className="text-[12px] font-black uppercase tracking-[0.2em]" textAnchor="middle">
+                              <textPath href="#textCircleTop" startOffset="50%">
+                                Digital Climate Hub
+                              </textPath>
+                            </text>
+                            <text fill="#fbbf24" className="text-[9px] font-black uppercase tracking-[0.15em] opacity-90" textAnchor="middle">
+                              <textPath href="#textCircleBottom" startOffset="50%">
+                                Agriculture & Climate Resolution
+                              </textPath>
+                            </text>
+                            <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1" strokeDasharray="4 4" />
+                          </svg>
                         </div>
                       </div>
 
