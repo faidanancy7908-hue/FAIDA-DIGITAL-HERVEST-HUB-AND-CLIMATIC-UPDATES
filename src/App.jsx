@@ -2635,7 +2635,7 @@ Authorized Signature: Faida Nancy (General Director)
           if (role.isQuickLink) return false;
           if (userRole === 'Admin') return true;
           if (userRole === 'NGO') return role.id === 'General' || role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
-          if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Resource';
+          if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Seller' || role.id === 'Resource';
           return role.id === 'General' || role.id === userRole || role.id === 'Resource';
         })
         .map(role => {
