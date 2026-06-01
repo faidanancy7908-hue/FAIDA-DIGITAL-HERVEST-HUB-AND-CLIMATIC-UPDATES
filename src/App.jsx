@@ -1718,13 +1718,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <div className="text-[11px] font-black uppercase tracking-widest text-slate-400">Step 2 — Farmer Details <span className="text-red-400">*</span></div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                      <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Send Request To</label>
-                        <select required value={toolReqRecipient} onChange={(e) => setToolReqRecipient(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-slate-200">
-                          <option value="NGO">NGO Partner Initiative</option>
-                          <option value="Ministry">Ministry of Agriculture</option>
-                        </select>
-                      </div>
+
                         <div className="space-y-1.5">
                           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Full Name of Farmer <span className="text-red-400">*</span></label>
                           <input
@@ -2009,21 +2003,21 @@ Authorized Signature: Faida Nancy (General Director)
             </div>
           )}
 
-          {(activeRole === 'NGO') && (
+          {(activeRole === 'NGO' || activeRole === 'Ministry') && (
             <div className="space-y-8">
               
               <section id="applications-list-ngo" className="glass-panel p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-3">
-                    <Users className="text-emerald-400" /> NGO Application Management
+                    <Users className="text-emerald-400" /> Application Management
                   </h2>
                   <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 rounded-xl text-xs font-bold border border-amber-500/20">
-                    <Activity size={14} /> {applications.filter(a => a.status === 'Pending' && a.recipient === 'NGO').length} Action Required
+                    <Activity size={14} /> {applications.filter(a => a.status === 'Pending').length} Action Required
                   </div>
                 </div>
                 
                 <div className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {applications.filter(a => a.recipient === 'NGO').map(app => (
+                  {applications.map(app => (
                     <div key={app.id} className="min-w-[300px] md:min-w-[340px] shrink-0 snap-start p-6 bg-slate-900/50 rounded-3xl border border-slate-800 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
                         <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'} />
@@ -2084,12 +2078,12 @@ Authorized Signature: Faida Nancy (General Director)
               <section id="equipment-requests-ngo" className="glass-panel p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-3">
-                    <Wrench className="text-emerald-400" /> NGO Equipment Requests
+                    <Wrench className="text-emerald-400" /> Equipment Requests
                   </h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {equipmentRequests.filter(req => req.recipient === 'NGO').map(req => (
+                  {equipmentRequests.map(req => (
                     <div key={req.id} className="p-6 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col justify-between">
                       <div className="space-y-4">
                         <div className="flex justify-between items-start">
