@@ -29,7 +29,11 @@ import {
   Camera,
   UploadCloud,
   CheckCircle2,
-  MapPin
+  MapPin,
+  Cloud,
+  Droplets,
+  Thermometer,
+  Menu
 } from 'lucide-react';
 
 
@@ -76,6 +80,10 @@ const TRANSLATIONS = {
     intro: "FAIDA IoT Audio Diagnostic Report initiated.",
     ph: "Current soil pH is {ph}.",
     phLow: "Alert: Soil pH is below normal. The soil is too acidic. We recommend applying agricultural lime immediately.",
+    cloudCoverage: "Cloud cover is at {cloudCoverage} percent.",
+    moisture: "Soil moisture is at {moisture} percent.",
+    moistureAlert: "Alert: Soil moisture is low. Please irrigate your field.",
+    ambient: "Immediate climate temperature is {temp} degrees Celsius with {humidity} percent humidity.",
     nutrientsAlert: "Alert: The soil is lacking vital nutrients, specifically: {nutrients}. Please apply N P K fertilizer.",
     temp: "Current soil temperature is {temp} degrees Celsius.",
     drought: "Critical Weather Alert: There is no significant rainfall expected. Please deploy irrigation and mulch fields immediately.",
@@ -86,6 +94,10 @@ const TRANSLATIONS = {
     intro: "Ripoti ya uchunguzi wa sauti ya FAIDA IoT imeanzishwa.",
     ph: "Kiwango cha pH cha udongo ni {ph}.",
     phLow: "Tahadhari: Kiwango cha pH kiko chini. Udongo una asidi nyingi. Tunapendekeza kuweka chokaa ya kilimo mara moja.",
+    cloudCoverage: "Kiwango cha mawingu ni asilimia {cloudCoverage}.",
+    moisture: "Unyevu wa udongo ni asilimia {moisture}.",
+    moistureAlert: "Tahadhari: Unyevu wa udongo uko chini. Tafadhali mwagilia shamba lako.",
+    ambient: "Hali ya hewa hapa ni nyuzi {temp} Selsiasi na unyevu wa asilimia {humidity}.",
     nutrientsAlert: "Tahadhari: Udongo unakosa virutubisho muhimu, hasa: {nutrients}. Tafadhali weka mbolea ya N P K.",
     temp: "Joto la udongo kwa sasa ni nyuzi {temp} Selsiasi.",
     drought: "Tahadhari ya Hali ya Hewa: Hakuna mvua ya kutosha inayotarajiwa. Tafadhali tumia umwagiliaji na uweke matandazo mara moja.",
@@ -96,6 +108,10 @@ const TRANSLATIONS = {
     intro: "Alipoota ya FAIDA IoT etandise.",
     ph: "P-H y'ettaka eri {ph}.",
     phLow: "Okulabula: P-H y'ettaka eri wansi nnyo. Kozesa ekigimusa eky'eddasi amangu ddala.",
+    cloudCoverage: "Ebire biri ku bitundu {cloudCoverage} ku kikumi.",
+    moisture: "Obunnyogovu bw'ettaka buli ku bitundu {moisture} ku kikumi.",
+    moistureAlert: "Okulabula: Ettaka liry'ekalu nnyo. Ffukirira ettaka amangu.",
+    ambient: "Ebbugumu ly'omwoyo liri diguli {temp} era n'obunnyogovu buli {humidity} ku kikumi.",
     nutrientsAlert: "Okulabula: Ettaka libulamu ebiriisa ebyetaagisa: {nutrients}. Teekamu ebigimusa bya N P K.",
     temp: "Ebbugumu ly'ettaka liri diguli {temp}.",
     drought: "Okulabula ku budde: Tewali nkuba ya maanyi esuubirwa. Ffukirira era obikke ettaka amangu ddala.",
@@ -117,14 +133,20 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState(null);
   const [userRole, setUserRole] = useState('Admin'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
   
-  const [iotData] = useState({
+  const [iotData, setIotData] = useState({
     ph: 5.2,
     nitrogen: 'Low',
     phosphorus: 'Optimal',
     potassium: 'Low',
     temp: 29.5,
-    moisture: 35
+    moisture: 35,
+    cloudCoverage: 65,
+    ambientTemp: 28.2,
+    ambientHumidity: 62
   });
+
+  const [selectedSensorForSimulation, setSelectedSensorForSimulation] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [weeklyForecast] = useState([
     { day: 'Mon', condition: 'Sunny', temp: 32, rainProb: 0 },
@@ -256,12 +278,16 @@ Resource Center for direct funding, equipment lease, or input subsidy support.
    - Total Farm Size (Hectares): _______ Hectares
    - Primary Crops Grown: _________________________________________
 
-3. REQUESTED ASSISTANCE (Check all that apply)
+3: REQUESTED ASSISTANCE (Check all that apply)
    [ ] Smart Irrigation Kit (Solar-powered drip system)
    [ ] Organic N P K Fertilizer (100kg batch)
    [ ] Soil Sensor Pro Diagnostic Kit
    [ ] Pest Spraying Drone Access
    [ ] Financial Yield Grant Support
+   [ ] Soil pH Sensor Probe
+   [ ] Cloud Coverage Sensor Hub
+   [ ] Soil Moisture Probe
+   [ ] Micro-Climate Sensor Stationrt
 
 ------------------------------------------------------------------------
 Signature of Applicant: _____________________    Date: ____/____/2026
@@ -399,9 +425,10 @@ dossier below. Save or print this note to present to your regional field officer
    - Crop Species / Cultivar   : ${app.cropSpecies || 'Local Breed'}
 
 4. INTEGRATED IOT SOIL ANALYSIS:
-   - Baseline Soil pH          : 5.2 (Acidic deficiency detected)
-   - Baseline Temp             : 29.5°C
-   - Baseline Moisture         : 35%
+   - Soil pH Sensor Reading    : ${iotData.ph} (${iotData.ph < 6.0 ? 'Acidic - Below Normal' : iotData.ph > 7.5 ? 'Alkaline - Above Normal' : 'Optimal'})
+   - Cloud Reading Sensor      : ${iotData.cloudCoverage}% (${iotData.cloudCoverage > 70 ? 'Overcast - Rain Probable' : iotData.cloudCoverage < 20 ? 'Clear Sky' : 'Partly Cloudy'})
+   - Soil Moisture Sensor      : ${iotData.moisture}% (${iotData.moisture < 50 ? 'Dry - Low Moisture' : iotData.moisture > 80 ? 'Soggy - High Moisture' : 'Optimal'})
+   - Immediate Climate Sensor  : ${iotData.ambientTemp}°C / ${iotData.ambientHumidity}% RH (${iotData.ambientTemp > 32 ? 'Hot' : iotData.ambientTemp < 18 ? 'Cold' : 'Optimal'})
    - Dynamic Yield Monitoring  : Active (Targeting optimal yield escalation)
 
 5. CARRIER OFFLINE GATEWAY USSD LINKAGE:
@@ -485,8 +512,22 @@ Authorized Signature: Faida Nancy (General Director)
     const translations = TRANSLATIONS[audioLanguage] || TRANSLATIONS['en-US'];
 
     let introText = translations.intro;
+    
+    // Soil pH
     let phText = translations.ph.replace('{ph}', iotData.ph);
     let phAlertText = iotData.ph < 6.0 ? translations.phLow : '';
+    
+    // Soil Moisture
+    let moistureText = (translations.moisture || "Soil moisture is at {moisture} percent.").replace('{moisture}', iotData.moisture);
+    let moistureAlertText = iotData.moisture < 50 ? (translations.moistureAlert || "Alert: Soil moisture is low.") : '';
+    
+    // Cloud Coverage
+    let cloudText = (translations.cloudCoverage || "Cloud cover is at {cloudCoverage} percent.").replace('{cloudCoverage}', iotData.cloudCoverage);
+    
+    // Ambient Climate
+    let ambientText = (translations.ambient || "Immediate climate temperature is {temp} degrees Celsius with {humidity} percent humidity.")
+      .replace('{temp}', iotData.ambientTemp)
+      .replace('{humidity}', iotData.ambientHumidity);
     
     let nutrientsText = translations.nutrientsAlert.replace('{nutrients}', 'Nitrogen and Potassium');
     let tempText = translations.temp.replace('{temp}', iotData.temp);
@@ -497,6 +538,10 @@ Authorized Signature: Faida Nancy (General Director)
       introText,
       phText,
       phAlertText,
+      moistureText,
+      moistureAlertText,
+      cloudText,
+      ambientText,
       nutrientsText,
       tempText,
       weatherAlertText,
@@ -552,6 +597,14 @@ Authorized Signature: Faida Nancy (General Director)
         // Rolling 7-day window: drop oldest entry, push today's latest price
         const newHistory = [...item.history.slice(-6), newPrice];
         return { ...item, price: newPrice, history: newHistory };
+      }));
+      setIotData(prev => ({
+        ...prev,
+        ph: parseFloat(Math.max(4.0, Math.min(9.0, prev.ph + (Math.random() * 0.08 - 0.04))).toFixed(2)),
+        moisture: Math.max(10, Math.min(100, Math.round(prev.moisture + (Math.random() * 4 - 2)))),
+        cloudCoverage: Math.max(0, Math.min(100, Math.round(prev.cloudCoverage + (Math.random() * 6 - 3)))),
+        ambientTemp: parseFloat(Math.max(15.0, Math.min(40.0, prev.ambientTemp + (Math.random() * 0.4 - 0.2))).toFixed(1)),
+        ambientHumidity: Math.max(20, Math.min(100, Math.round(prev.ambientHumidity + (Math.random() * 4 - 2))))
       }));
       if (Math.random() > 0.7) {
         setWeather(WEATHER_CONDITIONS[Math.floor(Math.random() * WEATHER_CONDITIONS.length)]);
@@ -643,7 +696,7 @@ Authorized Signature: Faida Nancy (General Director)
     { id: 'Farmer', name: 'Farmer Portal', icon: User },
     { id: 'Seller', name: 'Market Seller', icon: ShoppingCart },
     { id: 'Ministry', name: 'Ministry/Policy', icon: Building2 },
-    { id: 'NGO', name: 'NGO/Initiative', icon: Heart },
+    { id: 'NGO', name: 'NGO/Initiative', icon: Heart },
     { id: 'Resource', name: 'Resource & Application', icon: Download }
   ];
 
@@ -675,148 +728,175 @@ Authorized Signature: Faida Nancy (General Director)
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-50 p-4 md:p-8 font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-slate-900 text-slate-50 p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30">
       <div className="max-w-7xl mx-auto">
+        {/* Global Top Header */}
+        <header className="w-full flex items-center justify-between p-4 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-slate-800/80 mb-4 sticky top-4 z-[80]">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsDrawerOpen(true)}
+              className="text-slate-400 hover:text-white transition-colors p-1 bg-slate-900/50 rounded-lg border border-slate-800">
+              <Menu size={20} />
+            </button>
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-500/30">
+              <img src="farm_logo.png" alt="Logo" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-wider text-white">FAIDA Climate Response</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+            <Sparkles size={11} className="animate-pulse" /> Live Monitoring
+          </div>
+        </header>
+
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* Sidebar: Stakeholders & Visuals */}
+          {/* Sidebar: Stakeholders & Visuals (Consolidated Welcoming Board) */}
           <aside className="w-full lg:w-80 space-y-6 lg:sticky lg:top-8">
-            <div className="glass-panel p-6 space-y-6 border-l-4 border-l-emerald-500">
-              <div className="space-y-2">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Users size={20} className="text-emerald-400" /> Stakeholders
-                </h2>
-                <p className="text-xs text-slate-400">Select your portal to access specialized tools</p>
+            
+            {/* Persistent Branding Welcoming Board Container */}
+            <div className="glass-panel p-6 flex flex-col items-center text-center gap-6 border-l-4 border-l-amber-500 relative overflow-hidden shadow-2xl group">
+              <button 
+                onClick={() => setIsDrawerOpen(true)}
+                className="absolute top-4 left-4 z-30 text-slate-400 hover:text-white transition-colors p-2 bg-slate-900/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                <Menu size={20} />
+              </button>
+              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
+              
+              {/* Spinning Logo Area - Centered on Top */}
+              <div className="w-32 h-32 rounded-[1rem] overflow-hidden shadow-[0_0_20px_rgba(245,158,11,0.15)] border border-amber-500/30 relative bg-slate-900/50">
+                <img 
+                  src="farm_logo.png" 
+                  alt="Digital Climate Hub" 
+                  className="absolute inset-0 w-full h-full object-cover object-bottom"
+                />
+                <div className="absolute top-2 left-2 z-20 bg-amber-500/20 p-1.5 rounded-full backdrop-blur-md border border-amber-500/30 shadow-[0_0_5px_rgba(245,158,11,0.4)]">
+                  <Sun className="text-amber-400 w-5 h-5 animate-[spin_10s_linear_infinite]" />
+                </div>
+                <div className="absolute top-2 right-2 z-20 bg-blue-500/20 p-1.5 rounded-full backdrop-blur-md border border-blue-500/30 shadow-[0_0_5px_rgba(59,130,246,0.4)]">
+                  <CloudRain className="text-blue-400 w-5 h-5 animate-bounce" />
+                </div>
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)]"></div>
+                  <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_60s_linear_infinite]" style={{ transformOrigin: 'center' }}>
+                    <path id="textCircleTopSidebar" d="M 20,100 A 80,80 0 0,1 180,100" fill="none" />
+                    <path id="textCircleBottomSidebar" d="M 180,100 A 80,80 0 0,1 20,100" fill="none" />
+                    <text fill="#fbbf24" className="text-[8px] font-black uppercase tracking-[0.1em]" textAnchor="middle">
+                      <textPath href="#textCircleTopSidebar" startOffset="50%">
+                        FAIDA DIGITAL CLIMATE RESPONSE
+                      </textPath>
+                    </text>
+                    <text fill="#fbbf24" className="text-[9px] font-black uppercase tracking-[0.15em] opacity-90" textAnchor="middle">
+                      <textPath href="#textCircleBottomSidebar" startOffset="50%">
+                        Agriculture & Climate Resolution
+                      </textPath>
+                    </text>
+                    <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1" strokeDasharray="4 4" />
+                  </svg>
+                </div>
               </div>
 
-              {/* Demo Role Switcher (For testing RBAC) */}
-              <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-800 space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Switch User Role (Demo)</label>
-                <select 
-                  value={userRole} 
-                  onChange={(e) => {
-                    setUserRole(e.target.value);
-                    setActiveRole('General');
-                  }}
-                  className="w-full bg-slate-800 border-none rounded-lg px-3 py-1.5 text-xs font-bold text-emerald-400 focus:ring-1 focus:ring-emerald-500"
-                >
-                  <option value="Admin">System Administrator</option>
-                  <option value="NGO">NGO Representative</option>
-                  <option value="Farmer">Partner Farmer</option>
-                  <option value="Seller">Market Seller</option>
-                  <option value="Ministry">Ministry Official</option>
-                </select>
-              </div>
+              {/* Branding Text & Metadata - Centered Below Logo */}
+              <div className="space-y-3 w-full">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mx-auto">
+                  <Sparkles size={11} /> {greeting}, System {userRole}
+                </div>
+                
+                <div>
+                  <h1 className="text-xl font-black tracking-tight text-white uppercase leading-none">
+                    FAIDA DIGITAL CLIMATE <br/>
+                    <span className="text-amber-400 text-base md:text-lg">RESPONSE</span>
+                  </h1>
+                  <div className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider mt-1.5">
+                    Agriculture & Climate Resolution
+                  </div>
+                </div>
 
-              <div className="flex flex-col gap-2">
-                {roles
-                  .filter(role => {
-                    if (userRole === 'Admin') return true;
-                    if (userRole === 'NGO') return role.id === 'General' || role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
-                    if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Resource';
-                    return role.id === 'General' || role.id === userRole || role.id === 'Resource';
-                  })
-                  .map(role => (
-                  <button 
-                    key={role.id}
-                    onClick={() => setActiveRole(role.id)}
-                    className={`flex items-center justify-between group/btn px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeRole === role.id ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
+                {/* Switch User Role Selector (Demo) */}
+                <div className="w-full mt-2 p-2 bg-slate-900/60 rounded-xl border border-slate-800 flex flex-col gap-1 text-left relative z-10">
+                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-500 block pl-1">Switch User Role (Demo)</label>
+                  <select 
+                    value={userRole} 
+                    onChange={(e) => {
+                      setUserRole(e.target.value);
+                      setActiveRole('General');
+                    }}
+                    className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold text-emerald-400 cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
-                      <role.icon size={18} />
-                      {role.name}
-                    </div>
-                    <ChevronRight size={14} className={`transition-transform ${activeRole === role.id ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'}`} />
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-700/50">
-                <div className="rounded-xl overflow-hidden border border-slate-700/50 shadow-xl relative group/img aspect-video">
-                  <img src="farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" />
-                </div>
-                <div className="rounded-xl overflow-hidden border border-slate-700/50 shadow-xl relative group/img aspect-video">
-                  <img src="bountiful_harvest.png" alt="Bountiful Harvest" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" />
+                    <option value="Admin" className="bg-slate-900 text-emerald-400 font-bold">System Administrator</option>
+                    <option value="NGO" className="bg-slate-900 text-emerald-400 font-bold">NGO Representative</option>
+                    <option value="Farmer" className="bg-slate-900 text-emerald-400 font-bold">Partner Farmer</option>
+                    <option value="Seller" className="bg-slate-900 text-emerald-400 font-bold">Market Seller</option>
+                    <option value="Ministry" className="bg-slate-900 text-emerald-400 font-bold">Ministry Official</option>
+                  </select>
                 </div>
               </div>
-            </div>
 
-            {/* Mobile Onboarding & USSD */}
-            <div className="glass-panel p-6 space-y-4 border-l-4 border-l-amber-500">
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Mobile Access</h3>
-                <p className="text-xs text-slate-400">Offline & Quick Entry</p>
-              </div>
-              <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col items-center gap-4 text-center">
-                <a 
-                  href={PORTAL_URL} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-40 h-40 rounded-3xl overflow-hidden border-8 border-white shadow-2xl bg-white p-2 transform hover:scale-105 transition-transform duration-500 block group/qr relative"
-                >
+              {/* Divider Line */}
+              <div className="w-full border-t border-slate-800 my-1"></div>
+
+              {/* Contact Area */}
+              <div className="w-full space-y-4">
+                <div className="text-left">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact & Mobile Entry</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <a href="tel:*672*001#" className="flex items-center justify-between bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-amber-500/50 transition-all">
+                    <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
+                    <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
+                  </a>
+                  <a href="tel:*818*3*5#" className="flex items-center justify-between bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-red-500/50 transition-all">
+                    <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
+                    <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
+                  </a>
+                </div>
+                
+                {/* QR Code and link */}
+                <div className="flex flex-col items-center gap-3 pt-2">
+                  <a 
+                    href={PORTAL_URL} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white p-1.5 transform hover:scale-105 transition-transform duration-500 block relative"
+                  >
                     <img 
                       src={`https://quickchart.io/qr?text=${encodeURIComponent(PORTAL_URL)}&size=160&centerImageUrl=https://img.icons8.com/color/48/000000/sprout.png`} 
                       alt="FAIDA Portal QR Code" 
                       className="w-full h-full object-contain"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover/qr:opacity-100 transition-opacity flex items-center justify-center">
-                      <Sparkles className="text-emerald-600 animate-pulse" size={24} />
-                    </div>
-                </a>
-                <div className="space-y-4 w-full">
-                  <div className="space-y-3 w-full">
-                    <a 
-                      href={PORTAL_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
-                    >
-                      <Layout size={12} /> Public Portal Access
-                    </a>
-                    <div className="flex flex-col gap-2">
-                      <a href="tel:*672*001#" className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 hover:border-amber-500/50 transition-all">
-                        <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
-                        <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
-                      </a>
-                      <a href="tel:*818*3*5#" className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 hover:border-red-500/50 transition-all">
-                        <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
-                        <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
-                      </a>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                    Scan the QR code or click the links above to grant immediate access to this intelligence hub.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* NGO Quick Contacts (Always visible in sidebar for NGOs or Farmers) */}
-            {(activeRole === 'NGO' || activeRole === 'Farmer') && (
-              <div className="glass-panel p-6 space-y-4 border-l-4 border-l-purple-500">
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-purple-400 uppercase tracking-wider">Direct Assistance</h3>
-                  <p className="text-xs text-slate-400">NGO Support Helpline</p>
-                </div>
-                <div className="space-y-2">
+                  </a>
                   <a 
-                    href="https://wa.me/256763927908" 
-                    target="_blank" 
+                    href={PORTAL_URL}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
                   >
-                    <MessageCircle size={18} /> WhatsApp Support
-                  </a>
-                  <a 
-                    href="tel:0763927908" 
-                    className="flex items-center justify-center gap-2 w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                  >
-                    <Phone size={18} /> Direct Call: 0763927908
+                    <Layout size={12} /> Public Portal Access
                   </a>
                 </div>
+
+                {/* Direct Helpline Support Contacts */}
+                {(activeRole === 'NGO' || activeRole === 'Farmer') && (
+                  <div className="flex flex-col gap-2 pt-3 border-t border-slate-800 mt-2">
+                    <a 
+                      href="https://wa.me/256763927908" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-xl text-xs font-bold transition-all"
+                    >
+                      <MessageCircle size={14} /> WhatsApp support
+                    </a>
+                    <a 
+                      href="tel:0763927908" 
+                      className="flex items-center justify-center gap-2 w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2 rounded-xl text-xs font-bold transition-all"
+                    >
+                      <Phone size={14} /> Call: 0763927908
+                    </a>
+                  </div>
+                )}
               </div>
-            )}
+
+            </div>
           </aside>
 
           {/* Main Content Area */}
@@ -898,178 +978,40 @@ Authorized Signature: Faida Nancy (General Director)
             <div className="space-y-12 transition-all duration-500">
               
               {activeRole === 'General' && (
-                <div className="space-y-12 animate-fade-in">
-                  {/* Top Branding Container (Enhanced) */}
-                  <div className="glass-panel p-10 relative overflow-hidden border-l-4 border-l-emerald-500 shadow-2xl">
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                      <div className="w-56 h-56 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)] border-2 border-amber-500/30 shrink-0 relative bg-slate-900/50">
-                        <img 
-                          src="farm_logo.png" 
-                          alt="Digital Climate Hub" 
-                          className="absolute inset-0 w-full h-full object-cover object-bottom"
-                        />
-                        <div className="absolute top-4 left-4 z-20 bg-amber-500/20 p-2 rounded-full backdrop-blur-md border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-                          <Sun className="text-amber-400 w-8 h-8 animate-[spin_10s_linear_infinite]" />
-                        </div>
-                        <div className="absolute top-4 right-4 z-20 bg-blue-500/20 p-2 rounded-full backdrop-blur-md border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                          <CloudRain className="text-blue-400 w-8 h-8 animate-bounce" />
-                        </div>
-                        {/* Branding inside the image area around the center */}
-                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)]"></div>
-                          <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_60s_linear_infinite]" style={{ transformOrigin: 'center' }}>
-                            <path id="textCircleTop" d="M 20,100 A 80,80 0 0,1 180,100" fill="none" />
-                            <path id="textCircleBottom" d="M 180,100 A 80,80 0 0,1 20,100" fill="none" />
-                            <text fill="#fbbf24" className="text-[8px] font-black uppercase tracking-[0.1em]" textAnchor="middle">
-                              <textPath href="#textCircleTop" startOffset="50%">
-                                FAIDA DIGITAL CLIMATE RESPONSE
-                              </textPath>
-                            </text>
-                            <text fill="#fbbf24" className="text-[9px] font-black uppercase tracking-[0.15em] opacity-90" textAnchor="middle">
-                              <textPath href="#textCircleBottom" startOffset="50%">
-                                Agriculture & Climate Resolution
-                              </textPath>
-                            </text>
-                            <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1" strokeDasharray="4 4" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4 text-center md:text-left flex-1">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-                          <Sparkles size={14} /> {greeting}, System {userRole}
-                        </div>
-                        <div>
-                          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase leading-none">
-                            FAIDA DIGITAL CLIMATE <br/><span className="text-amber-400">RESPONSE</span>
-                          </h1>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-2">
-                            Agriculture & Climate Resolution
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-slate-400 text-xs font-medium tracking-wider">
-                          <div className="flex items-center gap-2">
-                            <Activity size={14} className="text-emerald-500" />
-                            Live Intelligence Stream
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users size={14} className="text-blue-500" />
-                            Multi-Tenant Architecture
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <ShieldCheck size={14} className="text-purple-500" />
-                            Secure RBAC Verified
-                          </div>
-                        </div>
-                      </div>
-                      <div className="hidden xl:flex flex-col items-end text-right space-y-1">
-                        <div className="text-2xl font-black font-mono text-white tracking-tight">
-                          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                        </div>
-                      </div>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 bg-slate-800/20 rounded-[3rem] border border-slate-800 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-amber-500/5"></div>
+                  <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
+                  
+                  {/* Glowing Logo */}
+                  <div className="w-40 h-40 rounded-[2rem] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.25)] border-2 border-amber-500/40 shrink-0 relative bg-slate-950 mb-8 transform group-hover:scale-105 transition-transform duration-700">
+                    <img 
+                      src="farm_logo.png" 
+                      alt="Digital Climate Hub" 
+                      className="absolute inset-0 w-full h-full object-cover object-bottom"
+                    />
+                    <div className="absolute top-3 left-3 z-20 bg-amber-500/20 p-2.5 rounded-full backdrop-blur-md border border-amber-500/30">
+                      <Sun className="text-amber-400 w-6 h-6 animate-[spin_10s_linear_infinite]" />
+                    </div>
+                    <div className="absolute bottom-3 right-3 z-20 bg-blue-500/20 p-2.5 rounded-full backdrop-blur-md border border-blue-500/30">
+                      <CloudRain className="text-blue-400 w-6 h-6 animate-bounce" />
                     </div>
                   </div>
 
-                  {/* Ecosystem Health Row (Professional Stats) */}
-                  <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="glass-panel p-6 border-t-2 border-t-emerald-500 bg-emerald-500/5 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
-                      <div className="relative z-10 flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Global Edge Capacity</span>
-                        <ShieldCheck size={16} className="text-emerald-400 animate-pulse" />
-                      </div>
-                      <div className="relative z-10 text-3xl font-bold text-white">50M+</div>
-                      <div className="relative z-10 text-[10px] text-emerald-400 font-bold tracking-widest uppercase mt-1">Concurrent Users</div>
-                      <div className="relative z-10 text-xs text-slate-400 mt-1">Via Global Edge CDN</div>
+                  {/* Branding Title */}
+                  <div className="space-y-4 max-w-xl relative z-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                      <Sparkles size={12} /> Live Precision Agriculture Hub
                     </div>
-                    <div className="glass-panel p-6 border-t-2 border-t-blue-500 bg-blue-500/5">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Network Status</span>
-                        <Activity size={16} className="text-blue-400" />
-                      </div>
-                      <div className="text-3xl font-bold">98.4%</div>
-                      <div className="text-xs text-slate-400 mt-1">Ecosystem connectivity optimal</div>
-                    </div>
-                    <div className="glass-panel p-6 border-t-2 border-t-indigo-500 bg-indigo-500/5">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Total Productivity</span>
-                        <TrendingUp size={16} className="text-indigo-400" />
-                      </div>
-                      <div className="text-3xl font-bold">12,450 T</div>
-                      <div className="text-xs text-slate-400 mt-1">+12% vs previous quarter</div>
-                    </div>
-                    <div className="glass-panel p-6 border-t-2 border-t-purple-500 bg-purple-500/5">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Market Volatility</span>
-                        <Wind size={16} className="text-purple-400" />
-                      </div>
-                      <div className="text-3xl font-bold text-amber-400">Medium</div>
-                      <div className="text-xs text-slate-400 mt-1">Price stability index active</div>
-                    </div>
-                  </section>
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-none">
+                      FAIDA DIGITAL CLIMATE <br/>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">RESPONSE SYSTEM</span>
+                    </h1>
+                    <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                      Precision IoT analytics, real-time market signals, and direct grant administration for East African farming cooperatives.
+                    </p>
+                  </div>
 
-                  {/* Portal Selection Hub */}
-                  <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {roles
-                      .filter(role => {
-                        if (role.id === 'General') return false;
-                        if (userRole === 'Admin') return true;
-                        if (userRole === 'NGO') return role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
-                        if (userRole === 'Farmer') return role.id === 'Farmer' || role.id === 'Resource';
-                        return role.id === userRole || role.id === 'Resource';
-                      })
-                      .map(role => (
-                      <button 
-                        key={role.id}
-                        onClick={() => setActiveRole(role.id)}
-                        className="group relative p-8 rounded-[2.5rem] text-left border border-slate-800 bg-slate-800/40 hover:bg-slate-800/80 hover:border-emerald-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col justify-between h-64"
-                      >
-                        <div className={`w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform`}>
-                          <role.icon size={32} />
-                        </div>
-                        <div className="space-y-2">
-                          <h3 className="text-xl font-bold text-white">{role.name}</h3>
-                          <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-black uppercase tracking-widest pt-2">
-                            Enter Portal <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </section>
 
-                  {/* Market Overview for General View */}
-                  <section className="glass-panel p-8 space-y-8">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold flex items-center gap-3">
-                        <Activity className="text-emerald-400" /> Ecosystem Pulse
-                      </h2>
-                      <div className="flex gap-2">
-                        <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">Live Sync</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      {marketData.slice(0, 4).map(item => {
-                        const weeklyPct = ((item.price - item.weekAgoPrice) / item.weekAgoPrice * 100);
-                        const isUp = weeklyPct >= 0;
-                        return (
-                          <div key={item.id} className="p-6 bg-slate-900/50 rounded-[2rem] border border-slate-800 flex flex-col gap-2">
-                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{item.name}</span>
-                            <div className="text-2xl font-bold font-mono">${item.price.toFixed(2)}</div>
-                            <div className={`text-xs font-bold flex items-center gap-1 ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                              {isUp ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
-                              {isUp ? '+' : ''}{weeklyPct.toFixed(1)}% vs last week
-                            </div>
-                            <div className="text-[10px] text-slate-600 font-mono">7d ago: ${item.weekAgoPrice.toFixed(2)}</div>
-                            {renderSparkline(item.history, true)}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </section>
                 </div>
               )}
           
@@ -1131,27 +1073,284 @@ Authorized Signature: Faida Nancy (General Director)
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
-                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
-                    <div className="text-[10px] text-red-400 font-black uppercase tracking-widest mb-1">Soil pH</div>
-                    <div className="text-3xl font-bold text-white">{iotData.ph}</div>
-                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Below Normal</div>
+                  {/* Soil pH Sensor Card */}
+                  <div 
+                    onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'ph' ? null : 'ph')}
+                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                      selectedSensorForSimulation === 'ph' 
+                        ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
+                        : iotData.ph < 6.0 || iotData.ph > 7.5 
+                          ? 'border-red-500/40 hover:border-red-500/60' 
+                          : 'border-emerald-500/30 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Soil pH Sensor</div>
+                      <Activity size={14} className={iotData.ph < 6.0 || iotData.ph > 7.5 ? 'text-red-400 animate-pulse' : 'text-emerald-400'} />
+                    </div>
+                    <div className="text-3xl font-black text-white">{iotData.ph}</div>
+                    <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
+                      iotData.ph < 6.0 
+                        ? 'text-red-400' 
+                        : iotData.ph > 7.5 
+                          ? 'text-amber-400' 
+                          : 'text-emerald-400'
+                    }`}>
+                      {iotData.ph < 6.0 ? (
+                        <><AlertTriangle size={12}/> Acidic (Low)</>
+                      ) : iotData.ph > 7.5 ? (
+                        <><AlertTriangle size={12}/> Alkaline (High)</>
+                      ) : (
+                        <><CheckCircle2 size={12}/> Optimal pH</>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
-                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">Nitrogen / Potassium</div>
-                    <div className="text-2xl font-bold text-white">Depleted</div>
-                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Critical Need</div>
+
+                  {/* Cloud Reading Sensor Card */}
+                  <div 
+                    onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'cloud' ? null : 'cloud')}
+                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                      selectedSensorForSimulation === 'cloud' 
+                        ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
+                        : iotData.cloudCoverage > 70 
+                          ? 'border-blue-500/40 hover:border-blue-500/60' 
+                          : 'border-slate-700 hover:border-slate-600'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Cloud Reading</div>
+                      <Cloud size={14} className={iotData.cloudCoverage > 70 ? 'text-blue-400 animate-bounce' : 'text-slate-400'} />
+                    </div>
+                    <div className="text-3xl font-black text-white">{iotData.cloudCoverage}%</div>
+                    <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
+                      iotData.cloudCoverage > 70 
+                        ? 'text-blue-400' 
+                        : iotData.cloudCoverage < 20 
+                          ? 'text-amber-400' 
+                          : 'text-slate-400'
+                    }`}>
+                      {iotData.cloudCoverage > 70 ? (
+                        <><CloudRain size={12}/> Overcast (Rain)</>
+                      ) : iotData.cloudCoverage < 20 ? (
+                        <><Sun size={12}/> Clear Sky</>
+                      ) : (
+                        <><Cloud size={12}/> Partly Cloudy</>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-amber-500/30">
-                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">Soil Temp</div>
-                    <div className="text-3xl font-bold text-white">{iotData.temp}°C</div>
-                    <div className="text-xs text-amber-400 mt-1">Elevated</div>
+
+                  {/* Soil Moisture Sensor Card */}
+                  <div 
+                    onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'moisture' ? null : 'moisture')}
+                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                      selectedSensorForSimulation === 'moisture' 
+                        ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
+                        : iotData.moisture < 50 || iotData.moisture > 80 
+                          ? 'border-red-500/40 hover:border-red-500/60' 
+                          : 'border-emerald-500/30 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Soil Moisture</div>
+                      <Droplets size={14} className={iotData.moisture < 50 ? 'text-red-400 animate-pulse' : 'text-blue-400'} />
+                    </div>
+                    <div className="text-3xl font-black text-white">{iotData.moisture}%</div>
+                    <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
+                      iotData.moisture < 50 
+                        ? 'text-red-400' 
+                        : iotData.moisture > 80 
+                          ? 'text-blue-300' 
+                          : 'text-emerald-400'
+                    }`}>
+                      {iotData.moisture < 50 ? (
+                        <><AlertTriangle size={12}/> Dry (Irrigate)</>
+                      ) : iotData.moisture > 80 ? (
+                        <><AlertTriangle size={12}/> Soggy (Wet)</>
+                      ) : (
+                        <><CheckCircle2 size={12}/> Optimal Moisture</>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-red-500/30">
-                    <div className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-1">7-Day Rain Prob.</div>
-                    <div className="text-3xl font-bold text-white">0%</div>
-                    <div className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertTriangle size={12}/> Drought Warning</div>
+
+                  {/* Immediate Climate Sensor Card */}
+                  <div 
+                    onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'climate' ? null : 'climate')}
+                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                      selectedSensorForSimulation === 'climate' 
+                        ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
+                        : iotData.ambientTemp > 32 || iotData.ambientTemp < 18 
+                          ? 'border-red-500/40 hover:border-red-500/60' 
+                          : 'border-emerald-500/30 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Immediate Climate</div>
+                      <Thermometer size={14} className={iotData.ambientTemp > 32 ? 'text-red-400 animate-bounce' : 'text-amber-400'} />
+                    </div>
+                    <div className="text-xl font-black text-white leading-tight">
+                      {iotData.ambientTemp}°C <span className="text-xs text-slate-400 font-normal">/ {iotData.ambientHumidity}% RH</span>
+                    </div>
+                    <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
+                      iotData.ambientTemp > 32 
+                        ? 'text-red-400' 
+                        : iotData.ambientTemp < 18 
+                          ? 'text-blue-400' 
+                          : 'text-emerald-400'
+                    }`}>
+                      {iotData.ambientTemp > 32 ? (
+                        <><AlertTriangle size={12}/> Hot / Dry</>
+                      ) : iotData.ambientTemp < 18 ? (
+                        <><AlertTriangle size={12}/> Cold</>
+                      ) : (
+                        <><CheckCircle2 size={12}/> Optimal Climate</>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {/* 🛠️ Sensor Calibration & Simulation Terminal Panel */}
+                {selectedSensorForSimulation && (
+                  <div className="relative z-10 mt-6 p-6 bg-slate-900/80 rounded-2xl border border-amber-500/40 animate-fade-in space-y-4">
+                    <div className="flex justify-between items-center pb-3 border-b border-slate-800">
+                      <h3 className="text-sm font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
+                        <span>🛠️ Sensor Calibration & Simulation Terminal</span>
+                      </h3>
+                      <button 
+                        onClick={() => setSelectedSensorForSimulation(null)}
+                        className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700 transition-all"
+                      >
+                        Close
+                      </button>
+                    </div>
+
+                    {selectedSensorForSimulation === 'ph' && (
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-300">Soil pH Simulator</label>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.ph}</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="4.0" 
+                          max="9.0" 
+                          step="0.1" 
+                          value={iotData.ph} 
+                          onChange={(e) => setIotData(prev => ({ ...prev, ph: parseFloat(e.target.value) }))}
+                          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                        />
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {iotData.ph < 6.0 ? (
+                            <span className="text-red-400 font-bold">⚠️ Warning: Soil is acidic. Recommended Action: Apply 200kg of Agricultural Lime per hectare.</span>
+                          ) : iotData.ph > 7.5 ? (
+                            <span className="text-amber-400 font-bold">⚠️ Warning: Soil is alkaline. Recommended Action: Add organic compost or sulfur elements.</span>
+                          ) : (
+                            <span className="text-emerald-400 font-bold">✓ Soil pH is optimal. Nutrient availability is at peak levels.</span>
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedSensorForSimulation === 'cloud' && (
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-300">Cloud Coverage Simulator</label>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.cloudCoverage}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="5" 
+                          value={iotData.cloudCoverage} 
+                          onChange={(e) => setIotData(prev => ({ ...prev, cloudCoverage: parseInt(e.target.value) }))}
+                          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                        />
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {iotData.cloudCoverage > 70 ? (
+                            <span className="text-blue-400 font-bold">☁️ Dense Overcast detected. Impending rain warning is active. Minimize watering cycle.</span>
+                          ) : iotData.cloudCoverage < 20 ? (
+                            <span className="text-amber-400 font-bold">☀️ High Solar Radiation. Water evaporation rates are elevated.</span>
+                          ) : (
+                            <span className="text-slate-300">⛅ Partly Cloudy conditions. Normal photosynthesis and micro-climate rates.</span>
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedSensorForSimulation === 'moisture' && (
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-300">Soil Moisture Simulator</label>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.moisture}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="10" 
+                          max="100" 
+                          step="5" 
+                          value={iotData.moisture} 
+                          onChange={(e) => setIotData(prev => ({ ...prev, moisture: parseInt(e.target.value) }))}
+                          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-400"
+                        />
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {iotData.moisture < 50 ? (
+                            <span className="text-red-400 font-bold">⚠️ Warning: Soil moisture is deficient. Activate solar smart drip irrigation immediately.</span>
+                          ) : iotData.moisture > 80 ? (
+                            <span className="text-amber-400 font-bold">⚠️ Warning: Soil is oversaturated. Monitor drainage channels to prevent root rot.</span>
+                          ) : (
+                            <span className="text-emerald-400 font-bold">✓ Soil moisture is optimal for crop growth. Drip irrigation paused.</span>
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedSensorForSimulation === 'climate' && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <label className="text-[11px] font-bold text-slate-300">Ambient Temp</label>
+                              <span className="text-xs font-bold font-mono text-white bg-slate-950 px-1.5 py-0.5 rounded">{iotData.ambientTemp}°C</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="15.0" 
+                              max="40.0" 
+                              step="0.5" 
+                              value={iotData.ambientTemp} 
+                              onChange={(e) => setIotData(prev => ({ ...prev, ambientTemp: parseFloat(e.target.value) }))}
+                              className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <label className="text-[11px] font-bold text-slate-300">Relative Humidity</label>
+                              <span className="text-xs font-bold font-mono text-white bg-slate-950 px-1.5 py-0.5 rounded">{iotData.ambientHumidity}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="20" 
+                              max="100" 
+                              step="5" 
+                              value={iotData.ambientHumidity} 
+                              onChange={(e) => setIotData(prev => ({ ...prev, ambientHumidity: parseInt(e.target.value) }))}
+                              className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-400"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {iotData.ambientTemp > 32 ? (
+                            <span className="text-red-400 font-bold">⚠️ Warning: Ambient heat exceeds threshold. Deploy mulching immediately to protect root layer.</span>
+                          ) : iotData.ambientTemp < 18 ? (
+                            <span className="text-blue-400 font-bold">⚠️ Warning: Cold micro-climate. Watch for potential early morning frost build-up.</span>
+                          ) : (
+                            <span className="text-emerald-400 font-bold">✓ Immediate climate is optimal. Ambient temperatures promote stable growth.</span>
+                          )}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </section>
 
               {/* Visual AI Diagnostics Section */}
@@ -1450,6 +1649,10 @@ Authorized Signature: Faida Nancy (General Director)
                           { id: 'slasher', label: 'Slasher/Panga', icon: '🔪' },
                           { id: 'wheelbarrow', label: 'Wheelbarrow', icon: '🛒' },
                           { id: 'irrigation_kit', label: 'Irrigation Kit', icon: '🌊' },
+                          { id: 'soil_ph_sensor', label: 'Soil pH Sensor Probe', icon: '🧪' },
+                          { id: 'cloud_sensor', label: 'Cloud Coverage Sensor Hub', icon: '☁️' },
+                          { id: 'soil_moisture_sensor', label: 'Soil Moisture Probe', icon: '💧' },
+                          { id: 'climate_sensor', label: 'Micro-Climate Sensor Station', icon: '🌡️' }
                         ].map(tool => {
                           const isChecked = selectedToolItems.includes(tool.label);
                           return (
@@ -1573,14 +1776,40 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {(activeRole === 'Seller') && (
-            <section id="market-section" className="glass-panel p-6 relative overflow-hidden scroll-mt-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <Activity className="text-emerald-400" /> Market Ticker
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-1">Live prices with 7-day history (Mon – Today). Hover bars for daily values.</p>
+            <section id="market-section" className="glass-panel p-8 relative overflow-hidden scroll-mt-8 space-y-8">
+              
+              {/* Ecosystem Pulse Live Market Cards (Moved here from welcoming board) */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Ecosystem Pulse Overview</h3>
+                  <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-500/20 animate-pulse">Live Sync</span>
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {marketData.slice(0, 4).map(item => {
+                    const weeklyPct = ((item.price - item.weekAgoPrice) / item.weekAgoPrice * 100);
+                    const isUp = weeklyPct >= 0;
+                    return (
+                      <div key={item.id} className="p-4 bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col gap-1.5">
+                        <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">{item.name}</span>
+                        <div className="text-xl font-bold font-mono text-white">${item.price.toFixed(2)}</div>
+                        <div className={`text-[10px] font-bold flex items-center gap-1 ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {isUp ? <TrendingUp size={11}/> : <TrendingDown size={11}/>}
+                          {isUp ? '+' : ''}{weeklyPct.toFixed(1)}% vs last week
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-800 pt-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-semibold flex items-center gap-2">
+                      <Activity className="text-emerald-400" /> Market Ticker
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1">Live prices with 7-day history (Mon – Today). Hover bars for daily values.</p>
+                  </div>
                 <button 
                   onClick={() => handleDownload('FAIDA Live Market Prices', generateMarketCsv(), 'csv')}
                   className="text-xs px-4 py-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500/30 rounded-xl hover:text-white text-white font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-95 transition-all"
@@ -1623,11 +1852,49 @@ Authorized Signature: Faida Nancy (General Director)
                   </tbody>
                 </table>
               </div>
-            </section>
+            </div>
+          </section>
           )}
 
           {(activeRole === 'Ministry' || activeRole === 'NGO') && (
-            <div className="space-y-6 scroll-mt-8">
+            <div className="space-y-8 scroll-mt-8">
+              {/* Edge metrics / status row (Moved here from welcoming board) */}
+              <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+                <div className="glass-panel p-5 border-t-2 border-t-emerald-500 bg-emerald-500/5 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+                  <div className="relative z-10 flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Global Edge Capacity</span>
+                    <ShieldCheck size={14} className="text-emerald-400 animate-pulse" />
+                  </div>
+                  <div className="relative z-10 text-2xl font-bold text-white">50M+</div>
+                  <div className="relative z-10 text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">Concurrent Users</div>
+                </div>
+                <div className="glass-panel p-5 border-t-2 border-t-blue-500 bg-blue-500/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-400">Network Status</span>
+                    <Activity size={14} className="text-blue-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-white">98.4%</div>
+                  <div className="text-xs text-slate-400 mt-0.5">Connectivity optimal</div>
+                </div>
+                <div className="glass-panel p-5 border-t-2 border-t-indigo-500 bg-indigo-500/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400">Total Productivity</span>
+                    <TrendingUp size={14} className="text-indigo-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-white">12,450 T</div>
+                  <div className="text-xs text-slate-400 mt-0.5">+12% vs last quarter</div>
+                </div>
+                <div className="glass-panel p-5 border-t-2 border-t-purple-500 bg-purple-500/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-400">Market Volatility</span>
+                    <Wind size={14} className="text-purple-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-amber-400">Medium</div>
+                  <div className="text-xs text-slate-400 mt-0.5">Price stability active</div>
+                </div>
+              </section>
+
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="glass-panel p-6 border-l-4 border-l-blue-500 flex flex-col h-full">
                   <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 shrink-0">
@@ -2195,6 +2462,89 @@ Authorized Signature: Faida Nancy (General Director)
       </div>
     </div>
   )}
+
+  {/* Drawer Menu for Stakeholders */}
+  <div className={`fixed inset-0 z-[150] flex transition-all duration-300 ${isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
+    <div className={`relative w-72 h-full bg-slate-900 border-r border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-500/30">
+            <img src="farm_logo.png" alt="Logo" className="w-full h-full object-cover" />
+          </div>
+          <span className="text-xs font-black uppercase tracking-wider text-white">Stakeholders</span>
+        </div>
+        <button 
+          onClick={() => setIsDrawerOpen(false)}
+          className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+        >
+          <X size={20} />
+        </button>
+      </div>
+      
+      <div className="p-4 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
+        {roles.map(role => {
+          const isActive = activeRole === role.id;
+          return (
+            <button
+              key={role.id}
+              onClick={() => {
+                setActiveRole(role.id);
+                setIsDrawerOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                isActive
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50 border border-transparent'
+              }`}
+            >
+              <div className={`p-2 rounded-lg ${isActive ? 'bg-emerald-500/20' : 'bg-slate-800/50'}`}>
+                <role.icon size={18} className={isActive ? 'animate-pulse' : ''} />
+              </div>
+              <span className="text-sm font-bold tracking-wide text-left flex-1">
+                {role.name}
+              </span>
+              <ChevronRight size={16} className={`opacity-50 ${isActive ? 'text-emerald-400 opacity-100' : ''}`} />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+  {/* Fixed Bottom Navigation Footer for Stakeholders Selection */}
+  <footer className="fixed bottom-0 left-0 right-0 z-[120] bg-slate-950/85 backdrop-blur-md border-t border-slate-800/80 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] px-4 py-2.5 md:py-3.5 animate-fade-in">
+    <div className="max-w-5xl mx-auto flex justify-around items-center gap-1 overflow-x-auto custom-scrollbar">
+      {roles
+        .filter(role => {
+          if (userRole === 'Admin') return true;
+          if (userRole === 'NGO') return role.id === 'General' || role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
+          if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Resource';
+          return role.id === 'General' || role.id === userRole || role.id === 'Resource';
+        })
+        .map(role => {
+          const isActive = activeRole === role.id;
+          return (
+            <button
+              key={role.id}
+              onClick={() => setActiveRole(role.id)}
+              className={`flex flex-col items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all duration-300 min-w-[72px] shrink-0 group ${
+                isActive 
+                  ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' 
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
+              }`}
+            >
+              <role.icon size={16} className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}`} />
+              <span className="text-[9px] font-black uppercase tracking-wider whitespace-nowrap">
+                {role.id === 'General' ? 'Overview' : role.id === 'Resource' ? 'Resources' : role.name.replace(' Portal', '').replace('Initiative', '').replace('Ministry/Policy', 'Ministry').replace('NGO/', '')}
+              </span>
+            </button>
+          );
+        })}
+    </div>
+  </footer>
+
+
 </div>
   );
 }
