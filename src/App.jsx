@@ -33,7 +33,9 @@ import {
   Cloud,
   Droplets,
   Thermometer,
-  Menu
+  Menu,
+  Info,
+  Package
 } from 'lucide-react';
 
 
@@ -697,7 +699,11 @@ Authorized Signature: Faida Nancy (General Director)
     { id: 'Seller', name: 'Market Seller', icon: ShoppingCart },
     { id: 'Ministry', name: 'Ministry/Policy', icon: Building2 },
     { id: 'NGO', name: 'NGO/Initiative', icon: Heart },
-    { id: 'Resource', name: 'Resource & Application', icon: Download }
+    { id: 'Resource', name: 'Resource & Application', icon: Download },
+    { id: 'About', name: 'About Us', icon: Info, isQuickLink: true },
+    { id: 'Contact', name: 'Contact', icon: Phone, isQuickLink: true },
+    { id: 'Items', name: 'Items', icon: Package, isQuickLink: true },
+    { id: 'Rules', name: 'Rules', icon: ShieldCheck, isQuickLink: true }
   ];
 
   const FARMING_TOOLS = [
@@ -743,6 +749,17 @@ Authorized Signature: Faida Nancy (General Director)
             </div>
             <span className="text-xs font-black uppercase tracking-wider text-white">FAIDA Climate Response</span>
           </div>
+          
+          {/* Welcome Page Navigation Bar */}
+          {activeRole === 'General' && (
+            <nav className="hidden md:flex items-center gap-2">
+              <button onClick={() => setActiveRole('About')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-full transition-all">About Us</button>
+              <button onClick={() => setActiveRole('Contact')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-blue-400 hover:bg-blue-500/10 rounded-full transition-all">Contact</button>
+              <button onClick={() => setActiveRole('Items')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-amber-400 hover:bg-amber-500/10 rounded-full transition-all">Items</button>
+              <button onClick={() => setActiveRole('Rules')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-red-400 hover:bg-red-500/10 rounded-full transition-all">Rules</button>
+            </nav>
+          )}
+
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
             <Sparkles size={11} className="animate-pulse" /> Live Monitoring
           </div>
@@ -751,7 +768,8 @@ Authorized Signature: Faida Nancy (General Director)
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
           {/* Sidebar: Stakeholders & Visuals (Consolidated Welcoming Board) */}
-          <aside className="w-full lg:w-80 space-y-6 lg:sticky lg:top-8">
+          {activeRole === 'General' && (
+            <aside className="w-full lg:w-80 space-y-6 lg:sticky lg:top-8">
             
             {/* Persistent Branding Welcoming Board Container */}
             <div className="glass-panel p-6 flex flex-col items-center text-center gap-6 border-l-4 border-l-amber-500 relative overflow-hidden shadow-2xl group">
@@ -895,9 +913,9 @@ Authorized Signature: Faida Nancy (General Director)
                   </div>
                 )}
               </div>
-
             </div>
           </aside>
+          )}
 
           {/* Main Content Area */}
           <main className="flex-1 space-y-12 w-full">
@@ -2135,6 +2153,103 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
             </div>
           )}
+
+          {/* Additional Quick Links Sections */}
+          {(activeRole === 'About') && (
+            <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
+                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Info className="text-emerald-400" /> About Us</h2>
+                <p className="text-slate-300 leading-relaxed max-w-3xl">FAIDA DIGITAL CLIMATE RESPONSE is a precision agriculture initiative designed to empower East African farming cooperatives. By leveraging IoT soil diagnostics, real-time weather analytics, and direct NGO grant support, we aim to combat climate change effects and ensure high-yield sustainability for local communities.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                    <h3 className="text-emerald-400 font-bold mb-2">Our Mission</h3>
+                    <p className="text-sm text-slate-400">To bridge the technological gap in rural agriculture by providing accessible, data-driven farming tools.</p>
+                  </div>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                    <h3 className="text-amber-400 font-bold mb-2">Our Vision</h3>
+                    <p className="text-sm text-slate-400">A climate-resilient East Africa where every farmer has the knowledge and resources to thrive.</p>
+                  </div>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                    <h3 className="text-blue-400 font-bold mb-2">Core Values</h3>
+                    <p className="text-sm text-slate-400">Sustainability, Community Empowerment, Technological Inclusion, and Precision.</p>
+                  </div>
+                </div>
+            </section>
+          )}
+
+          {(activeRole === 'Contact') && (
+            <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
+                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Phone className="text-blue-400" /> Contact Us</h2>
+                <p className="text-slate-300">Reach out to our regional representatives via the following official channels:</p>
+                <div className="space-y-4 max-w-xl">
+                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <Phone size={24} className="text-emerald-400" />
+                    <div>
+                      <h4 className="font-bold text-white">General Inquiries</h4>
+                      <p className="text-sm">+256 763 927 908</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <MessageCircle size={24} className="text-amber-400" />
+                    <div>
+                      <h4 className="font-bold text-white">WhatsApp Support</h4>
+                      <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">Chat with an Expert</a>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <MapPin size={24} className="text-red-400" />
+                    <div>
+                      <h4 className="font-bold text-white">Headquarters</h4>
+                      <p className="text-sm">Kampala, Uganda - Innovation Hub</p>
+                    </div>
+                  </div>
+                </div>
+            </section>
+          )}
+
+          {(activeRole === 'Items') && (
+            <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Package className="text-amber-400" /> Available Items & Tools</h2>
+                  <span className="text-[10px] bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full font-bold uppercase border border-amber-500/20">Equipment Catalog</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {FARMING_TOOLS.map((tool, idx) => (
+                    <div key={idx} className="p-6 bg-slate-900/60 rounded-2xl border border-slate-800 flex gap-4 hover:border-amber-500/30 transition-all cursor-pointer group">
+                      <div className="p-4 bg-slate-800/80 text-amber-400 rounded-xl h-fit group-hover:scale-110 transition-transform"><tool.icon size={28} /></div>
+                      <div>
+                        <h3 className="text-white font-bold text-lg">{tool.name}</h3>
+                        <p className="text-xs text-amber-400 font-bold mb-2 uppercase tracking-widest">{tool.desc}</p>
+                        <p className="text-sm text-slate-400 leading-relaxed">{tool.details}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            </section>
+          )}
+
+          {(activeRole === 'Rules') && (
+            <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
+                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><ShieldCheck className="text-red-400" /> Rules & Compliance</h2>
+                <div className="space-y-6 max-w-4xl">
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-red-500">
+                    <h3 className="text-red-400 font-bold mb-2 uppercase tracking-wider text-sm">1. Data Privacy & Security</h3>
+                    <p className="text-sm text-slate-300">All farm coordinates and production yields are encrypted. By utilizing the USSD gateway, you consent to secure data logging strictly for subsidy assessment.</p>
+                  </div>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500">
+                    <h3 className="text-emerald-400 font-bold mb-2 uppercase tracking-wider text-sm">2. Grant Usage Integrity</h3>
+                    <p className="text-sm text-slate-300">Subsidies, tools, and fertilizers provided must be used exclusively for approved agricultural development. Misuse or illegal resale of NGO-provided items will result in permanent banishment from the program.</p>
+                  </div>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-blue-500">
+                    <h3 className="text-blue-400 font-bold mb-2 uppercase tracking-wider text-sm">3. Mandatory Reporting</h3>
+                    <p className="text-sm text-slate-300">Farmers receiving continuous aid must submit a monthly "Farm Activity Record" through their regional hub to guarantee subsequent distribution phases.</p>
+                  </div>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-amber-500">
+                    <h3 className="text-amber-400 font-bold mb-2 uppercase tracking-wider text-sm">4. Environmental Compliance</h3>
+                    <p className="text-sm text-slate-300">Strict adherence to Ministry guidelines regarding crop rotation, soil PH testing, and minimized chemical pesticide use is required. Organic and biological pest controls are highly encouraged.</p>
+                  </div>
+                </div>
+            </section>
+          )}
         </div>
       </main>
     </div>
@@ -2517,6 +2632,7 @@ Authorized Signature: Faida Nancy (General Director)
     <div className="max-w-5xl mx-auto flex justify-around items-center gap-1 overflow-x-auto custom-scrollbar">
       {roles
         .filter(role => {
+          if (role.isQuickLink) return false;
           if (userRole === 'Admin') return true;
           if (userRole === 'NGO') return role.id === 'General' || role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
           if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Resource';
