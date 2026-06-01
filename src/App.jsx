@@ -2137,7 +2137,7 @@ Authorized Signature: Faida Nancy (General Director)
                   ))}
                 </div>
                 <div className="flex gap-4 pt-4 border-t border-slate-800">
-                  <button onClick={() => handleDownload('Ecosystem Status Audit Report', generateEcosystemReportContent())} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl transition-all border border-slate-700/50 active:scale-95 shadow-lg">
+                  <button onClick={() => handleDownload('Ecosystem Status Audit Report', generateEcosystemReportContent(), 'doc')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl transition-all border border-slate-700/50 active:scale-95 shadow-lg">
                     <Download size={16} /> Download Report
                   </button>
                   <button onClick={() => alert('API Key Generation: Access restricted to authorized stakeholders.')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all">
