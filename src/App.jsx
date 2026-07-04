@@ -1250,7 +1250,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </div>
                   </div>
                 </div>
-
+                )}
                 {/* 🛠️ Sensor Calibration & Simulation Terminal Panel */}
                 {selectedSensorForSimulation && (
                   <div className="relative z-10 mt-6 p-6 bg-slate-900/80 rounded-2xl border border-amber-500/40 animate-fade-in space-y-4">
