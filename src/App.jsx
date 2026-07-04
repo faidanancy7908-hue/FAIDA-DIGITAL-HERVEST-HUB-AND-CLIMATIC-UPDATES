@@ -1043,7 +1043,7 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Farmer') && (
             <div id="weather-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-8">
               {/* NEW IoT Audio Assistant Dashboard */}
-              <section className="glass-panel p-8 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
+              <section className="glass-panel p-5 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
                 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8">
@@ -1379,7 +1379,7 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               {/* Visual AI Diagnostics Section */}
-              <section className="glass-panel p-8 lg:col-span-3 border-l-4 border-l-purple-500 relative overflow-hidden group">
+              <section className="glass-panel p-5 lg:col-span-3 border-l-4 border-l-purple-500 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors"></div>
                 <div className="relative z-10 flex flex-col md:flex-row gap-8">
                   <div className="flex-1 space-y-6">
@@ -1514,7 +1514,7 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               {/* Farmer Guidelines (Moved here as requested) */}
-              <section id="guidelines-section" className="glass-panel p-8 space-y-8 border-l-4 border-l-emerald-500 col-span-full">
+              <section id="guidelines-section" className="glass-panel p-5 space-y-4 border-l-4 border-l-emerald-500 col-span-full">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-3">
                     <Leaf size={28} className="text-emerald-400" /> Farmer Guidelines for High Yield
@@ -1548,7 +1548,7 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Resource') && (
             <div className="grid grid-cols-1 gap-6 scroll-mt-8">
               {/* Resource & Application Center */}
-              <section id="resource-center" className="glass-panel p-8 space-y-8 relative overflow-hidden">
+              <section id="resource-center" className="glass-panel p-5 space-y-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
                 <div className="flex items-center justify-between relative z-10">
                   <h2 className="text-xl font-bold flex items-center gap-3">
@@ -1590,7 +1590,7 @@ Authorized Signature: Faida Nancy (General Director)
                 </div>
               </section>
               {/* Action: Apply for NGO Support */}
-              <section className="glass-panel p-8 bg-emerald-600/10 border-emerald-500/20">
+              <section className="glass-panel p-5 bg-emerald-600/10 border-emerald-500/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2">
                     <h2 className="text-xl font-bold text-white flex items-center gap-3">
@@ -1608,7 +1608,7 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               {/* Farming Tools — Equipment Request Form */}
-              <section id="tools-section" className="glass-panel p-8 space-y-8 scroll-mt-8 relative overflow-hidden">
+              <section id="tools-section" className="glass-panel p-5 space-y-4 scroll-mt-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                 <div className="flex items-center justify-between relative z-10">
                   <h2 className="text-xl font-bold flex items-center gap-3">
@@ -1649,7 +1649,7 @@ Authorized Signature: Faida Nancy (General Director)
                 ) : (
                   /* ── Request Form ── */
                   <form
-                    className="relative z-10 space-y-8"
+                    className="relative z-10 space-y-4"
                     onSubmit={(e) => {
                       e.preventDefault();
                       if (selectedToolItems.length === 0) { alert('Please select at least one farming tool to request.'); return; }
@@ -1795,7 +1795,7 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {(activeRole === 'Seller') && (
-            <section id="market-section" className="glass-panel p-8 relative overflow-hidden scroll-mt-8 space-y-8">
+            <section id="market-section" className="glass-panel p-5 relative overflow-hidden scroll-mt-8 space-y-4">
               
               {/* Ecosystem Pulse Live Market Cards (Moved here from welcoming board) */}
               <div className="space-y-4">
@@ -1876,7 +1876,7 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {(activeRole === 'Ministry' || activeRole === 'NGO') && (
-            <div className="space-y-8 scroll-mt-8">
+            <div className="space-y-4 scroll-mt-8">
               {/* Edge metrics / status row (Moved here from welcoming board) */}
               <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
                 <div className="glass-panel p-5 border-t-2 border-t-emerald-500 bg-emerald-500/5 relative overflow-hidden group">
@@ -2011,8 +2011,8 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {activeRole === 'Farmer' && (
-            <div className="space-y-8">
-              <section id="applications-list-farmer" className="glass-panel p-8 space-y-8">
+            <div className="space-y-4">
+              <section id="applications-list-farmer" className="glass-panel p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-3">
                     <Activity className="text-emerald-400" /> My Applications & Feedback
@@ -2021,7 +2021,7 @@ Authorized Signature: Faida Nancy (General Director)
                 
                 <div className="flex flex-col gap-4">
                   {applications.map(app => (
-                    <div key={app.id} className="p-6 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div key={app.id} className="p-4 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
                         <h3 className="text-base font-bold text-white tracking-tight">{app.name}</h3>
                         <p className="text-xs text-slate-400">Crop Focus: <strong className="text-amber-400">{app.crop}</strong> | Region: {app.region}</p>
