@@ -1074,7 +1074,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </p>
                   </div>
                   
-                    <ChevronDown className={shrink-0 transition-transform } size={24} />
+                    <ChevronDown className="shrink-0 transition-transform" size={24} />
                   </div>
                   <div className="flex items-stretch shrink-0 w-full md:w-auto rounded-xl overflow-hidden shadow-xl border border-amber-500/30" onClick={e => e.stopPropagation()}>
                     <button 
