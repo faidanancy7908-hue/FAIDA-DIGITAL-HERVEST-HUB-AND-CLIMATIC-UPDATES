@@ -36,6 +36,7 @@ import {
   Menu,
   Info,
   Package
+  ChevronDown
 } from 'lucide-react';
 
 
@@ -131,6 +132,19 @@ export default function App() {
   const [landSize, setLandSize] = useState('');
   const [forecast, setForecast] = useState(null);
   const [activeRole, setActiveRole] = useState('General');
+
+  const [expandedSections, setExpandedSections] = useState({
+    weather: false,
+    interventions: false,
+    actions: false,
+    planning: false,
+    guidelines: false,
+    resource: false,
+    tools: false,
+    applications: false
+  });
+  const toggleSection = (section) => setExpandedSections(p => ({...p, [section]: !p[section]}));
+
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
   const [userRole, setUserRole] = useState('Admin'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
@@ -765,7 +779,7 @@ Authorized Signature: Faida Nancy (General Director)
           </div>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
           
           {/* Sidebar: Stakeholders & Visuals (Consolidated Welcoming Board) */}
           {activeRole === 'General' && (
@@ -1046,8 +1060,9 @@ Authorized Signature: Faida Nancy (General Director)
               <section className="glass-panel p-5 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
                 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8">
-                  <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8 cursor-pointer group" onClick={() => toggleSection('weather')}>
+                  <div className="flex-1 flex justify-between items-center w-full">
+                    <div>
                     <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
                       <Activity className="text-amber-400" size={28} /> Real-Time IoT Soil Diagnostics
                     </h2>
@@ -1059,7 +1074,9 @@ Authorized Signature: Faida Nancy (General Director)
                     </p>
                   </div>
                   
-                  <div className="flex items-stretch shrink-0 w-full md:w-auto rounded-xl overflow-hidden shadow-xl border border-amber-500/30">
+                    <ChevronDown className={shrink-0 transition-transform } size={24} />
+                  </div>
+                  <div className="flex items-stretch shrink-0 w-full md:w-auto rounded-xl overflow-hidden shadow-xl border border-amber-500/30" onClick={e => e.stopPropagation()}>
                     <button 
                       onClick={playIoTAudioReport}
                       disabled={isPlayingAudio}
@@ -1097,7 +1114,8 @@ Authorized Signature: Faida Nancy (General Director)
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+                {expandedSections.weather && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
                   {/* Soil pH Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'ph' ? null : 'ph')}
@@ -1483,9 +1501,13 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               <section id="planning-section" className="glass-panel p-6 lg:col-span-2 relative overflow-hidden">
-                <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                  <Calculator className="text-emerald-400" /> Smart Planning Tool
-                </h2>
+                <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => toggleSection('planning')}>
+                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-0">
+                    <Calculator className="text-emerald-400" /> Smart Planning Tool
+                  </h2>
+                  <ChevronDown className={	ransition-transform } />
+                </div>
+                {expandedSections.planning && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <form onSubmit={handleCalculate} className="space-y-4">
                     <div>
@@ -2012,13 +2034,14 @@ Authorized Signature: Faida Nancy (General Director)
 
           {activeRole === 'Farmer' && (
             <div className="space-y-4">
-              <section id="applications-list-farmer" className="glass-panel p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold flex items-center gap-3">
+              <section id="applications-list-farmer" className="glass-panel p-5">
+                <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('applications')}>
+                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
                     <Activity className="text-emerald-400" /> My Applications & Feedback
                   </h2>
+                  <ChevronDown className={	ransition-transform } />
                 </div>
-                
+                {expandedSections.applications && (
                 <div className="flex flex-col gap-4">
                   {applications.map(app => (
                     <div key={app.id} className="p-4 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -2053,6 +2076,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </div>
                   )}
                 </div>
+                )}
               </section>
             </div>
           )}
