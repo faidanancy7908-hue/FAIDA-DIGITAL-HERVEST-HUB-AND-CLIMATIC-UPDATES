@@ -2010,6 +2010,53 @@ Authorized Signature: Faida Nancy (General Director)
             </div>
           )}
 
+          {activeRole === 'Farmer' && (
+            <div className="space-y-8">
+              <section id="applications-list-farmer" className="glass-panel p-8 space-y-8">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold flex items-center gap-3">
+                    <Activity className="text-emerald-400" /> My Applications & Feedback
+                  </h2>
+                </div>
+                
+                <div className="flex flex-col gap-4">
+                  {applications.map(app => (
+                    <div key={app.id} className="p-6 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div>
+                        <h3 className="text-base font-bold text-white tracking-tight">{app.name}</h3>
+                        <p className="text-xs text-slate-400">Crop Focus: <strong className="text-amber-400">{app.crop}</strong> | Region: {app.region}</p>
+                      </div>
+                      
+                      <div className="flex flex-col items-end gap-2 text-right">
+                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                          app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                          app.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
+                          'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        }`}>
+                          {app.status}
+                        </span>
+                        {app.status === 'Approved' && (
+                          <p className="text-xs text-emerald-400 font-bold">congratulation, your application has been approved</p>
+                        )}
+                        {app.status === 'Rejected' && (
+                          <p className="text-xs text-red-400 font-bold">sorry, your application was not approved</p>
+                        )}
+                        {app.status === 'Pending' && (
+                          <p className="text-xs text-amber-400 font-bold">Your application is still under review.</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {applications.length === 0 && (
+                    <div className="p-8 text-center text-slate-500 text-sm">
+                      No applications found.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+          )}
+
           {(activeRole === 'NGO' || activeRole === 'Ministry') && (
             <div className="space-y-8">
               
@@ -2027,7 +2074,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {applications.map(app => (
                     <div key={app.id} className="min-w-[300px] md:min-w-[340px] shrink-0 snap-start p-6 bg-slate-900/50 rounded-3xl border border-slate-800 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-                        <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'} />
+                        <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : app.status === 'Rejected' ? 'text-red-400' : 'text-amber-400'} />
                       </div>
                       
                       <div className="relative z-10 space-y-4">
@@ -2036,7 +2083,7 @@ Authorized Signature: Faida Nancy (General Director)
                             <h3 className="text-base font-bold text-white tracking-tight">{app.name}</h3>
                             <p className="text-xs text-slate-400">Crop Focus: <strong className="text-amber-400">{app.crop}</strong></p>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : app.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
                             {app.status}
                           </span>
                         </div>
@@ -2064,11 +2111,20 @@ Authorized Signature: Faida Nancy (General Director)
                       
                       <div className="mt-6 flex gap-3 relative z-10">
                         {app.status === 'Pending' && (
-                          <button onClick={() => {
-                            setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Approved', yield: '1.2t/ha (Est)'} : a));
-                          }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-emerald-600/20 active:scale-95">
-                            Approve
-                          </button>
+                          <div className="flex w-full gap-2">
+                            <button onClick={() => {
+                              setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Approved', yield: '1.2t/ha (Est)'} : a));
+                              alert(`[SMS DISPATCHED to ${app.phone}]\n\n"congratulation, your application has been approved"`);
+                            }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-emerald-600/20 active:scale-95">
+                              Approve
+                            </button>
+                            <button onClick={() => {
+                              setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Rejected'} : a));
+                              alert(`[SMS DISPATCHED to ${app.phone}]\n\n"sorry, your application was not approved"`);
+                            }} className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-red-600/20 active:scale-95">
+                              Reject
+                            </button>
+                          </div>
                         )}
                         <button 
                           onClick={() => alert('Viewing application details...')}
