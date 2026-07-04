@@ -35,7 +35,7 @@ import {
   Thermometer,
   Menu,
   Info,
-  Package
+  Package,
   ChevronDown
 } from 'lucide-react';
 
