@@ -1895,6 +1895,43 @@ Authorized Signature: Faida Nancy (General Director)
                 </table>
               </div>
             </div>
+
+            {/* Monthly Fixed Price Graph */}
+            <div className="border-t border-slate-800 mt-12 pt-8">
+              <h2 className="text-xl font-semibold flex items-center gap-2 mb-10">
+                <BarChart3 className="text-blue-400" /> Monthly Fixed Price Index
+              </h2>
+              <div className="flex justify-between items-end gap-2 sm:gap-4 h-64 mt-8 px-4 pb-12 border-b border-l border-slate-700/50 relative">
+                {marketData.map((item) => {
+                  const maxPrice = Math.max(...marketData.map(d => d.price));
+                  const heightPct = (item.price / maxPrice) * 100;
+                  return (
+                    <div key={item.id} className="flex-1 flex flex-col justify-end items-center group relative h-full">
+                      {/* Tooltip */}
+                      <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap z-20 pointer-events-none border border-slate-700 shadow-xl">
+                        {item.name}: ${item.price.toFixed(2)}
+                      </div>
+                      {/* Bar */}
+                      <div 
+                        className="w-full max-w-[48px] bg-gradient-to-t from-emerald-600/40 to-emerald-400/80 rounded-t-xl hover:to-emerald-300 transition-all cursor-pointer relative shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                        style={{ height: `${heightPct}%`, minHeight: '10%' }}
+                      >
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                          ${Math.round(item.price)}
+                        </div>
+                      </div>
+                      {/* Label */}
+                      <div className="absolute -bottom-8 text-[9px] font-black uppercase tracking-widest text-slate-500 rotate-45 origin-top-left group-hover:text-emerald-400 transition-colors">
+                        {item.name.substring(0, 3)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-12 text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                <Activity size={12} className="text-slate-600" /> Graph: Fixed Market Prices for Current Month (USD)
+              </div>
+            </div>
           </section>
           )}
 
