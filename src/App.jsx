@@ -1505,7 +1505,7 @@ Authorized Signature: Faida Nancy (General Director)
                   <h2 className="text-xl font-semibold flex items-center gap-2 mb-0">
                     <Calculator className="text-emerald-400" /> Smart Planning Tool
                   </h2>
-                  <ChevronDown className={	ransition-transform } />
+                  <ChevronDown className="transition-transform" />
                 </div>
                 {expandedSections.planning && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1533,6 +1533,7 @@ Authorized Signature: Faida Nancy (General Director)
                     ) : <div className="text-slate-500 text-sm text-center border border-dashed border-slate-700 p-8 rounded-xl">Enter parameters for forecast.</div>}
                   </div>
                 </div>
+                )}
               </section>
 
               {/* Farmer Guidelines (Moved here as requested) */}
