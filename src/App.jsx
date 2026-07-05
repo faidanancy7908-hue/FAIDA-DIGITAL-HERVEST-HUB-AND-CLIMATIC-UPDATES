@@ -1896,40 +1896,83 @@ Authorized Signature: Faida Nancy (General Director)
               </div>
             </div>
 
-            {/* Monthly Fixed Price Graph */}
+            {/* Monthly Fixed Price Charts */}
             <div className="border-t border-slate-800 mt-12 pt-8">
               <h2 className="text-xl font-semibold flex items-center gap-2 mb-10">
-                <BarChart3 className="text-blue-400" /> Monthly Fixed Price Index
+                <BarChart3 className="text-blue-400" /> Monthly Fixed Price Index & Market Share
               </h2>
-              <div className="flex justify-between items-end gap-2 sm:gap-4 h-64 mt-8 px-4 pb-12 border-b border-l border-slate-700/50 relative">
-                {marketData.map((item) => {
-                  const maxPrice = Math.max(...marketData.map(d => d.price));
-                  const heightPct = (item.price / maxPrice) * 100;
-                  return (
-                    <div key={item.id} className="flex-1 flex flex-col justify-end items-center group relative h-full">
-                      {/* Tooltip */}
-                      <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap z-20 pointer-events-none border border-slate-700 shadow-xl">
-                        {item.name}: ${item.price.toFixed(2)}
-                      </div>
-                      {/* Bar */}
-                      <div 
-                        className="w-full max-w-[48px] bg-gradient-to-t from-emerald-600/40 to-emerald-400/80 rounded-t-xl hover:to-emerald-300 transition-all cursor-pointer relative shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                        style={{ height: `${heightPct}%`, minHeight: '10%' }}
-                      >
-                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          ${Math.round(item.price)}
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                {/* Bar Graph */}
+                <div className="lg:col-span-2 flex flex-col">
+                  <div className="flex justify-between items-end gap-2 sm:gap-4 h-64 mt-8 px-4 pb-12 border-b border-l border-slate-700/50 relative">
+                    {marketData.map((item) => {
+                      const maxPrice = Math.max(...marketData.map(d => d.price));
+                      const heightPct = (item.price / maxPrice) * 100;
+                      return (
+                        <div key={item.id} className="flex-1 flex flex-col justify-end items-center group relative h-full">
+                          {/* Tooltip */}
+                          <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap z-20 pointer-events-none border border-slate-700 shadow-xl">
+                            {item.name}: ${item.price.toFixed(2)}
+                          </div>
+                          {/* Bar */}
+                          <div 
+                            className="w-full max-w-[48px] bg-gradient-to-t from-emerald-600/40 to-emerald-400/80 rounded-t-xl hover:to-emerald-300 transition-all cursor-pointer relative shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                            style={{ height: `${heightPct}%`, minHeight: '10%' }}
+                          >
+                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                              ${Math.round(item.price)}
+                            </div>
+                          </div>
+                          {/* Label */}
+                          <div className="absolute -bottom-8 text-[9px] font-black uppercase tracking-widest text-slate-500 rotate-45 origin-top-left group-hover:text-emerald-400 transition-colors">
+                            {item.name.substring(0, 3)}
+                          </div>
                         </div>
-                      </div>
-                      {/* Label */}
-                      <div className="absolute -bottom-8 text-[9px] font-black uppercase tracking-widest text-slate-500 rotate-45 origin-top-left group-hover:text-emerald-400 transition-colors">
-                        {item.name.substring(0, 3)}
+                      );
+                    })}
+                  </div>
+                  <div className="mt-12 text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                    <Activity size={12} className="text-slate-600" /> Graph: Fixed Market Prices for Current Month (USD)
+                  </div>
+                </div>
+                
+                {/* Pie Chart */}
+                <div className="lg:col-span-1 flex flex-col items-center justify-center">
+                  <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-slate-800/50 shadow-[0_0_30px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-500" 
+                    style={{
+                      background: `conic-gradient(${marketData.map((item, i) => {
+                        const total = marketData.reduce((acc, curr) => acc + curr.price, 0);
+                        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#eab308', '#ec4899', '#14b8a6'];
+                        // Need to calculate cumulative percentage for conic-gradient
+                        const prevSum = marketData.slice(0, i).reduce((acc, curr) => acc + curr.price, 0);
+                        const startPct = (prevSum / total) * 100;
+                        const endPct = ((prevSum + item.price) / total) * 100;
+                        return `${colors[i % colors.length]} ${startPct}% ${endPct}%`;
+                      }).join(', ')})`
+                    }}
+                  >
+                    <div className="absolute inset-0 m-auto w-24 h-24 sm:w-28 sm:h-28 bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
+                      <div className="text-center">
+                        <span className="block text-xs font-bold text-slate-400">Total Avg</span>
+                        <span className="block text-lg font-black text-white font-mono">${Math.round(marketData.reduce((acc, curr) => acc + curr.price, 0) / marketData.length)}</span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-              <div className="mt-12 text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                <Activity size={12} className="text-slate-600" /> Graph: Fixed Market Prices for Current Month (USD)
+                  </div>
+                  
+                  {/* Legend */}
+                  <div className="w-full mt-8 grid grid-cols-2 gap-x-2 gap-y-3">
+                    {marketData.map((item, i) => {
+                      const colors = ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-red-500', 'bg-purple-500', 'bg-cyan-500', 'bg-yellow-500', 'bg-pink-500', 'bg-teal-500'];
+                      return (
+                        <div key={item.id} className="flex items-center gap-2">
+                          <span className={`w-3 h-3 rounded-full ${colors[i % colors.length]}`}></span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.name.substring(0, 8)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </section>
