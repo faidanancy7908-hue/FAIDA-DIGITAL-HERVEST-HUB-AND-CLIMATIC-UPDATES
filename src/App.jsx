@@ -1600,7 +1600,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
                         <div className="text-sm text-slate-400">Net Profit</div>
-                        <div className="text-3xl font-bold text-emerald-400 font-mono">${forecast.profit.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-emerald-400 font-mono">Shs {forecast.profit.toLocaleString()}</div>
                       </div>
                     ) : <div className="text-slate-500 text-sm text-center border border-dashed border-slate-700 p-8 rounded-xl">Enter parameters for forecast.</div>}
                   </div>
@@ -1905,7 +1905,7 @@ Authorized Signature: Faida Nancy (General Director)
                     return (
                       <div key={item.id} className="p-4 bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col gap-1.5">
                         <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">{item.name}</span>
-                        <div className="text-xl font-bold font-mono text-white">${item.price.toFixed(2)}</div>
+                        <div className="text-xl font-bold font-mono text-white">Shs {item.price.toFixed(2)}</div>
                         <div className={`text-[10px] font-bold flex items-center gap-1 ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
                           {isUp ? <TrendingUp size={11}/> : <TrendingDown size={11}/>}
                           {isUp ? '+' : ''}{weeklyPct.toFixed(1)}% vs last week
@@ -1949,8 +1949,8 @@ Authorized Signature: Faida Nancy (General Director)
                       return (
                         <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
                           <td className="py-4 font-medium">{item.name}</td>
-                          <td className="py-4 text-right font-mono font-bold">${item.price.toFixed(2)}</td>
-                          <td className="py-4 text-right font-mono text-slate-400">${item.weekAgoPrice.toFixed(2)}</td>
+                          <td className="py-4 text-right font-mono font-bold">Shs {item.price.toFixed(2)}</td>
+                          <td className="py-4 text-right font-mono text-slate-400">Shs {item.weekAgoPrice.toFixed(2)}</td>
                           <td className="py-4 text-right">
                             <span className={`px-2 py-1 rounded text-xs font-bold flex items-center gap-1 justify-end ${
                               isUp ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'
@@ -2030,7 +2030,7 @@ Authorized Signature: Faida Nancy (General Director)
                         <div key={item.id} className="flex-1 flex flex-col justify-end items-center group relative h-full">
                           {/* Tooltip */}
                           <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap z-20 pointer-events-none border border-slate-700 shadow-xl">
-                            {item.name}: ${item.price.toFixed(2)}
+                            {item.name}: Shs {item.price.toFixed(2)}
                           </div>
                           {/* Bar */}
                           <div 
@@ -2038,7 +2038,7 @@ Authorized Signature: Faida Nancy (General Director)
                             style={{ height: `${heightPct}%`, minHeight: '10%' }}
                           >
                             <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                              ${Math.round(item.price)}
+                              Shs {Math.round(item.price)}
                             </div>
                           </div>
                           {/* Label */}
@@ -2072,7 +2072,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="absolute inset-0 m-auto w-24 h-24 sm:w-28 sm:h-28 bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
                       <div className="text-center">
                         <span className="block text-xs font-bold text-slate-400">Total Avg</span>
-                        <span className="block text-lg font-black text-white font-mono">${Math.round(marketData.reduce((acc, curr) => acc + curr.price, 0) / marketData.length)}</span>
+                        <span className="block text-lg font-black text-white font-mono">Shs {Math.round(marketData.reduce((acc, curr) => acc + curr.price, 0) / marketData.length)}</span>
                       </div>
                     </div>
                   </div>
