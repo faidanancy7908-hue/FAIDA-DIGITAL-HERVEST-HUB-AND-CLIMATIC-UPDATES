@@ -23,8 +23,6 @@ import {
   X,
   Phone,
   MessageCircle,
-  Bot,
-  Send,
   Wrench,
   ChevronRight,
   Code,
@@ -37,11 +35,9 @@ import {
   Thermometer,
   Menu,
   Info,
-  Package,
-  ChevronDown
+  Package
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // 7-day price history: index 0 = Mon (1 week ago), index 6 = today's opening price
 // weekAgoPrice is the Mon price kept as a permanent reference for % change display
@@ -134,77 +130,10 @@ export default function App() {
   const [cropType, setCropType] = useState('maize');
   const [landSize, setLandSize] = useState('');
   const [forecast, setForecast] = useState(null);
-  const [activeRole, setActiveRole] = useState('Farmer');
-
-  const [expandedSections, setExpandedSections] = useState({
-    weather: true,
-    interventions: true,
-    actions: true,
-    planning: true,
-    guidelines: true,
-    resource: true,
-    tools: true,
-    applications: true,
-    magoba: true
-  });
-  const toggleSection = (section) => setExpandedSections(p => ({...p, [section]: !p[section]}));
-
+  const [activeRole, setActiveRole] = useState('General');
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
-  const [userRole, setUserRole] = useState('Farmer'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
-
-  const [magobaMessages, setMagobaMessages] = useState([
-    { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
-  ]);
-  const [magobaInput, setMagobaInput] = useState('');
-
-  const handleMagobaSend = async (e) => {
-    e.preventDefault();
-    if (!magobaInput.trim()) return;
-
-    const newMessages = [...magobaMessages, { sender: 'user', text: magobaInput }];
-    setMagobaMessages(newMessages);
-    const messageToSend = magobaInput;
-    setMagobaInput('');
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/magoba/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: messageToSend })
-      });
-      
-      const data = await response.json();
-      let newMagobaMsg = { sender: 'magoba', text: data.response };
-      
-      // Preserve client-side action hooks for specific phrases
-      const lowerInput = messageToSend.toLowerCase();
-      if (lowerInput.includes('apply fertilizer') || lowerInput.includes('procedure') || lowerInput.includes('diagram') || lowerInput.includes('types of fertilizer')) {
-        newMagobaMsg.text = "Here are the procedures for applying different fertilizers. Proper application is critical to avoid root burn and maximize nutrient uptake. Click below to download the full guide.";
-        newMagobaMsg.images = ['npk_fertilizer.png', 'fertilizer_diagram.png'];
-        newMagobaMsg.action = 'DOWNLOAD_FERTILIZER_GUIDE';
-      }
-
-      setMagobaMessages([...newMessages, newMagobaMsg]);
-    } catch (err) {
-      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA API servers." }]);
-    }
-  };
-
-  const handleMagobaAction = (actionId) => {
-    if (actionId === 'DOWNLOAD_FERTILIZER_GUIDE') {
-      const content = `FAIDA DIGITAL CLIMATE RESPONSE\n==============================\nFERTILIZER APPLICATION PROCEDURES\n\n1. NPK (Nitrogen, Phosphorus, Potassium)\n- Procedure: Apply in a ring around the base of the plant, at least 10cm away from the stem to avoid root burn.\n- Timing: Apply when soil is moist or right before a light rain.\n\n2. Urea (Nitrogen-rich)\n- Procedure: Broadcast evenly over the field or incorporate into the soil immediately to prevent nitrogen loss through volatilization.\n- Timing: Best applied during vegetative growth stage.\n\n3. Organic Compost\n- Procedure: Mix thoroughly with topsoil before planting or apply as a thick layer (mulch) around established plants.\n- Timing: Can be applied at any time, highly beneficial during land preparation.\n\nNote: Always conduct an IoT soil test using FAIDA sensors before application to determine exact nutrient deficiencies.`;
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'FAIDA_Fertilizer_Procedures.txt';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-  };
+  const [userRole, setUserRole] = useState('Admin'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
   
   const [iotData, setIotData] = useState({
     ph: 5.2,
@@ -661,36 +590,29 @@ Authorized Signature: Faida Nancy (General Director)
     else if (hour < 18) setGreeting('Good Afternoon');
     else setGreeting('Good Evening');
 
-    const fetchData = async () => {
-      try {
-        setIsUpdating(true);
-        const [marketRes, iotRes, weatherRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/market`),
-          fetch(`${API_BASE_URL}/api/iot`),
-          fetch(`${API_BASE_URL}/api/weather`)
-        ]);
-        
-        if (marketRes.ok) {
-          const marketJson = await marketRes.json();
-          setMarketData(marketJson.data);
-        }
-        if (iotRes.ok) {
-          const iotJson = await iotRes.json();
-          setIotData(iotJson.data);
-        }
-        if (weatherRes.ok) {
-          const weatherJson = await weatherRes.json();
-          setWeather(weatherJson.data);
-        }
-      } catch (error) {
-        console.error('Error fetching API data:', error);
-      } finally {
-        setTimeout(() => setIsUpdating(false), 800);
+    const interval = setInterval(() => {
+      setIsUpdating(true);
+      setMarketData(current => current.map(item => {
+        // Realistic intra-day micro-fluctuation: ±0.8% max per tick
+        const fluctuation = (Math.random() * 1.6 - 0.8) / 100;
+        const newPrice = parseFloat((item.price * (1 + fluctuation)).toFixed(2));
+        // Rolling 7-day window: drop oldest entry, push today's latest price
+        const newHistory = [...item.history.slice(-6), newPrice];
+        return { ...item, price: newPrice, history: newHistory };
+      }));
+      setIotData(prev => ({
+        ...prev,
+        ph: parseFloat(Math.max(4.0, Math.min(9.0, prev.ph + (Math.random() * 0.08 - 0.04))).toFixed(2)),
+        moisture: Math.max(10, Math.min(100, Math.round(prev.moisture + (Math.random() * 4 - 2)))),
+        cloudCoverage: Math.max(0, Math.min(100, Math.round(prev.cloudCoverage + (Math.random() * 6 - 3)))),
+        ambientTemp: parseFloat(Math.max(15.0, Math.min(40.0, prev.ambientTemp + (Math.random() * 0.4 - 0.2))).toFixed(1)),
+        ambientHumidity: Math.max(20, Math.min(100, Math.round(prev.ambientHumidity + (Math.random() * 4 - 2))))
+      }));
+      if (Math.random() > 0.7) {
+        setWeather(WEATHER_CONDITIONS[Math.floor(Math.random() * WEATHER_CONDITIONS.length)]);
       }
-    };
-
-    fetchData();
-    const interval = setInterval(fetchData, 5000);
+      setTimeout(() => setIsUpdating(false), 800);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -843,11 +765,11 @@ Authorized Signature: Faida Nancy (General Director)
           </div>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
           {/* Sidebar: Stakeholders & Visuals (Consolidated Welcoming Board) */}
           {activeRole === 'General' && (
-            <aside className="w-full max-w-2xl mx-auto space-y-8">
+            <aside className="w-full lg:w-80 space-y-6 lg:sticky lg:top-8">
             
             {/* Persistent Branding Welcoming Board Container */}
             <div className="glass-panel p-6 flex flex-col items-center text-center gap-6 border-l-4 border-l-amber-500 relative overflow-hidden shadow-2xl group">
@@ -859,7 +781,7 @@ Authorized Signature: Faida Nancy (General Director)
               <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
               
               {/* Spinning Logo Area - Centered on Top */}
-              <div className="w-48 h-48 rounded-[1rem] overflow-hidden shadow-[0_0_20px_rgba(245,158,11,0.15)] border border-amber-500/30 relative bg-slate-900/50">
+              <div className="w-32 h-32 rounded-[1rem] overflow-hidden shadow-[0_0_20px_rgba(245,158,11,0.15)] border border-amber-500/30 relative bg-slate-900/50">
                 <img 
                   src="farm_logo.png" 
                   alt="Digital Climate Hub" 
@@ -925,13 +847,6 @@ Authorized Signature: Faida Nancy (General Director)
                     <option value="Ministry" className="bg-slate-900 text-emerald-400 font-bold">Ministry Official</option>
                   </select>
                 </div>
-              </div>
-
-              {/* Added Images */}
-              <div className="w-full flex flex-col gap-4 mt-6">
-                <h2 className="text-lg text-emerald-400 font-bold tracking-widest uppercase text-center">Harvest Visuals</h2>
-                <img src="/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/bountiful_harvest.png" alt="Bountiful Harvest" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
-                <img src="/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
               </div>
 
               {/* Divider Line */}
@@ -1001,8 +916,8 @@ Authorized Signature: Faida Nancy (General Director)
             </div>
           </aside>
           )}
+
           {/* Main Content Area */}
-          {activeRole !== 'General' && (
           <main className="flex-1 space-y-12 w-full">
             
             {/* Portal Header */}
@@ -1112,14 +1027,6 @@ Authorized Signature: Faida Nancy (General Director)
                     <p className="text-slate-400 text-sm md:text-base leading-relaxed">
                       Precision IoT analytics, real-time market signals, and direct grant administration for East African farming cooperatives.
                     </p>
-                    <div className="pt-6">
-                      <button 
-                        onClick={() => setActiveRole(userRole)}
-                        className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-lg font-black uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 flex items-center gap-3 mx-auto"
-                      >
-                        <Layout size={24} /> Enter {userRole} Portal
-                      </button>
-                    </div>
                   </div>
 
 
@@ -1129,12 +1036,11 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Farmer') && (
             <div id="weather-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-8">
               {/* NEW IoT Audio Assistant Dashboard */}
-              <section className="glass-panel p-5 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
+              <section className="glass-panel p-8 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
                 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8 cursor-pointer group" onClick={() => toggleSection('weather')}>
-                  <div className="flex-1 flex justify-between items-center w-full">
-                    <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8">
+                  <div>
                     <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
                       <Activity className="text-amber-400" size={28} /> Real-Time IoT Soil Diagnostics
                     </h2>
@@ -1146,9 +1052,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </p>
                   </div>
                   
-                    <ChevronDown className="shrink-0 transition-transform" size={24} />
-                  </div>
-                  <div className="flex items-stretch shrink-0 w-full md:w-auto rounded-xl overflow-hidden shadow-xl border border-amber-500/30" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-stretch shrink-0 w-full md:w-auto rounded-xl overflow-hidden shadow-xl border border-amber-500/30">
                     <button 
                       onClick={playIoTAudioReport}
                       disabled={isPlayingAudio}
@@ -1186,8 +1090,7 @@ Authorized Signature: Faida Nancy (General Director)
                   </div>
                 </div>
 
-                {expandedSections.weather && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
                   {/* Soil pH Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'ph' ? null : 'ph')}
@@ -1322,7 +1225,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </div>
                   </div>
                 </div>
-                )}
+
                 {/* 🛠️ Sensor Calibration & Simulation Terminal Panel */}
                 {selectedSensorForSimulation && (
                   <div className="relative z-10 mt-6 p-6 bg-slate-900/80 rounded-2xl border border-amber-500/40 animate-fade-in space-y-4">
@@ -1469,7 +1372,7 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               {/* Visual AI Diagnostics Section */}
-              <section className="glass-panel p-5 lg:col-span-3 border-l-4 border-l-purple-500 relative overflow-hidden group">
+              <section className="glass-panel p-8 lg:col-span-3 border-l-4 border-l-purple-500 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors"></div>
                 <div className="relative z-10 flex flex-col md:flex-row gap-8">
                   <div className="flex-1 space-y-6">
@@ -1573,13 +1476,9 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               <section id="planning-section" className="glass-panel p-6 lg:col-span-2 relative overflow-hidden">
-                <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => toggleSection('planning')}>
-                  <h2 className="text-xl font-semibold flex items-center gap-2 mb-0">
-                    <Calculator className="text-emerald-400" /> Smart Planning Tool
-                  </h2>
-                  <ChevronDown className="transition-transform" />
-                </div>
-                {expandedSections.planning && (
+                <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <Calculator className="text-emerald-400" /> Smart Planning Tool
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <form onSubmit={handleCalculate} className="space-y-4">
                     <div>
@@ -1605,11 +1504,10 @@ Authorized Signature: Faida Nancy (General Director)
                     ) : <div className="text-slate-500 text-sm text-center border border-dashed border-slate-700 p-8 rounded-xl">Enter parameters for forecast.</div>}
                   </div>
                 </div>
-                )}
               </section>
 
               {/* Farmer Guidelines (Moved here as requested) */}
-              <section id="guidelines-section" className="glass-panel p-5 space-y-4 border-l-4 border-l-emerald-500 col-span-full">
+              <section id="guidelines-section" className="glass-panel p-8 space-y-8 border-l-4 border-l-emerald-500 col-span-full">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-3">
                     <Leaf size={28} className="text-emerald-400" /> Farmer Guidelines for High Yield
@@ -1643,7 +1541,7 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Resource') && (
             <div className="grid grid-cols-1 gap-6 scroll-mt-8">
               {/* Resource & Application Center */}
-              <section id="resource-center" className="glass-panel p-5 space-y-4 relative overflow-hidden">
+              <section id="resource-center" className="glass-panel p-8 space-y-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
                 <div className="flex items-center justify-between relative z-10">
                   <h2 className="text-xl font-bold flex items-center gap-3">
@@ -1685,7 +1583,7 @@ Authorized Signature: Faida Nancy (General Director)
                 </div>
               </section>
               {/* Action: Apply for NGO Support */}
-              <section className="glass-panel p-5 bg-emerald-600/10 border-emerald-500/20">
+              <section className="glass-panel p-8 bg-emerald-600/10 border-emerald-500/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2">
                     <h2 className="text-xl font-bold text-white flex items-center gap-3">
@@ -1703,7 +1601,7 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               {/* Farming Tools — Equipment Request Form */}
-              <section id="tools-section" className="glass-panel p-5 space-y-4 scroll-mt-8 relative overflow-hidden">
+              <section id="tools-section" className="glass-panel p-8 space-y-8 scroll-mt-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
                 <div className="flex items-center justify-between relative z-10">
                   <h2 className="text-xl font-bold flex items-center gap-3">
@@ -1744,7 +1642,7 @@ Authorized Signature: Faida Nancy (General Director)
                 ) : (
                   /* ── Request Form ── */
                   <form
-                    className="relative z-10 space-y-4"
+                    className="relative z-10 space-y-8"
                     onSubmit={(e) => {
                       e.preventDefault();
                       if (selectedToolItems.length === 0) { alert('Please select at least one farming tool to request.'); return; }
@@ -1890,7 +1788,7 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {(activeRole === 'Seller') && (
-            <section id="market-section" className="glass-panel p-5 relative overflow-hidden scroll-mt-8 space-y-4">
+            <section id="market-section" className="glass-panel p-8 relative overflow-hidden scroll-mt-8 space-y-8">
               
               {/* Ecosystem Pulse Live Market Cards (Moved here from welcoming board) */}
               <div className="space-y-4">
@@ -1922,7 +1820,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <h2 className="text-xl font-semibold flex items-center gap-2">
                       <Activity className="text-emerald-400" /> Market Ticker
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">Fixed prices for the week based on current market rates. 7-day history (Mon – Today).</p>
+                    <p className="text-xs text-slate-500 mt-1">Live prices with 7-day history (Mon – Today). Hover bars for daily values.</p>
                   </div>
                 <button 
                   onClick={() => handleDownload('FAIDA Live Market Prices', generateMarketCsv(), 'csv')}
@@ -1967,136 +1865,11 @@ Authorized Signature: Faida Nancy (General Director)
                 </table>
               </div>
             </div>
-
-            {/* Best Places for Seeds */}
-            <div className="border-t border-slate-800 mt-12 pt-8">
-              <h2 className="text-xl font-semibold flex items-center gap-2 mb-6">
-                <MapPin className="text-emerald-400" /> Best Places for Selling & Buying Seeds
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ShoppingCart className="text-blue-400" /> Buying Seeds</h3>
-                  <ul className="space-y-3 text-sm text-slate-300">
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Kalerwe Market, Kampala</span>
-                      <span className="text-emerald-400 font-mono font-bold">-12% avg price</span>
-                    </li>
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Mbale Central Market</span>
-                      <span className="text-emerald-400 font-mono font-bold">-8% avg price</span>
-                    </li>
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Lira Main Market</span>
-                      <span className="text-emerald-400 font-mono font-bold">-5% avg price</span>
-                    </li>
-                  </ul>
-                  <p className="text-xs text-slate-500 mt-4 italic">* Prices are heavily subsidized for early-season buyers.</p>
-                </div>
-                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Building2 className="text-emerald-400" /> Selling Seeds (Farmers)</h3>
-                  <ul className="space-y-3 text-sm text-slate-300">
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Nakasero Market, Kampala</span>
-                      <span className="text-emerald-400 font-mono font-bold">+15% premium</span>
-                    </li>
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Jinja Central Market</span>
-                      <span className="text-emerald-400 font-mono font-bold">+10% premium</span>
-                    </li>
-                    <li className="flex justify-between border-b border-slate-800 pb-2">
-                      <span>Mbarara Farmers Hub</span>
-                      <span className="text-emerald-400 font-mono font-bold">+7% premium</span>
-                    </li>
-                  </ul>
-                  <p className="text-xs text-slate-500 mt-4 italic">* High demand zones currently paying a premium for quality seeds.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly Fixed Price Charts */}
-            <div className="border-t border-slate-800 mt-12 pt-8">
-              <h2 className="text-xl font-semibold flex items-center gap-2 mb-10">
-                <BarChart3 className="text-blue-400" /> Monthly Fixed Price Index & Market Share
-              </h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                {/* Bar Graph */}
-                <div className="lg:col-span-2 flex flex-col">
-                  <div className="flex justify-between items-end gap-2 sm:gap-4 h-64 mt-8 px-4 pb-12 border-b border-l border-slate-700/50 relative">
-                    {marketData.map((item) => {
-                      const maxPrice = Math.max(...marketData.map(d => d.price));
-                      const heightPct = (item.price / maxPrice) * 100;
-                      return (
-                        <div key={item.id} className="flex-1 flex flex-col justify-end items-center group relative h-full">
-                          {/* Tooltip */}
-                          <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap z-20 pointer-events-none border border-slate-700 shadow-xl">
-                            {item.name}: ${item.price.toFixed(2)}
-                          </div>
-                          {/* Bar */}
-                          <div 
-                            className="w-full max-w-[48px] bg-gradient-to-t from-emerald-600/40 to-emerald-400/80 rounded-t-xl hover:to-emerald-300 transition-all cursor-pointer relative shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                            style={{ height: `${heightPct}%`, minHeight: '10%' }}
-                          >
-                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                              ${Math.round(item.price)}
-                            </div>
-                          </div>
-                          {/* Label */}
-                          <div className="absolute -bottom-8 text-[9px] font-black uppercase tracking-widest text-slate-500 rotate-45 origin-top-left group-hover:text-emerald-400 transition-colors">
-                            {item.name.substring(0, 3)}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-12 text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                    <Activity size={12} className="text-slate-600" /> Graph: Fixed Market Prices for Current Month (USD)
-                  </div>
-                </div>
-                
-                {/* Pie Chart */}
-                <div className="lg:col-span-1 flex flex-col items-center justify-center">
-                  <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-slate-800/50 shadow-[0_0_30px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-500" 
-                    style={{
-                      background: `conic-gradient(${marketData.map((item, i) => {
-                        const total = marketData.reduce((acc, curr) => acc + curr.price, 0);
-                        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#eab308', '#ec4899', '#14b8a6'];
-                        // Need to calculate cumulative percentage for conic-gradient
-                        const prevSum = marketData.slice(0, i).reduce((acc, curr) => acc + curr.price, 0);
-                        const startPct = (prevSum / total) * 100;
-                        const endPct = ((prevSum + item.price) / total) * 100;
-                        return `${colors[i % colors.length]} ${startPct}% ${endPct}%`;
-                      }).join(', ')})`
-                    }}
-                  >
-                    <div className="absolute inset-0 m-auto w-24 h-24 sm:w-28 sm:h-28 bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
-                      <div className="text-center">
-                        <span className="block text-xs font-bold text-slate-400">Total Avg</span>
-                        <span className="block text-lg font-black text-white font-mono">${Math.round(marketData.reduce((acc, curr) => acc + curr.price, 0) / marketData.length)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Legend */}
-                  <div className="w-full mt-8 grid grid-cols-2 gap-x-2 gap-y-3">
-                    {marketData.map((item, i) => {
-                      const colors = ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-red-500', 'bg-purple-500', 'bg-cyan-500', 'bg-yellow-500', 'bg-pink-500', 'bg-teal-500'];
-                      return (
-                        <div key={item.id} className="flex items-center gap-2">
-                          <span className={`w-3 h-3 rounded-full ${colors[i % colors.length]}`}></span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.name.substring(0, 8)}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
           )}
 
           {(activeRole === 'Ministry' || activeRole === 'NGO') && (
-            <div className="space-y-4 scroll-mt-8">
+            <div className="space-y-8 scroll-mt-8">
               {/* Edge metrics / status row (Moved here from welcoming board) */}
               <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
                 <div className="glass-panel p-5 border-t-2 border-t-emerald-500 bg-emerald-500/5 relative overflow-hidden group">
@@ -2230,114 +2003,6 @@ Authorized Signature: Faida Nancy (General Director)
             </div>
           )}
 
-          {activeRole === 'Farmer' && (
-            <div className="space-y-4">
-              {/* MAGOBA AI Assistant Section */}
-              <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-blue-500 relative overflow-hidden group">
-                <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('magoba')}>
-                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
-                    <Bot className="text-blue-400" /> MAGOBA AI Assistant
-                  </h2>
-                  <ChevronDown className="transition-transform" />
-                </div>
-                
-                {expandedSections.magoba && (
-                  <div className="flex flex-col h-[400px]">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 rounded-2xl border border-slate-800 custom-scrollbar mb-4">
-                      {magobaMessages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-blue-600/20 border border-blue-500/30 text-blue-50 rounded-tl-sm'}`}>
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                            
-                            {/* Render Images if present */}
-                            {msg.images && msg.images.length > 0 && (
-                              <div className="flex flex-col gap-2 mt-3">
-                                {msg.images.map((imgUrl, i) => (
-                                  <img key={i} src={imgUrl} alt="Visual Guide" className="w-full rounded-xl border border-blue-500/20 shadow-md" />
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Render Action Button if present */}
-                            {msg.action && (
-                              <button 
-                                onClick={() => handleMagobaAction(msg.action)}
-                                className="mt-4 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg active:scale-95"
-                              >
-                                <Download size={16} /> Download Procedures Guide
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <form onSubmit={handleMagobaSend} className="relative flex items-center">
-                      <input 
-                        type="text" 
-                        value={magobaInput}
-                        onChange={(e) => setMagobaInput(e.target.value)}
-                        placeholder="Ask MAGOBA about agriculture, pests, or weather..." 
-                        className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
-                      />
-                      <button 
-                        type="submit" 
-                        disabled={!magobaInput.trim()}
-                        className="absolute right-2 p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Send size={16} />
-                      </button>
-                    </form>
-                  </div>
-                )}
-              </section>
-              <section id="applications-list-farmer" className="glass-panel p-5">
-                <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('applications')}>
-                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
-                    <Activity className="text-emerald-400" /> My Applications & Feedback
-                  </h2>
-                  <ChevronDown className="transition-transform" />
-                </div>
-                {expandedSections.applications && (
-                <div className="flex flex-col gap-4">
-                  {applications.map(app => (
-                    <div key={app.id} className="p-4 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div>
-                        <h3 className="text-base font-bold text-white tracking-tight">{app.name}</h3>
-                        <p className="text-xs text-slate-400">Crop Focus: <strong className="text-amber-400">{app.crop}</strong> | Region: {app.region}</p>
-                      </div>
-                      
-                      <div className="flex flex-col items-end gap-2 text-right">
-                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                          app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                          app.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
-                          'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                        }`}>
-                          {app.status}
-                        </span>
-                        {app.status === 'Approved' && (
-                          <p className="text-xs text-emerald-400 font-bold">congratulation, your application has been approved</p>
-                        )}
-                        {app.status === 'Rejected' && (
-                          <p className="text-xs text-red-400 font-bold">sorry, your application was not approved</p>
-                        )}
-                        {app.status === 'Pending' && (
-                          <p className="text-xs text-amber-400 font-bold">Your application is still under review.</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {applications.length === 0 && (
-                    <div className="p-8 text-center text-slate-500 text-sm">
-                      No applications found.
-                    </div>
-                  )}
-                </div>
-                )}
-              </section>
-            </div>
-          )}
-
           {(activeRole === 'NGO' || activeRole === 'Ministry') && (
             <div className="space-y-8">
               
@@ -2355,7 +2020,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {applications.map(app => (
                     <div key={app.id} className="min-w-[300px] md:min-w-[340px] shrink-0 snap-start p-6 bg-slate-900/50 rounded-3xl border border-slate-800 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-                        <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : app.status === 'Rejected' ? 'text-red-400' : 'text-amber-400'} />
+                        <ShieldCheck size={40} className={app.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'} />
                       </div>
                       
                       <div className="relative z-10 space-y-4">
@@ -2364,7 +2029,7 @@ Authorized Signature: Faida Nancy (General Director)
                             <h3 className="text-base font-bold text-white tracking-tight">{app.name}</h3>
                             <p className="text-xs text-slate-400">Crop Focus: <strong className="text-amber-400">{app.crop}</strong></p>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : app.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
                             {app.status}
                           </span>
                         </div>
@@ -2392,20 +2057,11 @@ Authorized Signature: Faida Nancy (General Director)
                       
                       <div className="mt-6 flex gap-3 relative z-10">
                         {app.status === 'Pending' && (
-                          <div className="flex w-full gap-2">
-                            <button onClick={() => {
-                              setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Approved', yield: '1.2t/ha (Est)'} : a));
-                              alert(`[SMS DISPATCHED to ${app.phone}]\n\n"congratulation, your application has been approved"`);
-                            }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-emerald-600/20 active:scale-95">
-                              Approve
-                            </button>
-                            <button onClick={() => {
-                              setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Rejected'} : a));
-                              alert(`[SMS DISPATCHED to ${app.phone}]\n\n"sorry, your application was not approved"`);
-                            }} className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-red-600/20 active:scale-95">
-                              Reject
-                            </button>
-                          </div>
+                          <button onClick={() => {
+                            setApplications(applications.map(a => a.id === app.id ? {...a, status: 'Approved', yield: '1.2t/ha (Est)'} : a));
+                          }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all uppercase tracking-wider shadow-md shadow-emerald-600/20 active:scale-95">
+                            Approve
+                          </button>
                         )}
                         <button 
                           onClick={() => alert('Viewing application details...')}
@@ -2590,8 +2246,6 @@ Authorized Signature: Faida Nancy (General Director)
           )}
         </div>
       </main>
-          )}
-
     </div>
   </div>
 

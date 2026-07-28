@@ -5,6 +5,7 @@
   "homepage": "https://faidanancy7908-hue.github.io/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
