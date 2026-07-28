@@ -157,6 +157,30 @@ export default function App() {
     { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
   ]);
   const [magobaInput, setMagobaInput] = useState('');
+  
+  // PWA Install Prompt State
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      alert("To install the app on iOS, tap the Share button in Safari and select 'Add to Home Screen'.");
+    }
+  };
 
   const handleMagobaSend = async (e) => {
     e.preventDefault();
@@ -838,8 +862,16 @@ Authorized Signature: Faida Nancy (General Director)
             </nav>
           )}
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-            <Sparkles size={11} className="animate-pulse" /> Live Monitoring
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleInstallClick} 
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 mr-2"
+            >
+              <Download size={14} /> Install App
+            </button>
+            <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+              <Sparkles size={11} className="animate-pulse" /> Live Monitoring
+            </div>
           </div>
         </header>
 
