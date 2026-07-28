@@ -46,15 +46,15 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 // 7-day price history: index 0 = Mon (1 week ago), index 6 = today's opening price
 // weekAgoPrice is the Mon price kept as a permanent reference for % change display
 const INITIAL_MARKET_DATA = [
-  { id: 'maize',      name: 'Maize',      price: 240.50,   weekAgoPrice: 231.00,  history: [231.00, 233.50, 236.00, 238.20, 239.80, 241.10, 240.50] },
-  { id: 'soybeans',  name: 'Soybeans',   price: 512.20,   weekAgoPrice: 498.00,  history: [498.00, 501.50, 505.00, 507.80, 510.40, 513.60, 512.20] },
-  { id: 'wheat',     name: 'Wheat',      price: 315.75,   weekAgoPrice: 323.00,  history: [323.00, 321.50, 319.80, 318.20, 317.00, 315.90, 315.75] },
-  { id: 'cocoa',     name: 'Cocoa',      price: 2850.00,  weekAgoPrice: 2790.00, history: [2790.00, 2805.00, 2815.00, 2825.00, 2835.00, 2845.00, 2850.00] },
-  { id: 'millet',    name: 'Millet',     price: 185.30,   weekAgoPrice: 178.00,  history: [178.00, 179.80, 181.50, 182.90, 184.20, 185.00, 185.30] },
-  { id: 'groundnuts',name: 'Groundnuts', price: 420.00,   weekAgoPrice: 412.00,  history: [412.00, 413.80, 415.50, 417.20, 418.60, 419.50, 420.00] },
-  { id: 'sorghum',   name: 'Sorghum',    price: 195.50,   weekAgoPrice: 190.00,  history: [190.00, 191.20, 192.50, 193.80, 194.60, 195.20, 195.50] },
-  { id: 'tobacco',   name: 'Tobacco',    price: 3250.00,  weekAgoPrice: 3195.00, history: [3195.00, 3205.00, 3215.00, 3225.00, 3235.00, 3244.00, 3250.00] },
-  { id: 'livestock', name: 'Livestock',  price: 1540.00,  weekAgoPrice: 1558.00, history: [1558.00, 1554.00, 1550.00, 1547.00, 1544.00, 1541.00, 1540.00] }
+  { id: 'maize',      name: 'Maize',      price: 1200,    weekAgoPrice: 1150,    history: [1150, 1160, 1175, 1180, 1195, 1205, 1200] },
+  { id: 'soybeans',  name: 'Soybeans',   price: 3100,    weekAgoPrice: 2950,    history: [2950, 2980, 3020, 3050, 3080, 3110, 3100] },
+  { id: 'wheat',     name: 'Wheat',      price: 2250,    weekAgoPrice: 2300,    history: [2300, 2290, 2280, 2260, 2250, 2240, 2250] },
+  { id: 'cocoa',     name: 'Cocoa',      price: 15200,   weekAgoPrice: 14800,   history: [14800, 14900, 15000, 15100, 15150, 15250, 15200] },
+  { id: 'millet',    name: 'Millet',     price: 2850,    weekAgoPrice: 2750,    history: [2750, 2770, 2790, 2810, 2830, 2840, 2850] },
+  { id: 'groundnuts',name: 'Groundnuts', price: 4600,    weekAgoPrice: 4500,    history: [4500, 4520, 4540, 4560, 4580, 4590, 4600] },
+  { id: 'sorghum',   name: 'Sorghum',    price: 1550,    weekAgoPrice: 1500,    history: [1500, 1510, 1520, 1530, 1540, 1545, 1550] },
+  { id: 'tobacco',   name: 'Tobacco',    price: 8200,    weekAgoPrice: 8000,    history: [8000, 8050, 8100, 8150, 8180, 8220, 8200] },
+  { id: 'livestock', name: 'Livestock',  price: 1550000, weekAgoPrice: 1580000, history: [1580000, 1575000, 1570000, 1565000, 1560000, 1555000, 1550000] }
 ];
 
 const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'];
