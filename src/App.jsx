@@ -23,6 +23,8 @@ import {
   X,
   Phone,
   MessageCircle,
+  Bot,
+  Send,
   Wrench,
   ChevronRight,
   Code,
@@ -131,23 +133,75 @@ export default function App() {
   const [cropType, setCropType] = useState('maize');
   const [landSize, setLandSize] = useState('');
   const [forecast, setForecast] = useState(null);
-  const [activeRole, setActiveRole] = useState('General');
+  const [activeRole, setActiveRole] = useState('Farmer');
 
   const [expandedSections, setExpandedSections] = useState({
-    weather: false,
-    interventions: false,
-    actions: false,
-    planning: false,
-    guidelines: false,
-    resource: false,
-    tools: false,
-    applications: false
+    weather: true,
+    interventions: true,
+    actions: true,
+    planning: true,
+    guidelines: true,
+    resource: true,
+    tools: true,
+    applications: true,
+    magoba: true
   });
   const toggleSection = (section) => setExpandedSections(p => ({...p, [section]: !p[section]}));
 
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
-  const [userRole, setUserRole] = useState('Admin'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
+  const [userRole, setUserRole] = useState('Farmer'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
+
+  const [magobaMessages, setMagobaMessages] = useState([
+    { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
+  ]);
+  const [magobaInput, setMagobaInput] = useState('');
+
+  const handleMagobaSend = (e) => {
+    e.preventDefault();
+    if (!magobaInput.trim()) return;
+
+    const newMessages = [...magobaMessages, { sender: 'user', text: magobaInput }];
+    setMagobaMessages(newMessages);
+    setMagobaInput('');
+
+    // Simulate MAGOBA response
+    setTimeout(() => {
+      const lowerInput = magobaInput.toLowerCase();
+      let response = "I'm analyzing your request. For personalized advice, please contact the nearest NGO field officer.";
+      let newMagobaMsg = { sender: 'magoba', text: response };
+
+      if (lowerInput.includes('apply fertilizer') || lowerInput.includes('procedure') || lowerInput.includes('diagram') || lowerInput.includes('types of fertilizer')) {
+        newMagobaMsg.text = "Here are the procedures for applying different fertilizers. Proper application is critical to avoid root burn and maximize nutrient uptake. Click below to download the full guide.";
+        newMagobaMsg.images = ['npk_fertilizer.png', 'fertilizer_diagram.png'];
+        newMagobaMsg.action = 'DOWNLOAD_FERTILIZER_GUIDE';
+      } else if (lowerInput.includes('pest') || lowerInput.includes('insect') || lowerInput.includes('disease')) {
+        newMagobaMsg.text = "For pest control, I recommend using our Pest Drone for precision spraying. Also, ensure you are practicing crop rotation and using organic pesticides where possible.";
+      } else if (lowerInput.includes('weather') || lowerInput.includes('rain') || lowerInput.includes('climate')) {
+        newMagobaMsg.text = "Based on the current forecast, there's good rainfall expected this week. Wait to irrigate until you check the soil moisture sensors.";
+      } else if (lowerInput.includes('fertilizer') || lowerInput.includes('soil') || lowerInput.includes('nutrient')) {
+        newMagobaMsg.text = "Your IoT soil sensors indicate low Nitrogen. I suggest applying an NPK fertilizer blend rich in Nitrogen to boost leaf growth. Ask me about 'fertilizer procedures' for application guides.";
+      } else if (lowerInput.includes('yield') || lowerInput.includes('harvest') || lowerInput.includes('crop')) {
+        newMagobaMsg.text = "To maximize yield, keep your soil pH balanced and ensure your Smart Irrigation Kit is fully operational during dry spells.";
+      }
+      setMagobaMessages([...newMessages, newMagobaMsg]);
+    }, 1000);
+  };
+
+  const handleMagobaAction = (actionId) => {
+    if (actionId === 'DOWNLOAD_FERTILIZER_GUIDE') {
+      const content = `FAIDA DIGITAL CLIMATE RESPONSE\n==============================\nFERTILIZER APPLICATION PROCEDURES\n\n1. NPK (Nitrogen, Phosphorus, Potassium)\n- Procedure: Apply in a ring around the base of the plant, at least 10cm away from the stem to avoid root burn.\n- Timing: Apply when soil is moist or right before a light rain.\n\n2. Urea (Nitrogen-rich)\n- Procedure: Broadcast evenly over the field or incorporate into the soil immediately to prevent nitrogen loss through volatilization.\n- Timing: Best applied during vegetative growth stage.\n\n3. Organic Compost\n- Procedure: Mix thoroughly with topsoil before planting or apply as a thick layer (mulch) around established plants.\n- Timing: Can be applied at any time, highly beneficial during land preparation.\n\nNote: Always conduct an IoT soil test using FAIDA sensors before application to determine exact nutrient deficiencies.`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'FAIDA_Fertilizer_Procedures.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
   
   const [iotData, setIotData] = useState({
     ph: 5.2,
@@ -606,14 +660,7 @@ Authorized Signature: Faida Nancy (General Director)
 
     const interval = setInterval(() => {
       setIsUpdating(true);
-      setMarketData(current => current.map(item => {
-        // Realistic intra-day micro-fluctuation: ±0.8% max per tick
-        const fluctuation = (Math.random() * 1.6 - 0.8) / 100;
-        const newPrice = parseFloat((item.price * (1 + fluctuation)).toFixed(2));
-        // Rolling 7-day window: drop oldest entry, push today's latest price
-        const newHistory = [...item.history.slice(-6), newPrice];
-        return { ...item, price: newPrice, history: newHistory };
-      }));
+      // Market prices are fixed for the week based on current market rate
       setIotData(prev => ({
         ...prev,
         ph: parseFloat(Math.max(4.0, Math.min(9.0, prev.ph + (Math.random() * 0.08 - 0.04))).toFixed(2)),
@@ -1850,7 +1897,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <h2 className="text-xl font-semibold flex items-center gap-2">
                       <Activity className="text-emerald-400" /> Market Ticker
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">Live prices with 7-day history (Mon – Today). Hover bars for daily values.</p>
+                    <p className="text-xs text-slate-500 mt-1">Fixed prices for the week based on current market rates. 7-day history (Mon – Today).</p>
                   </div>
                 <button 
                   onClick={() => handleDownload('FAIDA Live Market Prices', generateMarketCsv(), 'csv')}
@@ -1893,6 +1940,51 @@ Authorized Signature: Faida Nancy (General Director)
                     })}
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            {/* Best Places for Seeds */}
+            <div className="border-t border-slate-800 mt-12 pt-8">
+              <h2 className="text-xl font-semibold flex items-center gap-2 mb-6">
+                <MapPin className="text-emerald-400" /> Best Places for Selling & Buying Seeds
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ShoppingCart className="text-blue-400" /> Buying Seeds</h3>
+                  <ul className="space-y-3 text-sm text-slate-300">
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Kalerwe Market, Kampala</span>
+                      <span className="text-emerald-400 font-mono font-bold">-12% avg price</span>
+                    </li>
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Mbale Central Market</span>
+                      <span className="text-emerald-400 font-mono font-bold">-8% avg price</span>
+                    </li>
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Lira Main Market</span>
+                      <span className="text-emerald-400 font-mono font-bold">-5% avg price</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-slate-500 mt-4 italic">* Prices are heavily subsidized for early-season buyers.</p>
+                </div>
+                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Building2 className="text-emerald-400" /> Selling Seeds (Farmers)</h3>
+                  <ul className="space-y-3 text-sm text-slate-300">
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Nakasero Market, Kampala</span>
+                      <span className="text-emerald-400 font-mono font-bold">+15% premium</span>
+                    </li>
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Jinja Central Market</span>
+                      <span className="text-emerald-400 font-mono font-bold">+10% premium</span>
+                    </li>
+                    <li className="flex justify-between border-b border-slate-800 pb-2">
+                      <span>Mbarara Farmers Hub</span>
+                      <span className="text-emerald-400 font-mono font-bold">+7% premium</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-slate-500 mt-4 italic">* High demand zones currently paying a premium for quality seeds.</p>
+                </div>
               </div>
             </div>
 
@@ -2115,12 +2207,71 @@ Authorized Signature: Faida Nancy (General Director)
 
           {activeRole === 'Farmer' && (
             <div className="space-y-4">
+              {/* MAGOBA AI Assistant Section */}
+              <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-blue-500 relative overflow-hidden group">
+                <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('magoba')}>
+                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
+                    <Bot className="text-blue-400" /> MAGOBA AI Assistant
+                  </h2>
+                  <ChevronDown className="transition-transform" />
+                </div>
+                
+                {expandedSections.magoba && (
+                  <div className="flex flex-col h-[400px]">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 rounded-2xl border border-slate-800 custom-scrollbar mb-4">
+                      {magobaMessages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-blue-600/20 border border-blue-500/30 text-blue-50 rounded-tl-sm'}`}>
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                            
+                            {/* Render Images if present */}
+                            {msg.images && msg.images.length > 0 && (
+                              <div className="flex flex-col gap-2 mt-3">
+                                {msg.images.map((imgUrl, i) => (
+                                  <img key={i} src={imgUrl} alt="Visual Guide" className="w-full rounded-xl border border-blue-500/20 shadow-md" />
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Render Action Button if present */}
+                            {msg.action && (
+                              <button 
+                                onClick={() => handleMagobaAction(msg.action)}
+                                className="mt-4 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg active:scale-95"
+                              >
+                                <Download size={16} /> Download Procedures Guide
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <form onSubmit={handleMagobaSend} className="relative flex items-center">
+                      <input 
+                        type="text" 
+                        value={magobaInput}
+                        onChange={(e) => setMagobaInput(e.target.value)}
+                        placeholder="Ask MAGOBA about agriculture, pests, or weather..." 
+                        className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={!magobaInput.trim()}
+                        className="absolute right-2 p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Send size={16} />
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </section>
               <section id="applications-list-farmer" className="glass-panel p-5">
                 <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('applications')}>
                   <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
                     <Activity className="text-emerald-400" /> My Applications & Feedback
                   </h2>
-                  <ChevronDown className={	ransition-transform } />
+                  <ChevronDown className="transition-transform" />
                 </div>
                 {expandedSections.applications && (
                 <div className="flex flex-col gap-4">
