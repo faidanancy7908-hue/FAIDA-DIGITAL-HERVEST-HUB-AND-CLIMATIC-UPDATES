@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/sw.js', { scope: '/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/' })})}
