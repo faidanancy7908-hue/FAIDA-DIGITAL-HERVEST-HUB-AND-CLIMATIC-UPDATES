@@ -157,35 +157,37 @@ export default function App() {
   ]);
   const [magobaInput, setMagobaInput] = useState('');
 
-  const handleMagobaSend = (e) => {
+  const handleMagobaSend = async (e) => {
     e.preventDefault();
     if (!magobaInput.trim()) return;
 
     const newMessages = [...magobaMessages, { sender: 'user', text: magobaInput }];
     setMagobaMessages(newMessages);
+    const messageToSend = magobaInput;
     setMagobaInput('');
 
-    // Simulate MAGOBA response
-    setTimeout(() => {
-      const lowerInput = magobaInput.toLowerCase();
-      let response = "I'm analyzing your request. For personalized advice, please contact the nearest NGO field officer.";
-      let newMagobaMsg = { sender: 'magoba', text: response };
-
+    try {
+      const response = await fetch('http://localhost:3001/api/magoba/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: messageToSend })
+      });
+      
+      const data = await response.json();
+      let newMagobaMsg = { sender: 'magoba', text: data.response };
+      
+      // Preserve client-side action hooks for specific phrases
+      const lowerInput = messageToSend.toLowerCase();
       if (lowerInput.includes('apply fertilizer') || lowerInput.includes('procedure') || lowerInput.includes('diagram') || lowerInput.includes('types of fertilizer')) {
         newMagobaMsg.text = "Here are the procedures for applying different fertilizers. Proper application is critical to avoid root burn and maximize nutrient uptake. Click below to download the full guide.";
         newMagobaMsg.images = ['npk_fertilizer.png', 'fertilizer_diagram.png'];
         newMagobaMsg.action = 'DOWNLOAD_FERTILIZER_GUIDE';
-      } else if (lowerInput.includes('pest') || lowerInput.includes('insect') || lowerInput.includes('disease')) {
-        newMagobaMsg.text = "For pest control, I recommend using our Pest Drone for precision spraying. Also, ensure you are practicing crop rotation and using organic pesticides where possible.";
-      } else if (lowerInput.includes('weather') || lowerInput.includes('rain') || lowerInput.includes('climate')) {
-        newMagobaMsg.text = "Based on the current forecast, there's good rainfall expected this week. Wait to irrigate until you check the soil moisture sensors.";
-      } else if (lowerInput.includes('fertilizer') || lowerInput.includes('soil') || lowerInput.includes('nutrient')) {
-        newMagobaMsg.text = "Your IoT soil sensors indicate low Nitrogen. I suggest applying an NPK fertilizer blend rich in Nitrogen to boost leaf growth. Ask me about 'fertilizer procedures' for application guides.";
-      } else if (lowerInput.includes('yield') || lowerInput.includes('harvest') || lowerInput.includes('crop')) {
-        newMagobaMsg.text = "To maximize yield, keep your soil pH balanced and ensure your Smart Irrigation Kit is fully operational during dry spells.";
       }
+
       setMagobaMessages([...newMessages, newMagobaMsg]);
-    }, 1000);
+    } catch (err) {
+      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA API servers." }]);
+    }
   };
 
   const handleMagobaAction = (actionId) => {
@@ -658,22 +660,36 @@ Authorized Signature: Faida Nancy (General Director)
     else if (hour < 18) setGreeting('Good Afternoon');
     else setGreeting('Good Evening');
 
-    const interval = setInterval(() => {
-      setIsUpdating(true);
-      // Market prices are fixed for the week based on current market rate
-      setIotData(prev => ({
-        ...prev,
-        ph: parseFloat(Math.max(4.0, Math.min(9.0, prev.ph + (Math.random() * 0.08 - 0.04))).toFixed(2)),
-        moisture: Math.max(10, Math.min(100, Math.round(prev.moisture + (Math.random() * 4 - 2)))),
-        cloudCoverage: Math.max(0, Math.min(100, Math.round(prev.cloudCoverage + (Math.random() * 6 - 3)))),
-        ambientTemp: parseFloat(Math.max(15.0, Math.min(40.0, prev.ambientTemp + (Math.random() * 0.4 - 0.2))).toFixed(1)),
-        ambientHumidity: Math.max(20, Math.min(100, Math.round(prev.ambientHumidity + (Math.random() * 4 - 2))))
-      }));
-      if (Math.random() > 0.7) {
-        setWeather(WEATHER_CONDITIONS[Math.floor(Math.random() * WEATHER_CONDITIONS.length)]);
+    const fetchData = async () => {
+      try {
+        setIsUpdating(true);
+        const [marketRes, iotRes, weatherRes] = await Promise.all([
+          fetch('http://localhost:3001/api/market'),
+          fetch('http://localhost:3001/api/iot'),
+          fetch('http://localhost:3001/api/weather')
+        ]);
+        
+        if (marketRes.ok) {
+          const marketJson = await marketRes.json();
+          setMarketData(marketJson.data);
+        }
+        if (iotRes.ok) {
+          const iotJson = await iotRes.json();
+          setIotData(iotJson.data);
+        }
+        if (weatherRes.ok) {
+          const weatherJson = await weatherRes.json();
+          setWeather(weatherJson.data);
+        }
+      } catch (error) {
+        console.error('Error fetching API data:', error);
+      } finally {
+        setTimeout(() => setIsUpdating(false), 800);
       }
-      setTimeout(() => setIsUpdating(false), 800);
-    }, 10000);
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
 
     return () => clearInterval(interval);
   }, []);
