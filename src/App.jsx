@@ -913,8 +913,14 @@ Authorized Signature: Faida Nancy (General Director)
                   <select 
                     value={userRole} 
                     onChange={(e) => {
-                      setUserRole(e.target.value);
-                      setActiveRole('General');
+                      const newRole = e.target.value;
+                      setUserRole(newRole);
+                      
+                      if (newRole === 'Admin') setActiveRole('General');
+                      else if (newRole === 'Farmer') setActiveRole('Farmer');
+                      else if (newRole === 'NGO') setActiveRole('NGO');
+                      else if (newRole === 'Ministry') setActiveRole('Ministry');
+                      else if (newRole === 'Seller') setActiveRole('Seller');
                     }}
                     className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold text-emerald-400 cursor-pointer"
                   >
@@ -2938,7 +2944,15 @@ Authorized Signature: Faida Nancy (General Director)
       </div>
       
       <div className="p-4 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
-        {roles.map(role => {
+        {roles.filter(role => {
+          if (['About', 'Rules', 'Items', 'Contact'].includes(role.id)) return true;
+          if (userRole === 'Admin') return true;
+          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource'].includes(role.id);
+          if (userRole === 'NGO') return ['NGO'].includes(role.id);
+          if (userRole === 'Ministry') return ['Ministry'].includes(role.id);
+          if (userRole === 'Seller') return ['Seller'].includes(role.id);
+          return false;
+        }).map(role => {
           const isActive = activeRole === role.id;
           return (
             <button
@@ -2974,9 +2988,11 @@ Authorized Signature: Faida Nancy (General Director)
         .filter(role => {
           if (role.isQuickLink) return false;
           if (userRole === 'Admin') return true;
-          if (userRole === 'NGO') return role.id === 'General' || role.id === 'NGO' || role.id === 'Farmer' || role.id === 'Resource';
-          if (userRole === 'Farmer') return role.id === 'General' || role.id === 'Farmer' || role.id === 'Seller' || role.id === 'Resource';
-          return role.id === 'General' || role.id === userRole || role.id === 'Resource';
+          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource'].includes(role.id);
+          if (userRole === 'NGO') return ['NGO'].includes(role.id);
+          if (userRole === 'Ministry') return ['Ministry'].includes(role.id);
+          if (userRole === 'Seller') return ['Seller'].includes(role.id);
+          return false;
         })
         .map(role => {
           const isActive = activeRole === role.id;
