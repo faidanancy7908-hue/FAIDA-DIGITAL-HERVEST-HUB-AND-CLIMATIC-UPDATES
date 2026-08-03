@@ -129,7 +129,9 @@ const TRANSLATIONS = {
 };
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try { return localStorage.getItem('faida_auth') === 'true'; } catch { return false; }
+  });
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
   const [isUpdating, setIsUpdating] = useState(false);
   const [weather, setWeather] = useState(WEATHER_CONDITIONS[0]);
@@ -137,7 +139,7 @@ export default function App() {
   const [cropType, setCropType] = useState('maize');
   const [landSize, setLandSize] = useState('');
   const [forecast, setForecast] = useState(null);
-  const [activeRole, setActiveRole] = useState('Farmer');
+  const [activeRole, setActiveRole] = useState('General');
 
   const [expandedSections, setExpandedSections] = useState({
     weather: true,
@@ -154,8 +156,15 @@ export default function App() {
 
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
-  const [userRole, setUserRole] = useState('Farmer'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
-  const [userInfo, setUserInfo] = useState(null); // Stores CEO/admin metadata
+  const [userRole, setUserRole] = useState(() => {
+    try { return localStorage.getItem('faida_role') || 'Farmer'; } catch { return 'Farmer'; }
+  });
+  const [userInfo, setUserInfo] = useState(() => {
+    try {
+      const stored = localStorage.getItem('faida_userinfo');
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
 
   const [magobaMessages, setMagobaMessages] = useState([
     { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
@@ -842,15 +851,28 @@ Authorized Signature: Faida Nancy (General Director)
   const handleLogin = (role, info = null) => {
     setUserRole(role);
     setUserInfo(info || null);
-    // Admin (CEO) starts on the Overview / General portal and can switch to any
-    if (role === 'Admin') setActiveRole('General');
-    else if (role === 'Farmer') setActiveRole('Farmer');
-    else if (role === 'NGO') setActiveRole('NGO');
-    else if (role === 'Ministry') setActiveRole('Ministry');
-    else if (role === 'Seller') setActiveRole('Seller');
-    else setActiveRole('General');
-
+    // Everyone lands on the Overview (General) page after login
+    setActiveRole('General');
     setIsAuthenticated(true);
+    // Persist session so GitHub Pages reload keeps user logged in
+    try {
+      localStorage.setItem('faida_auth', 'true');
+      localStorage.setItem('faida_role', role);
+      if (info) localStorage.setItem('faida_userinfo', JSON.stringify(info));
+      else localStorage.removeItem('faida_userinfo');
+    } catch {}
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole('Farmer');
+    setUserInfo(null);
+    setActiveRole('General');
+    try {
+      localStorage.removeItem('faida_auth');
+      localStorage.removeItem('faida_role');
+      localStorage.removeItem('faida_userinfo');
+    } catch {}
   };
 
   // Portals the current user is allowed to see in the switcher
@@ -923,6 +945,7 @@ Authorized Signature: Faida Nancy (General Director)
               <Download size={14} /> Install App
             </button>
 
+
             {isAdmin ? (
               <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest">
                 <Crown size={11} className="animate-pulse" /> CEO Access
@@ -932,6 +955,14 @@ Authorized Signature: Faida Nancy (General Director)
                 <Sparkles size={11} className="animate-pulse" /> Live Monitoring
               </div>
             )}
+
+            {/* Sign Out */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-wider transition-all"
+            >
+              <X size={13} /> Sign Out
+            </button>
           </div>
         </header>
 
