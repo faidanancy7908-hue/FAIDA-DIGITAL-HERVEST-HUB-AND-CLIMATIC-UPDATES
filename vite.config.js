@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['apple-touch-icon.png'],
+      includeAssets: ['apple-touch-icon.png', 'farm_logo.png', 'bountiful_harvest.png', 'farmer_garden_yield.png', 'pwa-192x192.png', 'pwa-512x512.png', 'favicon.svg'],
       manifest: {
         name: 'FAIDA Harvest Hub',
         short_name: 'Harvest Hub',

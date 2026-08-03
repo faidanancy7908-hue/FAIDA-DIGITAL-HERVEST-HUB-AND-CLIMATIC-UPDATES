@@ -38,8 +38,10 @@ import {
   Menu,
   Info,
   Package,
-  ChevronDown
+  ChevronDown,
+  Crown
 } from 'lucide-react';
+import AuthScreen from './AuthScreen';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -127,6 +129,7 @@ const TRANSLATIONS = {
 };
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
   const [isUpdating, setIsUpdating] = useState(false);
   const [weather, setWeather] = useState(WEATHER_CONDITIONS[0]);
@@ -152,6 +155,7 @@ export default function App() {
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
   const [userRole, setUserRole] = useState('Farmer'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
+  const [userInfo, setUserInfo] = useState(null); // Stores CEO/admin metadata
 
   const [magobaMessages, setMagobaMessages] = useState([
     { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
@@ -835,6 +839,35 @@ Authorized Signature: Faida Nancy (General Director)
     }
   ];
 
+  const handleLogin = (role, info = null) => {
+    setUserRole(role);
+    setUserInfo(info || null);
+    // Admin (CEO) starts on the Overview / General portal and can switch to any
+    if (role === 'Admin') setActiveRole('General');
+    else if (role === 'Farmer') setActiveRole('Farmer');
+    else if (role === 'NGO') setActiveRole('NGO');
+    else if (role === 'Ministry') setActiveRole('Ministry');
+    else if (role === 'Seller') setActiveRole('Seller');
+    else setActiveRole('General');
+
+    setIsAuthenticated(true);
+  };
+
+  // Portals the current user is allowed to see in the switcher
+  const ALL_PORTALS = [
+    { id: 'General',  label: 'Overview',     color: 'text-slate-300' },
+    { id: 'Farmer',   label: 'Farmer',        color: 'text-emerald-400' },
+    { id: 'Seller',   label: 'Seller',         color: 'text-amber-400' },
+    { id: 'NGO',      label: 'NGO',            color: 'text-blue-400' },
+    { id: 'Ministry', label: 'Ministry',       color: 'text-purple-400' },
+    { id: 'Resource', label: 'Resources',      color: 'text-rose-400' },
+  ];
+  const isAdmin = userRole === 'Admin';
+
+  if (!isAuthenticated) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-50 p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30">
       <div className="max-w-7xl mx-auto">
@@ -863,15 +896,42 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           <div className="flex items-center gap-2">
+            {/* Admin/CEO Portal Switcher */}
+            {isAdmin && (
+              <div className="hidden md:flex items-center gap-1 bg-slate-900/80 rounded-xl px-2 py-1 border border-amber-500/30">
+                <Crown size={12} className="text-amber-400 mr-1" />
+                {ALL_PORTALS.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setActiveRole(p.id)}
+                    className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
+                      activeRole === p.id
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                        : `${p.color} hover:bg-slate-800`
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <button 
               onClick={handleInstallClick} 
               className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 mr-2"
             >
               <Download size={14} /> Install App
             </button>
-            <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-              <Sparkles size={11} className="animate-pulse" /> Live Monitoring
-            </div>
+
+            {isAdmin ? (
+              <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest">
+                <Crown size={11} className="animate-pulse" /> CEO Access
+              </div>
+            ) : (
+              <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                <Sparkles size={11} className="animate-pulse" /> Live Monitoring
+              </div>
+            )}
           </div>
         </header>
 
@@ -915,7 +975,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </text>
                     <text fill="#fbbf24" className="text-[9px] font-black uppercase tracking-[0.15em] opacity-90" textAnchor="middle">
                       <textPath href="#textCircleBottomSidebar" startOffset="50%">
-                        Agriculture & Climate Resolution
+                        Agriculture &amp; Climate Resolution
                       </textPath>
                     </text>
                     <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1" strokeDasharray="4 4" />
@@ -925,9 +985,22 @@ Authorized Signature: Faida Nancy (General Director)
 
               {/* Branding Text & Metadata - Centered Below Logo */}
               <div className="space-y-3 w-full">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mx-auto">
-                  <Sparkles size={11} /> {greeting}, System {userRole}
-                </div>
+                {/* CEO/Admin personalised greeting */}
+                {isAdmin ? (
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-black uppercase tracking-widest mx-auto">
+                      <Crown size={12} className="text-amber-400" />
+                      {greeting}, {userInfo?.displayName || 'Faida Nancy'}
+                    </div>
+                    <p className="text-[9px] text-amber-500/70 font-bold uppercase tracking-widest">
+                      {userInfo?.title || 'Managing Director / CEO / Supervisor'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mx-auto">
+                    <Sparkles size={11} /> {greeting}, System {userRole}
+                  </div>
+                )}
                 
                 <div>
                   <h1 className="text-xl font-black tracking-tight text-white uppercase leading-none">
@@ -939,30 +1012,31 @@ Authorized Signature: Faida Nancy (General Director)
                   </div>
                 </div>
 
-                {/* Switch User Role Selector (Demo) */}
-                <div className="w-full mt-2 p-2 bg-slate-900/60 rounded-xl border border-slate-800 flex flex-col gap-1 text-left relative z-10">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-500 block pl-1">Switch User Role (Demo)</label>
-                  <select 
-                    value={userRole} 
-                    onChange={(e) => {
-                      const newRole = e.target.value;
-                      setUserRole(newRole);
-                      
-                      if (newRole === 'Admin') setActiveRole('General');
-                      else if (newRole === 'Farmer') setActiveRole('Farmer');
-                      else if (newRole === 'NGO') setActiveRole('NGO');
-                      else if (newRole === 'Ministry') setActiveRole('Ministry');
-                      else if (newRole === 'Seller') setActiveRole('Seller');
-                    }}
-                    className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold text-emerald-400 cursor-pointer"
-                  >
-                    <option value="Admin" className="bg-slate-900 text-emerald-400 font-bold">System Administrator</option>
-                    <option value="NGO" className="bg-slate-900 text-emerald-400 font-bold">NGO Representative</option>
-                    <option value="Farmer" className="bg-slate-900 text-emerald-400 font-bold">Partner Farmer</option>
-                    <option value="Seller" className="bg-slate-900 text-emerald-400 font-bold">Market Seller</option>
-                    <option value="Ministry" className="bg-slate-900 text-emerald-400 font-bold">Ministry Official</option>
-                  </select>
-                </div>
+                {/* Switch User Role Selector — hidden for CEO/Admin who uses the header portal switcher */}
+                {!isAdmin && (
+                  <div className="w-full mt-2 p-2 bg-slate-900/60 rounded-xl border border-slate-800 flex flex-col gap-1 text-left relative z-10">
+                    <label className="text-[8px] font-black uppercase tracking-widest text-slate-500 block pl-1">Switch User Role (Demo)</label>
+                    <select 
+                      value={userRole} 
+                      onChange={(e) => {
+                        const newRole = e.target.value;
+                        setUserRole(newRole);
+                        if (newRole === 'Admin') setActiveRole('General');
+                        else if (newRole === 'Farmer') setActiveRole('Farmer');
+                        else if (newRole === 'NGO') setActiveRole('NGO');
+                        else if (newRole === 'Ministry') setActiveRole('Ministry');
+                        else if (newRole === 'Seller') setActiveRole('Seller');
+                      }}
+                      className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold text-emerald-400 cursor-pointer"
+                    >
+                      <option value="Admin" className="bg-slate-900 text-emerald-400 font-bold">System Administrator</option>
+                      <option value="NGO" className="bg-slate-900 text-emerald-400 font-bold">NGO Representative</option>
+                      <option value="Farmer" className="bg-slate-900 text-emerald-400 font-bold">Partner Farmer</option>
+                      <option value="Seller" className="bg-slate-900 text-emerald-400 font-bold">Market Seller</option>
+                      <option value="Ministry" className="bg-slate-900 text-emerald-400 font-bold">Ministry Official</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {/* Added Images */}
@@ -2522,9 +2596,6 @@ Authorized Signature: Faida Nancy (General Director)
                   <button onClick={() => handleDownload('Ecosystem Status Audit Report', generateEcosystemReportContent(), 'doc')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl transition-all border border-slate-700/50 active:scale-95 shadow-lg">
                     <Download size={16} /> Download Report
                   </button>
-                  <button onClick={() => alert('API Key Generation: Access restricted to authorized stakeholders.')} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all">
-                    <Code size={16} /> Generate API Key
-                  </button>
                 </div>
               </section>
             </div>
@@ -2979,10 +3050,10 @@ Authorized Signature: Faida Nancy (General Director)
         {roles.filter(role => {
           if (['About', 'Rules', 'Items', 'Contact'].includes(role.id)) return true;
           if (userRole === 'Admin') return true;
-          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource'].includes(role.id);
-          if (userRole === 'NGO') return ['NGO'].includes(role.id);
-          if (userRole === 'Ministry') return ['Ministry'].includes(role.id);
-          if (userRole === 'Seller') return ['Seller'].includes(role.id);
+          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource', 'NGO', 'Ministry'].includes(role.id);
+          if (userRole === 'NGO') return ['General', 'NGO', 'Resource', 'Ministry'].includes(role.id);
+          if (userRole === 'Ministry') return ['General', 'Ministry', 'Resource', 'NGO'].includes(role.id);
+          if (userRole === 'Seller') return ['General', 'Seller', 'Resource', 'NGO', 'Ministry'].includes(role.id);
           return false;
         }).map(role => {
           const isActive = activeRole === role.id;
@@ -3020,10 +3091,10 @@ Authorized Signature: Faida Nancy (General Director)
         .filter(role => {
           if (role.isQuickLink) return false;
           if (userRole === 'Admin') return true;
-          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource'].includes(role.id);
-          if (userRole === 'NGO') return ['NGO'].includes(role.id);
-          if (userRole === 'Ministry') return ['Ministry'].includes(role.id);
-          if (userRole === 'Seller') return ['Seller'].includes(role.id);
+          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource', 'NGO', 'Ministry'].includes(role.id);
+          if (userRole === 'NGO') return ['General', 'NGO', 'Resource', 'Ministry'].includes(role.id);
+          if (userRole === 'Ministry') return ['General', 'Ministry', 'Resource', 'NGO'].includes(role.id);
+          if (userRole === 'Seller') return ['General', 'Seller', 'Resource', 'NGO', 'Ministry'].includes(role.id);
           return false;
         })
         .map(role => {
