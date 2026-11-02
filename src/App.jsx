@@ -129,9 +129,7 @@ const TRANSLATIONS = {
 };
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try { return localStorage.getItem('faida_auth') === 'true'; } catch { return false; }
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
   const [isUpdating, setIsUpdating] = useState(false);
   const [weather, setWeather] = useState(WEATHER_CONDITIONS[0]);
@@ -139,7 +137,7 @@ export default function App() {
   const [cropType, setCropType] = useState('maize');
   const [landSize, setLandSize] = useState('');
   const [forecast, setForecast] = useState(null);
-  const [activeRole, setActiveRole] = useState('General');
+  const [activeRole, setActiveRole] = useState('Farmer');
 
   const [expandedSections, setExpandedSections] = useState({
     weather: true,
@@ -156,15 +154,8 @@ export default function App() {
 
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
-  const [userRole, setUserRole] = useState(() => {
-    try { return localStorage.getItem('faida_role') || 'Farmer'; } catch { return 'Farmer'; }
-  });
-  const [userInfo, setUserInfo] = useState(() => {
-    try {
-      const stored = localStorage.getItem('faida_userinfo');
-      return stored ? JSON.parse(stored) : null;
-    } catch { return null; }
-  });
+  const [userRole, setUserRole] = useState('Farmer'); // Demo Role: Admin, NGO, Farmer, Seller, Ministry
+  const [userInfo, setUserInfo] = useState(null); // Stores CEO/admin metadata
 
   const [magobaMessages, setMagobaMessages] = useState([
     { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
@@ -851,28 +842,15 @@ Authorized Signature: Faida Nancy (General Director)
   const handleLogin = (role, info = null) => {
     setUserRole(role);
     setUserInfo(info || null);
-    // Everyone lands on the Overview (General) page after login
-    setActiveRole('General');
-    setIsAuthenticated(true);
-    // Persist session so GitHub Pages reload keeps user logged in
-    try {
-      localStorage.setItem('faida_auth', 'true');
-      localStorage.setItem('faida_role', role);
-      if (info) localStorage.setItem('faida_userinfo', JSON.stringify(info));
-      else localStorage.removeItem('faida_userinfo');
-    } catch {}
-  };
+    // Admin (CEO) starts on the Overview / General portal and can switch to any
+    if (role === 'Admin') setActiveRole('General');
+    else if (role === 'Farmer') setActiveRole('Farmer');
+    else if (role === 'NGO') setActiveRole('NGO');
+    else if (role === 'Ministry') setActiveRole('Ministry');
+    else if (role === 'Seller') setActiveRole('Seller');
+    else setActiveRole('General');
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserRole('Farmer');
-    setUserInfo(null);
-    setActiveRole('General');
-    try {
-      localStorage.removeItem('faida_auth');
-      localStorage.removeItem('faida_role');
-      localStorage.removeItem('faida_userinfo');
-    } catch {}
+    setIsAuthenticated(true);
   };
 
   // Portals the current user is allowed to see in the switcher
@@ -945,7 +923,6 @@ Authorized Signature: Faida Nancy (General Director)
               <Download size={14} /> Install App
             </button>
 
-
             {isAdmin ? (
               <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest">
                 <Crown size={11} className="animate-pulse" /> CEO Access
@@ -955,14 +932,6 @@ Authorized Signature: Faida Nancy (General Director)
                 <Sparkles size={11} className="animate-pulse" /> Live Monitoring
               </div>
             )}
-
-            {/* Sign Out */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-wider transition-all"
-            >
-              <X size={13} /> Sign Out
-            </button>
           </div>
         </header>
 
@@ -1073,8 +1042,8 @@ Authorized Signature: Faida Nancy (General Director)
               {/* Added Images */}
               <div className="w-full flex flex-col gap-4 mt-6">
                 <h2 className="text-lg text-emerald-400 font-bold tracking-widest uppercase text-center">Harvest Visuals</h2>
-                <img src="/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/bountiful_harvest.png" alt="Bountiful Harvest" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
-                <img src="/FAIDA-DIGITAL-HERVEST-HUB-AND-CLIMATIC-UPDATES/farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
+                <img src="bountiful_harvest.png" alt="Bountiful Harvest" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
+                <img src="farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
               </div>
 
               {/* Divider Line */}
@@ -1086,14 +1055,18 @@ Authorized Signature: Faida Nancy (General Director)
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact & Mobile Entry</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <a href="tel:*672*001#" className="flex items-center justify-between bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-amber-500/50 transition-all">
+                  <button 
+                    onClick={() => handleDownload('MTN_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
+                    className="flex items-center justify-between w-full bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-amber-500/50 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
                     <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
-                  </a>
-                  <a href="tel:*818*3*5#" className="flex items-center justify-between bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-red-500/50 transition-all">
+                  </button>
+                  <button 
+                    onClick={() => handleDownload('Airtel_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
+                    className="flex items-center justify-between w-full bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-red-500/50 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
                     <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
-                  </a>
+                  </button>
                 </div>
                 
                 {/* QR Code and link */}
@@ -3120,12 +3093,12 @@ Authorized Signature: Faida Nancy (General Director)
     <div className="max-w-5xl mx-auto flex justify-around items-center gap-1 overflow-x-auto custom-scrollbar">
       {roles
         .filter(role => {
+          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource', 'Seller', 'About', 'Contact'].includes(role.id);
           if (role.isQuickLink) return false;
           if (userRole === 'Admin') return true;
-          if (userRole === 'Farmer') return ['General', 'Farmer', 'Resource', 'NGO', 'Ministry'].includes(role.id);
-          if (userRole === 'NGO') return ['General', 'NGO', 'Resource', 'Ministry'].includes(role.id);
-          if (userRole === 'Ministry') return ['General', 'Ministry', 'Resource', 'NGO'].includes(role.id);
-          if (userRole === 'Seller') return ['General', 'Seller', 'Resource', 'NGO', 'Ministry'].includes(role.id);
+          if (userRole === 'NGO') return ['General', 'NGO', 'Resource'].includes(role.id);
+          if (userRole === 'Ministry') return ['General', 'Ministry', 'Resource'].includes(role.id);
+          if (userRole === 'Seller') return ['General', 'Seller', 'Resource'].includes(role.id);
           return false;
         })
         .map(role => {
