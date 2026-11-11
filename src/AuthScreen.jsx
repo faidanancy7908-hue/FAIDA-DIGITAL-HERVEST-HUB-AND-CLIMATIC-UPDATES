@@ -15,7 +15,7 @@ const ROLES = [
 const COLOR_MAP = {
   emerald: { active: 'bg-emerald-500/20 border-emerald-500 text-emerald-400', hover: 'hover:border-emerald-700 hover:text-emerald-400' },
   amber:   { active: 'bg-amber-500/20 border-amber-500 text-amber-400',     hover: 'hover:border-amber-700 hover:text-amber-400' },
-  blue:    { active: 'bg-blue-500/20 border-blue-500 text-blue-400',         hover: 'hover:border-blue-700 hover:text-blue-400' },
+  blue:    { active: 'bg-white/20 border-white/50 text-white',               hover: 'hover:border-white/40 hover:text-white' },
   purple:  { active: 'bg-purple-500/20 border-purple-500 text-purple-400',   hover: 'hover:border-purple-700 hover:text-purple-400' },
   slate:   { active: 'bg-slate-500/20 border-slate-400 text-slate-300',      hover: 'hover:border-slate-500 hover:text-slate-300' },
 };
@@ -48,12 +48,18 @@ export default function AuthScreen({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-emerald-500/30" style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 40%, #f0f9ff 100%)'}}>
+      {/* African Farm Background Images */}
+      <div className="absolute inset-0 z-0">
+        <img src="bountiful_harvest.png" alt="" className="absolute top-0 left-0 w-1/2 h-full object-cover opacity-20" />
+        <img src="african_women_harvest.png" alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60"></div>
+      </div>
       <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
-      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"></div>
+      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-emerald-300/10 rounded-full blur-[100px]"></div>
       
       <div className="w-full max-w-md relative z-10">
-        <div className="glass-panel p-8 rounded-3xl border border-slate-800 shadow-2xl bg-slate-950/60 backdrop-blur-xl">
+        <div className="glass-panel p-8 rounded-3xl border border-emerald-200/60 shadow-2xl bg-white/80 backdrop-blur-xl">
           
           {/* Logo & Title */}
           <div className="flex flex-col items-center mb-8">
@@ -64,14 +70,14 @@ export default function AuthScreen({ onLogin }) {
                 className="absolute inset-0 w-full h-full object-cover object-bottom"
               />
             </div>
-            <h1 className="text-2xl font-black uppercase tracking-wider text-white text-center">FAIDA Harvest Hub</h1>
-            <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
+            <h1 className="text-2xl font-black uppercase tracking-wider text-slate-800 text-center">FAIDA Harvest Hub</h1>
+            <p className="text-emerald-600 text-xs font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
               <ShieldCheck size={14} /> Secure Access
             </p>
           </div>
 
           {/* Sign In / Register Toggle */}
-          <div className="flex bg-slate-900 rounded-xl p-1 mb-6 border border-slate-800">
+          <div className="flex bg-white/50 rounded-xl p-1 mb-6 border border-emerald-200">
             <button
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${isLogin ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
