@@ -23,6 +23,7 @@ const COLOR_MAP = {
 export default function AuthScreen({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('Farmer');
@@ -42,9 +43,9 @@ export default function AuthScreen({ onLogin }) {
       return;
     }
 
-    // For Sign In: use the role the user picked
-    // For Register: same
-    onLogin(role, { email });
+    // Pass display name for personalized greeting
+    const displayName = name.trim() || email.split('@')[0];
+    onLogin(role, { email, displayName });
   };
 
   return (
@@ -94,6 +95,23 @@ export default function AuthScreen({ onLogin }) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             
+            {/* Full Name — always shown */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Your Full Name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User size={16} className="text-slate-500" />
+                </div>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-600"
+                  placeholder="e.g. Achan Florence"
+                />
+              </div>
+            </div>
+
             {/* Email */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Email or Phone Contact</label>

@@ -1040,8 +1040,8 @@ Authorized Signature: Faida Nancy (General Director)
                     </p>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mx-auto">
-                    <Sparkles size={11} /> {greeting}, System {userRole}
+                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mx-auto">
+                    <Sparkles size={11} /> {greeting}, {userInfo?.displayName || 'Valued User'} 👋
                   </div>
                 )}
                 
@@ -2558,6 +2558,53 @@ Authorized Signature: Faida Nancy (General Director)
 
           {activeRole === 'Farmer' && (
             <div className="space-y-4">
+              {/* ════════════════════════════════════════════
+                  FARMER PAGE — QUICK NAVIGATION MENU
+              ════════════════════════════════════════════ */}
+              <div className="glass-panel p-4 border-l-4 border-l-emerald-500">
+                <details className="group">
+                  <summary className="flex items-center justify-between cursor-pointer list-none select-none py-1">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📋</span>
+                      <div>
+                        <h2 className="text-base font-black uppercase tracking-widest text-emerald-400">Page Navigation</h2>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Click to jump to any section</p>
+                      </div>
+                    </div>
+                    <ChevronDown className="text-emerald-400 w-5 h-5 transition-transform duration-300 group-open:rotate-180 shrink-0" />
+                  </summary>
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-4 border-t border-slate-700/40">
+                    {[
+                      { id: 'weather-section',         icon: '🌤️', label: 'Weather & IoT Sensors',       desc: 'Live climate & soil alerts' },
+                      { id: 'planning-section',         icon: '📅', label: 'Crop Planning Calendar',      desc: 'Planting & seasonal schedules' },
+                      { id: 'guidelines-section',       icon: '📖', label: 'Farmer Guidelines & IPM',     desc: 'Best practices & pest management' },
+                      { id: 'resource-center',          icon: '📦', label: 'Resource Center',             desc: 'Tools, seeds & input requests' },
+                      { id: 'tools-section',            icon: '🛠️', label: 'Smart Farming Tools',         desc: 'Calculators & spray planners' },
+                      { id: 'market-section',           icon: '📈', label: 'Market Prices',               desc: 'Live commodity prices & trends' },
+                      { id: 'magoba-ai-section',        icon: '🤖', label: 'FANCY AI Assistant',          desc: 'Disease, pest & weather help' },
+                      { id: 'applications-list-farmer', icon: '📝', label: 'My Applications',             desc: 'Track support requests' },
+                      { id: 'disease-section',          icon: '🌿', label: 'Crop Disease Guide',          desc: 'Identify & treat crop diseases' },
+                    ].map(({ id, icon, label, desc }) => (
+                      <button
+                        key={id}
+                        onClick={() => {
+                          const el = document.getElementById(id);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 hover:bg-emerald-500/10 border border-slate-700/40 hover:border-emerald-500/40 transition-all text-left group/nav w-full"
+                      >
+                        <span className="text-lg shrink-0">{icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-200 group-hover/nav:text-emerald-400 transition-colors leading-tight truncate">{label}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5 leading-tight truncate">{desc}</p>
+                        </div>
+                        <ArrowRight className="text-slate-600 group-hover/nav:text-emerald-400 w-3 h-3 shrink-0 transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </details>
+              </div>
+
               {/* FANCY AI Assistant Section */}
               <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-white/40 relative overflow-hidden group">
                 <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('magoba')}>

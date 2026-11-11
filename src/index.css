@@ -2,156 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  min-height: 100vh;
-  font-family: 'Inter', sans-serif;
-  transition: background 0.5s ease, color 0.3s ease;
-}
+/* ═══════════════════════════════════════════════════════════════
+   FAIDA DIGITAL CLIMATE RESPONSE — Global Styles
+   Professional Agricultural Management Platform
+═══════════════════════════════════════════════════════════════ */
 
-/* ── Dark mode: light Tailwind classes stay as intended ──────────────── */
-html.dark .text-white {
-  color: #ffffff;
-}
+/* ── Custom Scrollbar ──────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.6); }
 
-html.dark .text-slate-50 {
-  color: #f8fafc;
-}
-
-html.dark .text-slate-100 {
-  color: #f1f5f9;
-}
-
-html.dark .text-slate-200 {
-  color: #e2e8f0;
-}
-
-html.dark .text-slate-300 {
-  color: #cbd5e1;
-}
-
-html.dark .text-slate-400 {
-  color: #94a3b8;
-}
-
-html.dark .text-slate-500 {
-  color: #64748b;
-}
-
-/* ── Light mode: remap light classes to dark readable ink ───────────── */
-html.light .text-white {
-  color: #0f172a;
-}
-
-html.light .text-slate-50 {
-  color: #0f172a;
-}
-
-html.light .text-slate-100 {
-  color: #1e293b;
-}
-
-html.light .text-slate-200 {
-  color: #1e293b;
-}
-
-html.light .text-slate-300 {
-  color: #334155;
-}
-
-html.light .text-slate-400 {
-  color: #475569;
-}
-
-html.light .text-slate-500 {
-  color: #64748b;
-}
-
-html.light .text-gray-50 {
-  color: #0f172a;
-}
-
-html.light .text-gray-100 {
-  color: #1e293b;
-}
-
-html.light .text-gray-200 {
-  color: #1e293b;
-}
-
-html.light .text-gray-300 {
-  color: #374151;
-}
-
-html.light .text-gray-400 {
-  color: #4b5563;
-}
-
-/* ── Coloured containers always keep white text regardless of mode ───── */
-[class*="bg-white/"] .text-white,
-[class*="bg-white/"] .text-slate-50,
-[class*="bg-white/"] .text-slate-100,
-[class*="bg-white/"] .text-slate-200,
-[class*="bg-white/"] .text-slate-300,
-[class*="bg-slate-9"] .text-white,
-[class*="bg-slate-9"] .text-slate-100,
-[class*="bg-slate-9"] .text-slate-200,
-[class*="bg-slate-9"] .text-slate-300,
-[class*="bg-slate-8"] .text-white,
-[class*="bg-slate-8"] .text-slate-100,
-[class*="bg-slate-8"] .text-slate-200,
-[class*="bg-slate-8"] .text-slate-300,
-[class*="bg-emerald-"] .text-white,
-[class*="bg-amber-"] .text-white,
-[class*="bg-red-"] .text-white,
-[class*="bg-green-"] .text-white {
-  color: #ffffff !important;
-}
-
-button[class*="bg-emerald"],
-button[class*="bg-white"],
-button[class*="bg-red"],
-button[class*="bg-amber"] {
-  color: #ffffff !important;
-}
-
-/* ── glass-panel adapts to current mode ──────────────────────────────── */
+/* ── Glass Panel — Core UI card component ──────────────────── */
 html.dark .glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 3rem;
+  background: rgba(15, 23, 42, 0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+html.dark .glass-panel:hover {
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
 }
 
 html.light .glass-panel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 3rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  color: #0f172a;
+}
+html.light .glass-panel:hover {
+  box-shadow: 0 6px 30px rgba(0,0,0,0.10);
+  border-color: rgba(16,185,129,0.30);
 }
 
-/* Default (before JS loads) */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 3rem;
+/* ── Light mode text overrides ─────────────────────────────── */
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-slate-300 { color: #1e293b; }
+html.light .text-slate-400,
+html.light .text-slate-500 { color: #475569; }
+html.light .text-white     { color: #0f172a; }
+
+/* ── Button text — always readable on colored backgrounds ───── */
+[class*="bg-emerald-"] .text-white,
+[class*="bg-amber-"]   .text-white,
+[class*="bg-red-"]     .text-white,
+[class*="bg-purple-"]  .text-white,
+[class*="bg-white/"]   .text-white { color: #ffffff !important; }
+
+html.light [class*="bg-emerald-"] .text-white,
+html.light [class*="bg-amber-"]   .text-white { color: #ffffff !important; }
+
+button[class*="bg-emerald"],
+button[class*="bg-amber"],
+button[class*="bg-red"],
+button[class*="bg-purple"] { color: #ffffff !important; }
+
+/* ── Smooth section transitions ────────────────────────────── */
+.section-transition {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Details/Summary dropdown arrow hide ───────────────────── */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+/* ── Fade-in animation ─────────────────────────────────────── */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ── Professional typography ───────────────────────────────── */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+/* ── Shimmer loading effect ────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
-
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
