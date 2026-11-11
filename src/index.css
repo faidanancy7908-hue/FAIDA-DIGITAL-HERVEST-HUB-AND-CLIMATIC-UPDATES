@@ -3,24 +3,155 @@
 @tailwind utilities;
 
 body {
-  background: linear-gradient(135deg, #1F2937 0%, #0f172a 100%);
-  color: #f8fafc;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  transition: background 0.5s ease, color 0.3s ease;
 }
 
+/* ── Dark mode: light Tailwind classes stay as intended ──────────────── */
+html.dark .text-white {
+  color: #ffffff;
+}
+
+html.dark .text-slate-50 {
+  color: #f8fafc;
+}
+
+html.dark .text-slate-100 {
+  color: #f1f5f9;
+}
+
+html.dark .text-slate-200 {
+  color: #e2e8f0;
+}
+
+html.dark .text-slate-300 {
+  color: #cbd5e1;
+}
+
+html.dark .text-slate-400 {
+  color: #94a3b8;
+}
+
+html.dark .text-slate-500 {
+  color: #64748b;
+}
+
+/* ── Light mode: remap light classes to dark readable ink ───────────── */
+html.light .text-white {
+  color: #0f172a;
+}
+
+html.light .text-slate-50 {
+  color: #0f172a;
+}
+
+html.light .text-slate-100 {
+  color: #1e293b;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b;
+}
+
+html.light .text-slate-300 {
+  color: #334155;
+}
+
+html.light .text-slate-400 {
+  color: #475569;
+}
+
+html.light .text-slate-500 {
+  color: #64748b;
+}
+
+html.light .text-gray-50 {
+  color: #0f172a;
+}
+
+html.light .text-gray-100 {
+  color: #1e293b;
+}
+
+html.light .text-gray-200 {
+  color: #1e293b;
+}
+
+html.light .text-gray-300 {
+  color: #374151;
+}
+
+html.light .text-gray-400 {
+  color: #4b5563;
+}
+
+/* ── Coloured containers always keep white text regardless of mode ───── */
+[class*="bg-white/"] .text-white,
+[class*="bg-white/"] .text-slate-50,
+[class*="bg-white/"] .text-slate-100,
+[class*="bg-white/"] .text-slate-200,
+[class*="bg-white/"] .text-slate-300,
+[class*="bg-slate-9"] .text-white,
+[class*="bg-slate-9"] .text-slate-100,
+[class*="bg-slate-9"] .text-slate-200,
+[class*="bg-slate-9"] .text-slate-300,
+[class*="bg-slate-8"] .text-white,
+[class*="bg-slate-8"] .text-slate-100,
+[class*="bg-slate-8"] .text-slate-200,
+[class*="bg-slate-8"] .text-slate-300,
+[class*="bg-emerald-"] .text-white,
+[class*="bg-amber-"] .text-white,
+[class*="bg-red-"] .text-white,
+[class*="bg-green-"] .text-white {
+  color: #ffffff !important;
+}
+
+button[class*="bg-emerald"],
+button[class*="bg-white"],
+button[class*="bg-red"],
+button[class*="bg-amber"] {
+  color: #ffffff !important;
+}
+
+/* ── glass-panel adapts to current mode ──────────────────────────────── */
+html.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3rem;
+}
+
+html.light .glass-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 3rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* Default (before JS loads) */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 3rem;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
+

@@ -39,7 +39,8 @@ import {
   Info,
   Package,
   ChevronDown,
-  Crown
+  Crown,
+  Moon
 } from 'lucide-react';
 import AuthScreen from './AuthScreen';
 
@@ -133,6 +134,31 @@ export default function App() {
   const [marketData, setMarketData] = useState(INITIAL_MARKET_DATA);
   const [isUpdating, setIsUpdating] = useState(false);
   const [weather, setWeather] = useState(WEATHER_CONDITIONS[0]);
+
+  // ── Dark / Light mode ──────────────────────────────────────────────────
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('faida-theme');
+    return saved ? saved === 'dark' : true; // default: dark
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      document.body.style.background = 'linear-gradient(160deg,#0f1f17 0%,#111827 50%,#0d1b2a 100%)';
+      document.body.style.color = '#e2e8f0';
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+      document.body.style.background = '#ffffff';
+      document.body.style.color = '#0f172a';
+    }
+    localStorage.setItem('faida-theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(prev => !prev);
+  // ───────────────────────────────────────────────────────────────────────
   
   const [cropType, setCropType] = useState('maize');
   const [landSize, setLandSize] = useState('');
@@ -148,9 +174,12 @@ export default function App() {
     resource: true,
     tools: true,
     applications: true,
-    magoba: true
+    magoba: true,
+    disease: false
   });
   const toggleSection = (section) => setExpandedSections(p => ({...p, [section]: !p[section]}));
+
+  const [diseaseTab, setDiseaseTab] = useState('fungal'); // fungal | bacterial | viral | nematode | crops | weather
 
   const [greeting, setGreeting] = useState('Welcome');
   const [selectedTool, setSelectedTool] = useState(null);
@@ -158,7 +187,7 @@ export default function App() {
   const [userInfo, setUserInfo] = useState(null); // Stores CEO/admin metadata
 
   const [magobaMessages, setMagobaMessages] = useState([
-    { sender: 'magoba', text: 'Hello! I am MAGOBA, your agricultural AI assistant. How can I help you today? I can advise on weather, pests, soil nutrients, or farming tools.' }
+    { sender: 'magoba', text: 'Hello! I am FANCY AI ✨, your expert agricultural intelligence. Ask me about crop diseases, weather-based farming actions, pest control, soil health, or any farming question!' }
   ]);
   const [magobaInput, setMagobaInput] = useState('');
   
@@ -215,7 +244,7 @@ export default function App() {
 
       setMagobaMessages([...newMessages, newMagobaMsg]);
     } catch (err) {
-      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA API servers." }]);
+      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA API servers. Please try again shortly." }]);
     }
   };
 
@@ -858,7 +887,7 @@ Authorized Signature: Faida Nancy (General Director)
     { id: 'General',  label: 'Overview',     color: 'text-slate-300' },
     { id: 'Farmer',   label: 'Farmer',        color: 'text-emerald-400' },
     { id: 'Seller',   label: 'Seller',         color: 'text-amber-400' },
-    { id: 'NGO',      label: 'NGO',            color: 'text-blue-400' },
+    { id: 'NGO',      label: 'NGO',            color: 'text-white' },
     { id: 'Ministry', label: 'Ministry',       color: 'text-purple-400' },
     { id: 'Resource', label: 'Resources',      color: 'text-rose-400' },
   ];
@@ -869,7 +898,7 @@ Authorized Signature: Faida Nancy (General Director)
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-50 p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30">
+    <div className={`min-h-screen p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-transparent text-slate-100' : 'bg-white text-slate-900'}`}>
       <div className="max-w-7xl mx-auto">
         {/* Global Top Header */}
         <header className="w-full flex items-center justify-between p-4 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-slate-800/80 mb-4 sticky top-4 z-[80]">
@@ -889,7 +918,7 @@ Authorized Signature: Faida Nancy (General Director)
           {activeRole === 'General' && (
             <nav className="hidden md:flex items-center gap-2">
               <button onClick={() => setActiveRole('About')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-full transition-all">About Us</button>
-              <button onClick={() => setActiveRole('Contact')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-blue-400 hover:bg-blue-500/10 rounded-full transition-all">Contact</button>
+              <button onClick={() => setActiveRole('Contact')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">Contact</button>
               <button onClick={() => setActiveRole('Items')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-amber-400 hover:bg-amber-500/10 rounded-full transition-all">Items</button>
               <button onClick={() => setActiveRole('Rules')} className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-red-400 hover:bg-red-500/10 rounded-full transition-all">Rules</button>
             </nav>
@@ -921,6 +950,20 @@ Authorized Signature: Faida Nancy (General Director)
               className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 mr-2"
             >
               <Download size={14} /> Install App
+            </button>
+
+            {/* ── Light / Dark Mode Toggle ── */}
+            <button
+              onClick={toggleTheme}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="p-2 rounded-xl border transition-all duration-300
+                bg-slate-800/60 border-slate-700 hover:border-amber-500/60
+                text-slate-300 hover:text-amber-400 hover:bg-slate-800"
+            >
+              {isDarkMode
+                ? <Sun size={16} className="text-amber-400" />
+                : <Moon size={16} className="text-slate-500" />
+              }
             </button>
 
             {isAdmin ? (
@@ -960,8 +1003,8 @@ Authorized Signature: Faida Nancy (General Director)
                 <div className="absolute top-2 left-2 z-20 bg-amber-500/20 p-1.5 rounded-full backdrop-blur-md border border-amber-500/30 shadow-[0_0_5px_rgba(245,158,11,0.4)]">
                   <Sun className="text-amber-400 w-5 h-5 animate-[spin_10s_linear_infinite]" />
                 </div>
-                <div className="absolute top-2 right-2 z-20 bg-blue-500/20 p-1.5 rounded-full backdrop-blur-md border border-blue-500/30 shadow-[0_0_5px_rgba(59,130,246,0.4)]">
-                  <CloudRain className="text-blue-400 w-5 h-5 animate-bounce" />
+                <div className="absolute top-2 right-2 z-20 bg-white/20 p-1.5 rounded-full backdrop-blur-md border border-white/30 shadow-[0_0_5px_rgba(255,255,255,0.4)]">
+                  <CloudRain className="text-white w-5 h-5 animate-bounce" />
                 </div>
                 <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)]"></div>
@@ -1041,9 +1084,10 @@ Authorized Signature: Faida Nancy (General Director)
 
               {/* Added Images */}
               <div className="w-full flex flex-col gap-4 mt-6">
-                <h2 className="text-lg text-emerald-400 font-bold tracking-widest uppercase text-center">Harvest Visuals</h2>
-                <img src="bountiful_harvest.png" alt="Bountiful Harvest" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
-                <img src="farmer_garden_yield.png" alt="Farmer Garden Yield" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
+                <h2 className="text-lg text-emerald-400 font-bold tracking-widest uppercase text-center">🌍 East African Harvest</h2>
+                <img src="bountiful_harvest.png" alt="African Farmers Celebrating Harvest" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
+                <img src="african_women_harvest.png" alt="African Women Farmers Harvesting" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
+                <img src="farmer_garden_yield.png" alt="African Farmer in Garden" className="w-3/4 max-w-sm mx-auto rounded-2xl shadow-xl border-2 border-emerald-500/20" />
               </div>
 
               {/* Divider Line */}
@@ -1088,7 +1132,7 @@ Authorized Signature: Faida Nancy (General Director)
                     href={PORTAL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
                   >
                     <Layout size={12} /> Public Portal Access
                   </a>
@@ -1107,7 +1151,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </a>
                     <a 
                       href="tel:0763927908" 
-                      className="flex items-center justify-center gap-2 w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2 rounded-xl text-xs font-bold transition-all"
+                      className="flex items-center justify-center gap-2 w-full bg-white/10 hover:bg-white/20 text-white border border-white/30 py-2 rounded-xl text-xs font-bold transition-all"
                     >
                       <Phone size={14} /> Call: 0763927908
                     </a>
@@ -1141,7 +1185,7 @@ Authorized Signature: Faida Nancy (General Director)
                           <Sun className="text-amber-400 w-4 h-4 animate-[spin_10s_linear_infinite]" />
                         </div>
                         <div className="absolute bottom-1 right-1 z-20">
-                          <CloudRain className="text-blue-400 w-4 h-4 animate-pulse" />
+                          <CloudRain className="text-white w-4 h-4 animate-pulse" />
                         </div>
                       </div>
 
@@ -1177,7 +1221,7 @@ Authorized Signature: Faida Nancy (General Director)
                     {activeRole === 'NGO' && (
                       <button 
                         onClick={() => document.getElementById('applications-list')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-600/20"
+                        className="flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-white/10 border border-white/30"
                       >
                         <Users size={18} /> Manage Applications
                       </button>
@@ -1211,8 +1255,8 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="absolute top-3 left-3 z-20 bg-amber-500/20 p-2.5 rounded-full backdrop-blur-md border border-amber-500/30">
                       <Sun className="text-amber-400 w-6 h-6 animate-[spin_10s_linear_infinite]" />
                     </div>
-                    <div className="absolute bottom-3 right-3 z-20 bg-blue-500/20 p-2.5 rounded-full backdrop-blur-md border border-blue-500/30">
-                      <CloudRain className="text-blue-400 w-6 h-6 animate-bounce" />
+                    <div className="absolute bottom-3 right-3 z-20 bg-white/20 p-2.5 rounded-full backdrop-blur-md border border-white/30">
+                      <CloudRain className="text-white w-6 h-6 animate-bounce" />
                     </div>
                   </div>
 
@@ -1344,18 +1388,18 @@ Authorized Signature: Faida Nancy (General Director)
                       selectedSensorForSimulation === 'cloud' 
                         ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
                         : iotData.cloudCoverage > 70 
-                          ? 'border-blue-500/40 hover:border-blue-500/60' 
+                          ? 'border-white/40 hover:border-white/40' 
                           : 'border-slate-700 hover:border-slate-600'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Cloud Reading</div>
-                      <Cloud size={14} className={iotData.cloudCoverage > 70 ? 'text-blue-400 animate-bounce' : 'text-slate-400'} />
+                      <Cloud size={14} className={iotData.cloudCoverage > 70 ? 'text-white animate-bounce' : 'text-slate-400'} />
                     </div>
                     <div className="text-3xl font-black text-white">{iotData.cloudCoverage}%</div>
                     <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
                       iotData.cloudCoverage > 70 
-                        ? 'text-blue-400' 
+                        ? 'text-white' 
                         : iotData.cloudCoverage < 20 
                           ? 'text-amber-400' 
                           : 'text-slate-400'
@@ -1383,14 +1427,14 @@ Authorized Signature: Faida Nancy (General Director)
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Soil Moisture</div>
-                      <Droplets size={14} className={iotData.moisture < 50 ? 'text-red-400 animate-pulse' : 'text-blue-400'} />
+                      <Droplets size={14} className={iotData.moisture < 50 ? 'text-red-400 animate-pulse' : 'text-white'} />
                     </div>
                     <div className="text-3xl font-black text-white">{iotData.moisture}%</div>
                     <div className={`text-[10px] font-bold mt-2 flex items-center gap-1 ${
                       iotData.moisture < 50 
                         ? 'text-red-400' 
                         : iotData.moisture > 80 
-                          ? 'text-blue-300' 
+                          ? 'text-white' 
                           : 'text-emerald-400'
                     }`}>
                       {iotData.moisture < 50 ? (
@@ -1425,7 +1469,7 @@ Authorized Signature: Faida Nancy (General Director)
                       iotData.ambientTemp > 32 
                         ? 'text-red-400' 
                         : iotData.ambientTemp < 18 
-                          ? 'text-blue-400' 
+                          ? 'text-white' 
                           : 'text-emerald-400'
                     }`}>
                       {iotData.ambientTemp > 32 ? (
@@ -1498,7 +1542,7 @@ Authorized Signature: Faida Nancy (General Director)
                         />
                         <p className="text-xs text-slate-400 leading-relaxed">
                           {iotData.cloudCoverage > 70 ? (
-                            <span className="text-blue-400 font-bold">☁️ Dense Overcast detected. Impending rain warning is active. Minimize watering cycle.</span>
+                            <span className="text-white font-bold">☁️ Dense Overcast detected. Impending rain warning is active. Minimize watering cycle.</span>
                           ) : iotData.cloudCoverage < 20 ? (
                             <span className="text-amber-400 font-bold">☀️ High Solar Radiation. Water evaporation rates are elevated.</span>
                           ) : (
@@ -1521,7 +1565,7 @@ Authorized Signature: Faida Nancy (General Director)
                           step="5" 
                           value={iotData.moisture} 
                           onChange={(e) => setIotData(prev => ({ ...prev, moisture: parseInt(e.target.value) }))}
-                          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-400"
+                          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-white"
                         />
                         <p className="text-xs text-slate-400 leading-relaxed">
                           {iotData.moisture < 50 ? (
@@ -1573,7 +1617,7 @@ Authorized Signature: Faida Nancy (General Director)
                           {iotData.ambientTemp > 32 ? (
                             <span className="text-red-400 font-bold">⚠️ Warning: Ambient heat exceeds threshold. Deploy mulching immediately to protect root layer.</span>
                           ) : iotData.ambientTemp < 18 ? (
-                            <span className="text-blue-400 font-bold">⚠️ Warning: Cold micro-climate. Watch for potential early morning frost build-up.</span>
+                            <span className="text-white font-bold">⚠️ Warning: Cold micro-climate. Watch for potential early morning frost build-up.</span>
                           ) : (
                             <span className="text-emerald-400 font-bold">✓ Immediate climate is optimal. Ambient temperatures promote stable growth.</span>
                           )}
@@ -1677,7 +1721,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="text-slate-400 mt-1">{weather.condition}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-medium text-blue-300 flex items-center justify-end gap-1">
+                    <div className="text-2xl font-medium text-white flex items-center justify-end gap-1">
                       <Wind size={20} /> {weather.humidity}%
                     </div>
                   </div>
@@ -1726,12 +1770,16 @@ Authorized Signature: Faida Nancy (General Director)
 
               {/* Farmer Guidelines (Moved here as requested) */}
               <section id="guidelines-section" className="glass-panel p-5 space-y-4 border-l-4 border-l-emerald-500 col-span-full">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('guidelines')}>
                   <h2 className="text-xl font-bold flex items-center gap-3">
                     <Leaf size={28} className="text-emerald-400" /> Farmer Guidelines for High Yield
                   </h2>
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Expert Intelligence</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Expert Intelligence</span>
+                    <ChevronDown className={`transition-transform duration-300 text-emerald-400 ${expandedSections.guidelines ? 'rotate-180' : ''}`} />
+                  </div>
                 </div>
+                {expandedSections.guidelines && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {[
                     { title: 'Soil Vitality Management', desc: 'Perform soil tests every 6 months. Maintain PH levels between 6.0 and 7.5 for optimal nutrient absorption.', icon: Activity },
@@ -1751,7 +1799,166 @@ Authorized Signature: Faida Nancy (General Director)
                     </div>
                   ))}
                 </div>
+                )}
               </section>
+
+              {/* ══════════ CROP DISEASE & HEALTH GUIDE ══════════ */}
+              <section className="glass-panel p-5 space-y-5 border-l-4 border-l-red-500 col-span-full">
+                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('disease')}>
+                  <h2 className="text-xl font-bold flex items-center gap-3">
+                    <AlertTriangle size={26} className="text-red-400" /> Crop Disease &amp; Health Guide
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] bg-red-500/10 text-red-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-red-500/20">IPM Reference</span>
+                    <ChevronDown className={`transition-transform duration-300 text-red-400 ${expandedSections.disease ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+
+                {expandedSections.disease && (<>
+                  {/* Tab Bar */}
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: 'fungal',    label: '🍄 Fungal'      },
+                      { id: 'bacterial', label: '🦠 Bacterial'   },
+                      { id: 'viral',     label: '🔬 Viral'       },
+                      { id: 'nematode',  label: '🪱 Nematode'    },
+                      { id: 'crops',     label: '🌿 By Crop'     },
+                      { id: 'weather',   label: '⛅ Weather Plan' },
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setDiseaseTab(tab.id)}
+                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
+                          diseaseTab === tab.id
+                            ? 'bg-red-500/20 border-red-500/50 text-red-300'
+                            : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-500'
+                        }`}
+                      >{tab.label}</button>
+                    ))}
+                  </div>
+
+                  {/* FUNGAL */}
+                  {diseaseTab === 'fungal' && (
+                    <div className="space-y-4">
+                      {[
+                        { name: 'Late Blight & Powdery Mildew', signs: 'Visible white powdery fungal growth on leaf surfaces; fuzzy greyish-white mold under leaves during high humidity.', symptoms: 'Dark green to black water-soaked leaf lesions, yellowing (chlorosis), leaf curling, and rapid tissue death.', prevention: 'Spray copper-based or sulfur-based fungicides. Plant resistant varieties. Space plants for airflow. Avoid overhead watering.' },
+                        { name: 'Root Rot & Damping-Off (Pythium, Fusarium, Phytophthora)', signs: 'Slime or dark brown fungal mycelium around decayed roots and lower stem base.', symptoms: 'Seedlings collapse at ground level; adult plants turn yellow, wilt despite moist soil, exhibit stunted growth.', prevention: 'Improve soil drainage. Use certified pathogen-free seeds. Treat seeds with Trichoderma. Avoid overwatering.' },
+                        { name: 'Rusts & Smuts (Maize Rust, Wheat Rust, Corn Smut)', signs: 'Bright yellow, orange, or reddish-brown powdery pustules on leaves/stems; black swollen spore galls on corn ears/tassels.', symptoms: 'Premature leaf drop, poor kernel development, and reduced overall plant vigor.', prevention: 'Rotate crop families. Destroy infected crop residues after harvest. Sow rust-resistant cultivars.' },
+                      ].map((d, i) => (
+                        <div key={i} className="p-5 bg-orange-500/5 rounded-2xl border border-orange-500/20 space-y-3">
+                          <h3 className="font-black text-orange-400 text-sm uppercase tracking-wider">{d.name}</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">{d.signs}</p></div>
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">{d.symptoms}</p></div>
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">{d.prevention}</p></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* BACTERIAL */}
+                  {diseaseTab === 'bacterial' && (
+                    <div className="space-y-4">
+                      {[
+                        { name: 'Bacterial Wilt & Black Rot (Xanthomonas, Ralstonia)', signs: 'Milky bacterial ooze streaming from cut stem bases placed in clean water; slimy ooze on stems.', symptoms: 'Sudden wilting without prior yellowing, V-shaped yellow lesions on leaf margins, internal stem vascular browning.', prevention: 'Disinfect field tools between rows. Avoid working in wet fields. Apply copper-based bactericides. Practice 3–4 year crop rotation.' },
+                        { name: 'Fire Blight & Cankers', signs: "Gummy bacterial exudate oozing from trunk cankers or branch lesions.", symptoms: "Shoot tips bend into a 'shepherd's crook' shape. Foliage turns charred black as if scorched.", prevention: 'Prune infected branches 20–30 cm below visible damage during dry periods. Sterilize shears with 70% alcohol. Plant resistant rootstocks.' },
+                      ].map((d, i) => (
+                        <div key={i} className="p-5 bg-yellow-500/5 rounded-2xl border border-yellow-500/20 space-y-3">
+                          <h3 className="font-black text-yellow-400 text-sm uppercase tracking-wider">{d.name}</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">{d.signs}</p></div>
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">{d.symptoms}</p></div>
+                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">{d.prevention}</p></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* VIRAL */}
+                  {diseaseTab === 'viral' && (
+                    <div className="p-5 bg-purple-500/5 rounded-2xl border border-purple-500/20 space-y-3">
+                      <h3 className="font-black text-purple-400 text-sm uppercase tracking-wider">Mosaic Viruses & Yellow Leaf Curl (TMV, TSWV, CMV)</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-purple-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">Viruses have no direct visible signs (microscopic only). Vector insects — aphids, whiteflies, thrips — are often visibly present.</p></div>
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">Light and dark green "mosaic" patterns, leaf distortion/curling, shoe-stringing, ring spots, severe stunting, deformed fruit.</p></div>
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">Uproot and burn infected plants immediately (roguing). Control vectors with sticky traps or neem oil. Keep fields weed-free. Use certified virus-tested seeds.</p></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* NEMATODE */}
+                  {diseaseTab === 'nematode' && (
+                    <div className="p-5 bg-pink-500/5 rounded-2xl border border-pink-500/20 space-y-3">
+                      <h3 className="font-black text-pink-400 text-sm uppercase tracking-wider">Root-Knot Nematodes (Meloidogyne spp.)</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-pink-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">Swollen knots, galls, or abnormal swellings directly on root systems — visible when plant is uprooted.</p></div>
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">Above-ground yellowing, unresponsiveness to water and fertilizer, severe wilting during hot afternoons.</p></div>
+                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">Apply heavy organic mulch. Plant Marigolds (Tagetes) to suppress nematodes. Rotate with non-host grass crops. Apply bio-nematicides.</p></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* BY CROP */}
+                  {diseaseTab === 'crops' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { crop: '🍅 Tomatoes',         diseases: ['Late Blight – dark green/black water-soaked spots, white mold underneath.', 'Yellow Leaf Curl Virus (TYLCV) – upward curling, severe stunting, yellowing.'], control: 'Spray copper fungicides before rains. Control whiteflies with sticky traps or neem oil. Use drip irrigation. Plant certified resistant hybrids.' },
+                        { crop: '🌿 Cassava',          diseases: ['Cassava Mosaic Disease (CMD) – yellow mottled mosaic patterns, warped leaf growth.', 'Brown Streak Disease (CBSD) – yellowing along veins, brown corky rot in roots.'], control: 'Plant resistant varieties (NASE/TME series). Rogue infected plants within 2–3 months. Source cuttings from certified fields only.' },
+                        { crop: '🌱 Simsim (Sesame)',  diseases: ['Bacterial Blight – water-soaked dark brown spots causing defoliation.', 'Cercospora Leaf Spot – circular brown spots with grey centres on leaves and pods.'], control: 'Soak seeds in warm water (52°C, 10 min) or treat with Thiram/Carbendazim. Apply Mancozeb during humid spells. Space rows properly.' },
+                        { crop: '🍫 Cocoa',            diseases: ['Black Pod Disease – rapidly expanding brown-black lesions with white spores.', 'Cocoa Swollen Shoot Virus (CSSV) – swollen stems, red vein banding, dieback.'], control: 'Apply copper hydroxide early rainy season. Burn Swollen Shoot infected trees. Harvest pods every 2 weeks. Prune shade trees to 30–50% sunlight.' },
+                        { crop: '🌾 Finger Millet',   diseases: ['Blast Disease – diamond-shaped leaf spots, neck rot causing head drop.'], control: 'Treat seeds with Pseudomonas fluorescens. Apply Tricyclazole at boot-leaf stage. Avoid high nitrogen fertilizers. Rotate with cowpeas or groundnuts.' },
+                        { crop: '🌾 Sorghum',          diseases: ['Anthracnose – elliptical leaf spots with red/purple borders.', 'Head Smut – floral heads replaced by black spore mass galls.'], control: 'Plant resistant cultivars. Dress seeds with systemic fungicides. Destroy smutted heads before spore release. Deep-plow residues after harvest.' },
+                        { crop: '🍌 Bananas',          diseases: ['Banana Bacterial Wilt (BXW) – yellowing leaves, brown ooze in pseudostems, unseasonal bud die-off.', 'Fusarium Wilt (TR4) – stem splitting, internal vascular discoloration.'], control: 'Sterilize tools with 20% bleach after each mat. Debudding technique for BXW. Use tissue-culture clean plantlets. Apply single-stem removal (SSR).' },
+                        { crop: '🌾 Rice',             diseases: ['Rice Blast – spindle-shaped leaf lesions and broken panicle necks (Neck Rot).', 'Bacterial Leaf Blight (BLB) – yellow-to-white wavy lesions along leaf margins.'], control: 'Soak seeds in Carbendazim before nursery preparation. Apply copper for BLB, Tricyclazole for blast. Split nitrogen fertilizer into 3 equal doses.' },
+                      ].map((c, i) => (
+                        <div key={i} className="p-5 bg-slate-900/40 rounded-2xl border border-slate-700 space-y-3 hover:border-emerald-500/30 transition-all">
+                          <h3 className="font-black text-white text-base">{c.crop}</h3>
+                          <div className="space-y-1">
+                            {c.diseases.map((d, j) => (
+                              <div key={j} className="flex gap-2 text-xs text-slate-300">
+                                <span className="text-red-400 mt-0.5 shrink-0">•</span><span>{d}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/20">
+                            <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Control &amp; Management</div>
+                            <p className="text-xs text-slate-300 leading-relaxed">{c.control}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* WEATHER PLAN */}
+                  {diseaseTab === 'weather' && (
+                    <div className="space-y-4">
+                      {[
+                        { condition: '🌧️ Heavy Rain & High Humidity', risk: 'Fungal blights, root rot, bacterial leaf spots, waterlogging.', actions: ['Dig drainage channels/furrows to prevent standing water.', 'Switch to drip/ground-level irrigation; stop overhead watering.', 'Apply protective copper or organic fungicides before prolonged rain.', 'Avoid working in fields when foliage is wet — prevents bacterial spread.'] },
+                        { condition: '☀️ Hot & Dry (Drought Stress)',  risk: 'Powdery mildew, spider mites, soil compaction, blossom end rot.', actions: ['Apply organic mulch (straw, grass clippings) to retain soil moisture.', 'Irrigate early morning (5:00 AM – 8:00 AM) to minimize evaporation.', 'Spray potassium-rich foliar fertilizers to boost drought tolerance.'] },
+                        { condition: '🌫️ Cool & Wet / Foggy',         risk: 'Downy mildew, Botrytis grey mold, damping-off.', actions: ['Increase plant spacing to maximize canopy airflow.', 'Prune excess inner foliage and side shoots.', 'Delay nitrogen fertilization — excess leafy growth encourages fungal establishment.'] },
+                        { condition: '💨 High Winds',                  risk: 'Mechanical crop damage, rapid airborne spread of fungal spores (rusts/mildews).', actions: ['Establish windbreaks or living fences (vetiver grass, agroforestry trees).', 'Stake or trellis tall crops (tomatoes, peppers, beans) to prevent stem breakage.', 'Scout windward field borders early for incoming spore infections.'] },
+                      ].map((w, i) => (
+                        <div key={i} className="p-5 bg-slate-900/40 rounded-2xl border border-slate-700 space-y-3">
+                          <div className="flex flex-col md:flex-row md:items-center gap-3">
+                            <h3 className="font-black text-white text-sm flex-1">{w.condition}</h3>
+                            <span className="text-[10px] bg-red-500/10 text-red-400 px-3 py-1 rounded-full font-bold border border-red-500/20 shrink-0">⚠️ {w.risk}</span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {w.actions.map((a, j) => (
+                              <div key={j} className="flex gap-2 text-xs text-slate-300 p-2 bg-emerald-500/5 rounded-lg border border-emerald-500/10">
+                                <span className="text-emerald-400 shrink-0">→</span><span>{a}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>)}
+              </section>
+              {/* ═══════════════════════════════════════════════════════════ */}
 
             </div>
           )}
@@ -1821,14 +2028,17 @@ Authorized Signature: Faida Nancy (General Director)
               {/* Farming Tools — Equipment Request Form */}
               <section id="tools-section" className="glass-panel p-5 space-y-4 scroll-mt-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]"></div>
-                <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center justify-between relative z-10 cursor-pointer" onClick={() => toggleSection('tools')}>
                   <h2 className="text-xl font-bold flex items-center gap-3">
                     <Wrench size={28} className="text-emerald-400" /> Equipment &amp; Farming Tools Request
                   </h2>
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Request Access</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Request Access</span>
+                    <ChevronDown className={`transition-transform duration-300 text-emerald-400 ${expandedSections.tools ? 'rotate-180' : ''}`} />
+                  </div>
                 </div>
 
-                {toolRequestSubmitted ? (
+                {expandedSections.tools && (toolRequestSubmitted ? (
                   /* ── Success State ── */
                   <div className="relative z-10 flex flex-col items-center justify-center gap-6 py-12 text-center animate-fade-in">
                     <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10">
@@ -2000,7 +2210,7 @@ Authorized Signature: Faida Nancy (General Director)
                       </p>
                     </div>
                   </form>
-                )}
+                ))}
               </section>
             </div>
           )}
@@ -2091,7 +2301,7 @@ Authorized Signature: Faida Nancy (General Director)
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ShoppingCart className="text-blue-400" /> Buying Seeds</h3>
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ShoppingCart className="text-white" /> Buying Seeds</h3>
                   <ul className="space-y-3 text-sm text-slate-300">
                     <li className="flex justify-between border-b border-slate-800 pb-2">
                       <span>Kalerwe Market, Kampala</span>
@@ -2132,7 +2342,7 @@ Authorized Signature: Faida Nancy (General Director)
             {/* Monthly Fixed Price Charts */}
             <div className="border-t border-slate-800 mt-12 pt-8">
               <h2 className="text-xl font-semibold flex items-center gap-2 mb-10">
-                <BarChart3 className="text-blue-400" /> Monthly Fixed Price Index & Market Share
+                <BarChart3 className="text-white" /> Monthly Fixed Price Index & Market Share
               </h2>
               
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -2224,10 +2434,10 @@ Authorized Signature: Faida Nancy (General Director)
                   <div className="relative z-10 text-2xl font-bold text-white">50M+</div>
                   <div className="relative z-10 text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">Concurrent Users</div>
                 </div>
-                <div className="glass-panel p-5 border-t-2 border-t-blue-500 bg-blue-500/5">
+                <div className="glass-panel p-5 border-t-2 border-t-white/30 bg-white/5">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-400">Network Status</span>
-                    <Activity size={14} className="text-blue-400" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">Network Status</span>
+                    <Activity size={14} className="text-white" />
                   </div>
                   <div className="text-2xl font-bold text-white">98.4%</div>
                   <div className="text-xs text-slate-400 mt-0.5">Connectivity optimal</div>
@@ -2251,16 +2461,16 @@ Authorized Signature: Faida Nancy (General Director)
               </section>
 
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="glass-panel p-6 border-l-4 border-l-blue-500 flex flex-col h-full">
+                <div className="glass-panel p-6 border-l-4 border-l-white/40 flex flex-col h-full">
                   <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 shrink-0">
-                    <BarChart3 className="text-blue-400" /> Regional Analytics & Districts
+                    <BarChart3 className="text-white" /> Regional Analytics & Districts
                   </h2>
                   <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
                     {REGIONAL_DATA.map((r, i) => (
                       <div key={i} className="flex flex-col bg-slate-800/30 rounded-lg overflow-hidden border border-slate-700/50">
                         <button 
                           onClick={() => { setActiveRegion(r.region); setActiveMapQuery(r.query); }}
-                          className={`flex justify-between items-center p-4 hover:bg-slate-700/30 transition-colors w-full text-left ${activeRegion === r.region ? 'bg-blue-900/20 border-l-2 border-blue-500' : ''}`}
+                          className={`flex justify-between items-center p-4 hover:bg-slate-700/30 transition-colors w-full text-left ${activeRegion === r.region ? 'bg-white/10 border-l-2 border-white/40' : ''}`}
                         >
                           <span className="text-sm font-bold text-slate-200">
                             {r.region === 'Northern' && "Northern Region"}
@@ -2269,7 +2479,7 @@ Authorized Signature: Faida Nancy (General Director)
                             {r.region === 'Western' && "Western Region"}
                             {r.region === 'Southern' && "Southern Region"}
                           </span>
-                          <span className={`text-xs px-2 py-1 rounded font-bold uppercase tracking-wider ${r.status === 'Optimal' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'Monitor' ? 'bg-amber-500/20 text-amber-400' : r.status === 'Critical' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                          <span className={`text-xs px-2 py-1 rounded font-bold uppercase tracking-wider ${r.status === 'Optimal' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'Monitor' ? 'bg-amber-500/20 text-amber-400' : r.status === 'Critical' ? 'bg-red-500/20 text-red-400' : 'bg-white/20 text-white'}`}>
                             {r.yield} - {r.status}
                           </span>
                         </button>
@@ -2281,7 +2491,7 @@ Authorized Signature: Faida Nancy (General Director)
                                 <button 
                                   key={d} 
                                   onClick={() => setActiveMapQuery(`${d} District, Uganda`)}
-                                  className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-blue-900/40 hover:text-blue-400 hover:border-blue-500/30 text-slate-300 rounded-full border border-slate-700 transition-colors flex items-center gap-1"
+                                  className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-white/40 hover:text-white hover:border-white/40 text-slate-300 rounded-full border border-slate-700 transition-colors flex items-center gap-1"
                                 >
                                   <MapPin size={10} /> {d}
                                 </button>
@@ -2305,7 +2515,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <p className="text-sm text-slate-300 leading-relaxed">0% VAT on essential farming inputs including high-yield seeds and organic fertilizers.</p>
                     </div>
                     <div className="p-4 bg-slate-800/30 rounded-xl border border-slate-700/50 hover:bg-slate-800/50 transition-colors">
-                      <div className="text-[10px] font-bold text-blue-400 uppercase mb-1 tracking-widest flex items-center gap-2">
+                      <div className="text-[10px] font-bold text-white uppercase mb-1 tracking-widest flex items-center gap-2">
                         <RefreshCcw size={12} /> Export Rebate
                       </div>
                       <p className="text-sm text-slate-300 leading-relaxed">15% Tax rebate active for all cooperative-led produce exports to regional markets.</p>
@@ -2348,11 +2558,11 @@ Authorized Signature: Faida Nancy (General Director)
 
           {activeRole === 'Farmer' && (
             <div className="space-y-4">
-              {/* MAGOBA AI Assistant Section */}
-              <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-blue-500 relative overflow-hidden group">
+              {/* FANCY AI Assistant Section */}
+              <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-white/40 relative overflow-hidden group">
                 <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('magoba')}>
                   <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
-                    <Bot className="text-blue-400" /> MAGOBA AI Assistant
+                    <Bot className="text-white" /> FANCY AI Assistant ✨
                   </h2>
                   <ChevronDown className="transition-transform" />
                 </div>
@@ -2362,14 +2572,14 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 rounded-2xl border border-slate-800 custom-scrollbar mb-4">
                       {magobaMessages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-blue-600/20 border border-blue-500/30 text-blue-50 rounded-tl-sm'}`}>
+                          <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-white/20 border border-white/30 text-white rounded-tl-sm'}`}>
                             <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                             
                             {/* Render Images if present */}
                             {msg.images && msg.images.length > 0 && (
                               <div className="flex flex-col gap-2 mt-3">
                                 {msg.images.map((imgUrl, i) => (
-                                  <img key={i} src={imgUrl} alt="Visual Guide" className="w-full rounded-xl border border-blue-500/20 shadow-md" />
+                                  <img key={i} src={imgUrl} alt="Visual Guide" className="w-full rounded-xl border border-white/20 shadow-md" />
                                 ))}
                               </div>
                             )}
@@ -2378,7 +2588,7 @@ Authorized Signature: Faida Nancy (General Director)
                             {msg.action && (
                               <button 
                                 onClick={() => handleMagobaAction(msg.action)}
-                                className="mt-4 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg active:scale-95"
+                                className="mt-4 flex items-center justify-center gap-2 w-full bg-white/20 hover:bg-white/20 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg active:scale-95"
                               >
                                 <Download size={16} /> Download Procedures Guide
                               </button>
@@ -2393,13 +2603,13 @@ Authorized Signature: Faida Nancy (General Director)
                         type="text" 
                         value={magobaInput}
                         onChange={(e) => setMagobaInput(e.target.value)}
-                        placeholder="Ask MAGOBA about agriculture, pests, or weather..." 
-                        className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="Ask FANCY AI about crop diseases, pests, weather, or anything farming..." 
+                        className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-white/50 transition-colors"
                       />
                       <button 
                         type="submit" 
                         disabled={!magobaInput.trim()}
-                        className="absolute right-2 p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="absolute right-2 p-2 bg-white/20 hover:bg-white/20 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Send size={16} />
                       </button>
@@ -2620,7 +2830,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <p className="text-sm text-slate-400">A climate-resilient East Africa where every farmer has the knowledge and resources to thrive.</p>
                   </div>
                   <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-                    <h3 className="text-blue-400 font-bold mb-2">Core Values</h3>
+                    <h3 className="text-white font-bold mb-2">Core Values</h3>
                     <p className="text-sm text-slate-400">Sustainability, Community Empowerment, Technological Inclusion, and Precision.</p>
                   </div>
                 </div>
@@ -2629,7 +2839,7 @@ Authorized Signature: Faida Nancy (General Director)
 
           {(activeRole === 'Contact') && (
             <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
-                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Phone className="text-blue-400" /> Contact Us</h2>
+                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Phone className="text-white" /> Contact Us</h2>
                 <p className="text-slate-300">Reach out to our regional representatives via the following official channels:</p>
                 <div className="space-y-4 max-w-xl">
                   <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
@@ -2643,7 +2853,7 @@ Authorized Signature: Faida Nancy (General Director)
                     <MessageCircle size={24} className="text-amber-400" />
                     <div>
                       <h4 className="font-bold text-white">WhatsApp Support</h4>
-                      <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">Chat with an Expert</a>
+                      <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-white hover:underline">Chat with an Expert</a>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
@@ -2690,8 +2900,8 @@ Authorized Signature: Faida Nancy (General Director)
                     <h3 className="text-emerald-400 font-bold mb-2 uppercase tracking-wider text-sm">2. Grant Usage Integrity</h3>
                     <p className="text-sm text-slate-300">Subsidies, tools, and fertilizers provided must be used exclusively for approved agricultural development. Misuse or illegal resale of NGO-provided items will result in permanent banishment from the program.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-blue-500">
-                    <h3 className="text-blue-400 font-bold mb-2 uppercase tracking-wider text-sm">3. Mandatory Reporting</h3>
+                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-white/40">
+                    <h3 className="text-white font-bold mb-2 uppercase tracking-wider text-sm">3. Mandatory Reporting</h3>
                     <p className="text-sm text-slate-300">Farmers receiving continuous aid must submit a monthly "Farm Activity Record" through their regional hub to guarantee subsequent distribution phases.</p>
                   </div>
                   <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-amber-500">

@@ -1,4 +1,4 @@
-import sys
+  rimport sys
 
 with open('src/old_App.jsx', 'r', encoding='utf-8') as f:
     old_lines = f.readlines()

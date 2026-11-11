@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, Building2, Heart, ShoppingCart, ArrowRight, ShieldCheck, Sparkles, Crown, Layout } from 'lucide-react';
+import { Mail, Lock, User, Building2, Heart, ShoppingCart, ArrowRight, ShieldCheck, Sparkles, Crown, Layout, Eye, EyeOff } from 'lucide-react';
 
 // The CEO / Managing Director / Supervisor email — gets unrestricted Admin access
 const CEO_EMAIL = 'faidanancy7908@gmail.com';
@@ -24,6 +24,7 @@ export default function AuthScreen({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('Farmer');
 
   const isCEO = email.trim().toLowerCase() === CEO_EMAIL;
@@ -113,13 +114,21 @@ export default function AuthScreen({ onLogin }) {
                   <Lock size={16} className="text-slate-500" />
                 </div>
                 <input 
-                  type="password" 
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-600"
+                  className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-10 pr-10 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-600"
                   placeholder="••••••••"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
 
