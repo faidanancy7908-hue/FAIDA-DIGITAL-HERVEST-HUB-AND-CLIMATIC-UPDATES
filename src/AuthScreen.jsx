@@ -51,9 +51,9 @@ export default function AuthScreen({ onLogin }) {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-emerald-500/30" style={{background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 40%, #f0f9ff 100%)'}}>
       {/* African Farm Background Images */}
       <div className="absolute inset-0 z-0">
-        <img src="bountiful_harvest.png" alt="" className="absolute top-0 left-0 w-1/2 h-full object-cover opacity-20" />
-        <img src="african_women_harvest.png" alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60"></div>
+        <img src="bountiful_harvest.png" alt="" className="absolute top-0 left-0 w-1/2 h-full object-cover opacity-50" />
+        <img src="african_women_harvest.png" alt="" className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-white/15 to-white/25"></div>
       </div>
       <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
       <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-emerald-300/10 rounded-full blur-[100px]"></div>

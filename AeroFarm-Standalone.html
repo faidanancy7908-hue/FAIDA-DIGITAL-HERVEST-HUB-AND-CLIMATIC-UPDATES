@@ -211,9 +211,9 @@ p
                             <SectionTitle t="Real-Time Market Pulse" i="TrendingUp" c="#3b82f6" />
                             <div className="space-y-6">
                                 {marketData.map(item => (
-                                    <div key={item.id} className="p-8 bg-slate-950 rounded-[2.5rem] border border-slate-800 flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                                    <div key={item.id} className="p-8 bg-slate-950 rounded-[2.5rem] border border-slate-800 flex items-center justify-between group hover:border-white/40 transition-all">
                                         <div className="flex items-center gap-6">
-                                            <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                                            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/40">
                                                 <Icon name="Activity" color="#3b82f6" />
                                             </div>
                                             <div>
@@ -238,12 +238,12 @@ p
                                 ].map((t, i) => (
                                     <div key={i} className="p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
                                         <div className="flex justify-between text-[10px] font-black uppercase mb-3">
-                                            <span className="text-blue-400">{t.id}</span>
+                                            <span className="text-white">{t.id}</span>
                                             <span className="text-slate-500">{t.s}</span>
                                         </div>
                                         <div className="text-md font-bold mb-4">{t.r}</div>
                                         <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                            <div className="bg-blue-500 h-full animate-pulse" style={{ width: `${t.p}%` }}></div>
+                                            <div className="bg-white/20 h-full animate-pulse" style={{ width: `${t.p}%` }}></div>
                                         </div>
                                     </div>
                                 ))}
