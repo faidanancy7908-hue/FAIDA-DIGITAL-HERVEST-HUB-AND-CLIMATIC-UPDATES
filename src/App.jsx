@@ -40,7 +40,8 @@ import {
   Package,
   ChevronDown,
   Crown,
-  Moon
+  Moon,
+  ArrowRight
 } from 'lucide-react';
 import AuthScreen from './AuthScreen';
 
@@ -158,6 +159,18 @@ export default function App() {
   }, [isDarkMode]);
 
   const toggleTheme = () => setIsDarkMode(prev => !prev);
+  // ── Screen Brightness (overlay dimmer) ─────────────────────────────────
+  const [brightness, setBrightness] = useState(() => {
+    return parseInt(localStorage.getItem('faida-brightness') || '100', 10);
+  });
+  useEffect(() => {
+    localStorage.setItem('faida-brightness', brightness);
+    const overlay = document.getElementById('brightness-overlay');
+    if (overlay) {
+      const dim = (100 - brightness) / 100;
+      overlay.style.opacity = dim.toString();
+    }
+  }, [brightness]);
   // ───────────────────────────────────────────────────────────────────────
   
   const [cropType, setCropType] = useState('maize');
@@ -190,6 +203,8 @@ export default function App() {
     { sender: 'magoba', text: 'Hello! I am FANCY AI ✨, your expert agricultural intelligence. Ask me about crop diseases, weather-based farming actions, pest control, soil health, or any farming question!' }
   ]);
   const [magobaInput, setMagobaInput] = useState('');
+  const [isMagobaLoading, setIsMagobaLoading] = useState(false);
+  const magobaEndRef = React.useRef(null);
   
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -217,12 +232,14 @@ export default function App() {
 
   const handleMagobaSend = async (e) => {
     e.preventDefault();
-    if (!magobaInput.trim()) return;
+    if (!magobaInput.trim() || isMagobaLoading) return;
 
     const newMessages = [...magobaMessages, { sender: 'user', text: magobaInput }];
     setMagobaMessages(newMessages);
     const messageToSend = magobaInput;
     setMagobaInput('');
+    setIsMagobaLoading(true);
+    setTimeout(() => magobaEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/magoba/chat`, {
@@ -244,7 +261,10 @@ export default function App() {
 
       setMagobaMessages([...newMessages, newMagobaMsg]);
     } catch (err) {
-      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA API servers. Please try again shortly." }]);
+      setMagobaMessages([...newMessages, { sender: 'magoba', text: "Sorry, I'm currently unable to reach the FAIDA servers. Please ensure the backend is running (node server.js) and try again." }]);
+    } finally {
+      setIsMagobaLoading(false);
+      setTimeout(() => magobaEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
   };
 
@@ -898,7 +918,10 @@ Authorized Signature: Faida Nancy (General Director)
   }
 
   return (
-    <div className={`min-h-screen p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-transparent text-slate-100' : 'bg-white text-slate-900'}`}>
+    <>
+      {/* Brightness overlay — fixed black layer, opacity controlled by slider */}
+      <div id="brightness-overlay" className="fixed inset-0 z-[9999] bg-black pointer-events-none transition-opacity duration-300" style={{opacity: (100 - brightness) / 100}} />
+      <div className={`min-h-screen p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-transparent text-slate-100' : 'bg-white text-slate-900'}`}>
       <div className="max-w-7xl mx-auto">
         {/* Global Top Header */}
         <header className="w-full flex items-center justify-between p-4 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-slate-800/80 mb-4 sticky top-4 z-[80]">
@@ -966,6 +989,19 @@ Authorized Signature: Faida Nancy (General Director)
               }
             </button>
 
+            {/* Brightness Slider */}
+            <div className="hidden sm:flex items-center gap-1.5 bg-slate-800/60 border border-slate-700 rounded-xl px-2.5 py-1.5" title="Screen Brightness">
+              <Sun size={12} className="text-amber-400 shrink-0" />
+              <input
+                type="range"
+                min={20}
+                max={100}
+                value={brightness}
+                onChange={e => setBrightness(Number(e.target.value))}
+                className="w-16 h-1 accent-amber-400 cursor-pointer"
+              />
+            </div>
+
             {isAdmin ? (
               <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest">
                 <Crown size={11} className="animate-pulse" /> CEO Access
@@ -985,7 +1021,7 @@ Authorized Signature: Faida Nancy (General Director)
             <aside className="w-full max-w-2xl mx-auto space-y-8">
             
             {/* Persistent Branding Welcoming Board Container */}
-            <div className="glass-panel p-6 flex flex-col items-center text-center gap-6 border-l-4 border-l-amber-500 relative overflow-hidden shadow-2xl group">
+            <div className="bg-white/90 backdrop-blur-xl border border-emerald-200/60 shadow-2xl rounded-2xl p-6 flex flex-col items-center text-center gap-6 border-l-4 border-l-amber-500 relative overflow-hidden group">
               <button 
                 onClick={() => setIsDrawerOpen(true)}
                 className="absolute top-4 left-4 z-30 text-slate-400 hover:text-white transition-colors p-2 bg-slate-900/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
@@ -1046,18 +1082,18 @@ Authorized Signature: Faida Nancy (General Director)
                 )}
                 
                 <div>
-                  <h1 className="text-xl font-black tracking-tight text-white uppercase leading-none">
+                  <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase leading-none">
                     FAIDA DIGITAL CLIMATE <br/>
-                    <span className="text-amber-400 text-base md:text-lg">RESPONSE</span>
+                    <span className="text-amber-600 text-base md:text-lg">RESPONSE</span>
                   </h1>
-                  <div className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider mt-1.5">
+                  <div className="text-[9.5px] font-bold text-slate-600 uppercase tracking-wider mt-1.5">
                     Agriculture & Climate Resolution
                   </div>
                 </div>
 
                 {/* Switch User Role Selector — hidden for CEO/Admin who uses the header portal switcher */}
                 {!isAdmin && (
-                  <div className="w-full mt-2 p-2 bg-slate-900/60 rounded-xl border border-slate-800 flex flex-col gap-1 text-left relative z-10">
+                  <div className="w-full mt-2 p-2 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1 text-left relative z-10">
                     <label className="text-[8px] font-black uppercase tracking-widest text-slate-500 block pl-1">Switch User Role (Demo)</label>
                     <select 
                       value={userRole} 
@@ -1091,23 +1127,23 @@ Authorized Signature: Faida Nancy (General Director)
               </div>
 
               {/* Divider Line */}
-              <div className="w-full border-t border-slate-800 my-1"></div>
+              <div className="w-full border-t border-slate-200 my-1"></div>
 
               {/* Contact Area */}
               <div className="w-full space-y-4">
                 <div className="text-left">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact & Mobile Entry</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contact & Mobile Entry</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <button 
                     onClick={() => handleDownload('MTN_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
-                    className="flex items-center justify-between w-full bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-amber-500/50 transition-all text-left">
+                    className="flex items-center justify-between w-full bg-amber-50 px-3.5 py-2.5 rounded-xl border border-amber-200 hover:border-amber-400 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
                     <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
                   </button>
                   <button 
                     onClick={() => handleDownload('Airtel_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
-                    className="flex items-center justify-between w-full bg-slate-900/60 px-3.5 py-2.5 rounded-xl border border-slate-800 hover:border-red-500/50 transition-all text-left">
+                    className="flex items-center justify-between w-full bg-red-50 px-3.5 py-2.5 rounded-xl border border-red-200 hover:border-red-400 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
                     <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
                   </button>
@@ -1132,7 +1168,7 @@ Authorized Signature: Faida Nancy (General Director)
                     href={PORTAL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-100 transition-all"
                   >
                     <Layout size={12} /> Public Portal Access
                   </a>
@@ -1241,8 +1277,8 @@ Authorized Signature: Faida Nancy (General Director)
             <div className="space-y-12 transition-all duration-500">
               
               {activeRole === 'General' && (
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 bg-slate-800/20 rounded-[3rem] border border-slate-800 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-amber-500/5"></div>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 bg-white/90 backdrop-blur-xl rounded-[3rem] border border-emerald-100 shadow-xl relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/80 via-transparent to-amber-50/80"></div>
                   <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
                   
                   {/* Glowing Logo */}
@@ -1265,11 +1301,11 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
                       <Sparkles size={12} /> Live Precision Agriculture Hub
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-none">
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-800 uppercase leading-none">
                       FAIDA DIGITAL CLIMATE <br/>
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">RESPONSE SYSTEM</span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-emerald-500">RESPONSE SYSTEM</span>
                     </h1>
-                    <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed">
                       Precision IoT analytics, real-time market signals, and direct grant administration for East African farming cooperatives.
                     </p>
                     <div className="pt-6">
@@ -1854,6 +1890,19 @@ Authorized Signature: Faida Nancy (General Director)
                           </div>
                         </div>
                       ))}
+                      {isMagobaLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-white/15 border border-white/20 text-white rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+                            <span className="text-xs text-slate-400 italic">FANCY AI is thinking</span>
+                            <span className="flex gap-1">
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'0ms'}} />
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}} />
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}} />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={magobaEndRef} />
                     </div>
                   )}
 
@@ -2619,8 +2668,8 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 rounded-2xl border border-slate-800 custom-scrollbar mb-4">
                       {magobaMessages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-white/20 border border-white/30 text-white rounded-tl-sm'}`}>
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                          <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-white/15 border border-white/20 text-white rounded-tl-sm'}`}>
+                            <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                             
                             {/* Render Images if present */}
                             {msg.images && msg.images.length > 0 && (
@@ -2866,18 +2915,18 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'About') && (
             <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
                 <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Info className="text-emerald-400" /> About Us</h2>
-                <p className="text-slate-300 leading-relaxed max-w-3xl">FAIDA DIGITAL CLIMATE RESPONSE is a precision agriculture initiative designed to empower East African farming cooperatives. By leveraging IoT soil diagnostics, real-time weather analytics, and direct NGO grant support, we aim to combat climate change effects and ensure high-yield sustainability for local communities.</p>
+                <p className="text-slate-600 leading-relaxed max-w-3xl">FAIDA DIGITAL CLIMATE RESPONSE is a precision agriculture initiative designed to empower East African farming cooperatives. By leveraging IoT soil diagnostics, real-time weather analytics, and direct NGO grant support, we aim to combat climate change effects and ensure high-yield sustainability for local communities.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-                    <h3 className="text-emerald-400 font-bold mb-2">Our Mission</h3>
+                  <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <h3 className="text-emerald-700 font-bold mb-2">Our Mission</h3>
                     <p className="text-sm text-slate-400">To bridge the technological gap in rural agriculture by providing accessible, data-driven farming tools.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-                    <h3 className="text-amber-400 font-bold mb-2">Our Vision</h3>
+                  <div className="p-6 bg-amber-50 rounded-2xl border border-amber-200">
+                    <h3 className="text-amber-700 font-bold mb-2">Our Vision</h3>
                     <p className="text-sm text-slate-400">A climate-resilient East Africa where every farmer has the knowledge and resources to thrive.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-                    <h3 className="text-white font-bold mb-2">Core Values</h3>
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                    <h3 className="text-slate-800 font-bold mb-2">Core Values</h3>
                     <p className="text-sm text-slate-400">Sustainability, Community Empowerment, Technological Inclusion, and Precision.</p>
                   </div>
                 </div>
@@ -2887,26 +2936,26 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Contact') && (
             <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
                 <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Phone className="text-white" /> Contact Us</h2>
-                <p className="text-slate-300">Reach out to our regional representatives via the following official channels:</p>
+                <p className="text-slate-600">Reach out to our regional representatives via the following official channels:</p>
                 <div className="space-y-4 max-w-xl">
-                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <Phone size={24} className="text-emerald-400" />
                     <div>
-                      <h4 className="font-bold text-white">General Inquiries</h4>
+                      <h4 className="font-bold text-slate-800">General Inquiries</h4>
                       <p className="text-sm">+256 763 927 908</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <MessageCircle size={24} className="text-amber-400" />
                     <div>
-                      <h4 className="font-bold text-white">WhatsApp Support</h4>
+                      <h4 className="font-bold text-slate-800">WhatsApp Support</h4>
                       <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-white hover:underline">Chat with an Expert</a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-slate-300 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <MapPin size={24} className="text-red-400" />
                     <div>
-                      <h4 className="font-bold text-white">Headquarters</h4>
+                      <h4 className="font-bold text-slate-800">Headquarters</h4>
                       <p className="text-sm">Kampala, Uganda - Innovation Hub</p>
                     </div>
                   </div>
@@ -2922,12 +2971,12 @@ Authorized Signature: Faida Nancy (General Director)
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {FARMING_TOOLS.map((tool, idx) => (
-                    <div key={idx} className="p-6 bg-slate-900/60 rounded-2xl border border-slate-800 flex gap-4 hover:border-amber-500/30 transition-all cursor-pointer group">
-                      <div className="p-4 bg-slate-800/80 text-amber-400 rounded-xl h-fit group-hover:scale-110 transition-transform"><tool.icon size={28} /></div>
+                    <div key={idx} className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex gap-4 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer group">
+                      <div className="p-4 bg-amber-50 text-amber-500 rounded-xl h-fit group-hover:scale-110 transition-transform"><tool.icon size={28} /></div>
                       <div>
-                        <h3 className="text-white font-bold text-lg">{tool.name}</h3>
+                        <h3 className="text-slate-800 font-bold text-lg">{tool.name}</h3>
                         <p className="text-xs text-amber-400 font-bold mb-2 uppercase tracking-widest">{tool.desc}</p>
-                        <p className="text-sm text-slate-400 leading-relaxed">{tool.details}</p>
+                        <p className="text-sm text-slate-600 leading-relaxed">{tool.details}</p>
                       </div>
                     </div>
                   ))}
@@ -2939,19 +2988,19 @@ Authorized Signature: Faida Nancy (General Director)
             <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
                 <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><ShieldCheck className="text-red-400" /> Rules & Compliance</h2>
                 <div className="space-y-6 max-w-4xl">
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-red-500">
+                  <div className="p-6 bg-red-50 rounded-2xl border border-red-200 border-l-4 border-l-red-500">
                     <h3 className="text-red-400 font-bold mb-2 uppercase tracking-wider text-sm">1. Data Privacy & Security</h3>
                     <p className="text-sm text-slate-300">All farm coordinates and production yields are encrypted. By utilizing the USSD gateway, you consent to secure data logging strictly for subsidy assessment.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500">
+                  <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 border-l-4 border-l-emerald-500">
                     <h3 className="text-emerald-400 font-bold mb-2 uppercase tracking-wider text-sm">2. Grant Usage Integrity</h3>
                     <p className="text-sm text-slate-300">Subsidies, tools, and fertilizers provided must be used exclusively for approved agricultural development. Misuse or illegal resale of NGO-provided items will result in permanent banishment from the program.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-white/40">
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 border-l-4 border-l-slate-400">
                     <h3 className="text-white font-bold mb-2 uppercase tracking-wider text-sm">3. Mandatory Reporting</h3>
                     <p className="text-sm text-slate-300">Farmers receiving continuous aid must submit a monthly "Farm Activity Record" through their regional hub to guarantee subsequent distribution phases.</p>
                   </div>
-                  <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 border-l-4 border-l-amber-500">
+                  <div className="p-6 bg-amber-50 rounded-2xl border border-amber-200 border-l-4 border-l-amber-500">
                     <h3 className="text-amber-400 font-bold mb-2 uppercase tracking-wider text-sm">4. Environmental Compliance</h3>
                     <p className="text-sm text-slate-300">Strict adherence to Ministry guidelines regarding crop rotation, soil PH testing, and minimized chemical pesticide use is required. Organic and biological pest controls are highly encouraged.</p>
                   </div>
@@ -3382,5 +3431,6 @@ Authorized Signature: Faida Nancy (General Director)
 
 
 </div>
+    </>
   );
 }
