@@ -1132,20 +1132,20 @@ Authorized Signature: Faida Nancy (General Director)
               {/* Contact Area */}
               <div className="w-full space-y-4">
                 <div className="text-left">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contact & Mobile Entry</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black">Contact & Mobile Entry</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <button 
                     onClick={() => handleDownload('MTN_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
                     className="flex items-center justify-between w-full bg-amber-50 px-3.5 py-2.5 rounded-xl border border-amber-200 hover:border-amber-400 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-amber-500">MTN Line</span>
-                    <span className="text-sm font-black font-mono text-white tracking-widest">*672*001#</span>
+                    <span className="text-sm font-black font-mono text-black tracking-widest">*672*001#</span>
                   </button>
                   <button 
                     onClick={() => handleDownload('Airtel_USSD_Access_Auth', generateAccessCodeContent(), 'txt')}
                     className="flex items-center justify-between w-full bg-red-50 px-3.5 py-2.5 rounded-xl border border-red-200 hover:border-red-400 transition-all text-left">
                     <span className="text-[9px] font-black uppercase text-red-500">Airtel Line</span>
-                    <span className="text-sm font-black font-mono text-white tracking-widest">*818*3*5#</span>
+                    <span className="text-sm font-black font-mono text-black tracking-widest">*818*3*5#</span>
                   </button>
                 </div>
                 
@@ -1176,18 +1176,18 @@ Authorized Signature: Faida Nancy (General Director)
 
                 {/* Direct Helpline Support Contacts */}
                 {(activeRole === 'NGO' || activeRole === 'Farmer') && (
-                  <div className="flex flex-col gap-2 pt-3 border-t border-slate-800 mt-2">
+                  <div className="flex flex-col gap-2 pt-3 border-t border-slate-200 mt-2">
                     <a 
                       href="https://wa.me/256763927908" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-xl text-xs font-bold transition-all"
+                      className="flex items-center justify-center gap-2 w-full bg-emerald-50 hover:bg-emerald-100 text-black border border-emerald-300 py-2 rounded-xl text-xs font-bold transition-all"
                     >
                       <MessageCircle size={14} /> WhatsApp support
                     </a>
                     <a 
                       href="tel:0763927908" 
-                      className="flex items-center justify-center gap-2 w-full bg-white/10 hover:bg-white/20 text-white border border-white/30 py-2 rounded-xl text-xs font-bold transition-all"
+                      className="flex items-center justify-center gap-2 w-full bg-slate-100 hover:bg-slate-200 text-black border border-slate-300 py-2 rounded-xl text-xs font-bold transition-all"
                     >
                       <Phone size={14} /> Call: 0763927908
                     </a>
@@ -1238,7 +1238,7 @@ Authorized Signature: Faida Nancy (General Director)
                       </div>
                     </div>
                     <p className="text-slate-400 text-sm max-w-xl">
-                      {activeRole === 'Farmer' && "Optimize your yield with precision tools and direct NGO support. USSD: *672*001#"}
+                      {activeRole === 'Farmer' && <span>Optimize your yield with precision tools and direct NGO support. USSD: <strong className="text-black font-mono">*672*001#</strong></span>}
                       {activeRole === 'Seller' && "Real-time market signals and supply chain optimization for trusted vendors."}
                       {activeRole === 'Ministry' && "Strategic policy implementation and national agricultural analytics."}
                       {activeRole === 'NGO' && "Empowering local communities through technology and knowledge sharing."}
@@ -2800,7 +2800,7 @@ Authorized Signature: Faida Nancy (General Director)
                           </div>
                           <div className="p-2.5 bg-slate-950/40 rounded-xl border border-slate-800">
                             <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Verified Mobile</span>
-                            <span className="text-white font-semibold font-mono">{app.phone || '+256772000111'}</span>
+                            <span className="text-black font-semibold font-mono">{app.phone || '+256772000111'}</span>
                           </div>
                         </div>
 
@@ -2934,29 +2934,29 @@ Authorized Signature: Faida Nancy (General Director)
           )}
 
           {(activeRole === 'Contact') && (
-            <section className="glass-panel p-8 space-y-6 relative overflow-hidden animate-fade-in">
-                <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Phone className="text-white" /> Contact Us</h2>
+            <section className="bg-white/90 backdrop-blur-xl border border-slate-200 shadow-xl rounded-2xl p-8 space-y-6 relative overflow-hidden animate-fade-in">
+                <h2 className="text-2xl font-bold flex items-center gap-3 text-slate-800"><Phone className="text-emerald-500" /> Contact Us</h2>
                 <p className="text-slate-600">Reach out to our regional representatives via the following official channels:</p>
                 <div className="space-y-4 max-w-xl">
                   <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <Phone size={24} className="text-emerald-400" />
                     <div>
                       <h4 className="font-bold text-slate-800">General Inquiries</h4>
-                      <p className="text-sm">+256 763 927 908</p>
+                      <p className="text-sm font-bold text-black">+256 763 927 908</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <MessageCircle size={24} className="text-amber-400" />
                     <div>
                       <h4 className="font-bold text-slate-800">WhatsApp Support</h4>
-                      <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-white hover:underline">Chat with an Expert</a>
+                      <a href="https://wa.me/256763927908" target="_blank" rel="noreferrer" className="text-sm text-black font-semibold hover:underline">Chat with an Expert (+256 763 927 908)</a>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-slate-700 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <MapPin size={24} className="text-red-400" />
                     <div>
                       <h4 className="font-bold text-slate-800">Headquarters</h4>
-                      <p className="text-sm">Kampala, Uganda - Innovation Hub</p>
+                      <p className="text-sm font-bold text-black">Kampala, Uganda — Innovation Hub</p>
                     </div>
                   </div>
                 </div>

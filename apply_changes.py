@@ -521,3 +521,4 @@ print("  4. White containers in hero section (Enter Portal)")
 print("  5. White containers in About, Contact, Items, Rules pages")
 print("  6. FANCY AI: loading indicator + auto-scroll + better error msg")
 print("  7. About/README section: full professional redesign")
+
