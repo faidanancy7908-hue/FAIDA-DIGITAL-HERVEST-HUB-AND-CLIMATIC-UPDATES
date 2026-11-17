@@ -205,7 +205,18 @@ export default function App() {
   const [magobaInput, setMagobaInput] = useState('');
   const [isMagobaLoading, setIsMagobaLoading] = useState(false);
   const magobaEndRef = React.useRef(null);
-  
+
+  // ── Background Image Slideshow ─────────────────────────────────────────
+  const BG_IMAGES = ['bountiful_harvest.png', 'african_women_harvest.png', 'farmer_garden_yield.png'];
+  const [bgIndex, setBgIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBgIndex(prev => (prev + 1) % BG_IMAGES.length);
+    }, 6000); // change every 6 seconds
+    return () => clearInterval(timer);
+  }, []);
+  // ───────────────────────────────────────────────────────────────────────
+
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
@@ -921,7 +932,27 @@ Authorized Signature: Faida Nancy (General Director)
     <>
       {/* Brightness overlay — fixed black layer, opacity controlled by slider */}
       <div id="brightness-overlay" className="fixed inset-0 z-[9999] bg-black pointer-events-none transition-opacity duration-300" style={{opacity: (100 - brightness) / 100}} />
-      <div className={`min-h-screen p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-transparent text-slate-100' : 'bg-white text-slate-900'}`}>
+
+      {/* ── Background Image Slideshow ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {BG_IMAGES.map((img, i) => (
+          <div
+            key={img}
+            className="absolute inset-0 transition-opacity duration-[2000ms] ease-in-out"
+            style={{ opacity: i === bgIndex ? 1 : 0 }}
+          >
+            <img
+              src={img}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.12 }}
+            />
+          </div>
+        ))}
+        {/* Soft white overlay so content stays readable */}
+        <div className="absolute inset-0 bg-white/60" />
+      </div>
+      <div className={`relative z-10 min-h-screen p-4 md:p-8 pb-24 md:pb-32 font-sans selection:bg-emerald-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-transparent text-slate-100' : 'bg-transparent text-slate-900'}`}>
       <div className="max-w-7xl mx-auto">
         {/* Global Top Header */}
         <header className="w-full flex items-center justify-between p-4 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-slate-800/80 mb-4 sticky top-4 z-[80]">
