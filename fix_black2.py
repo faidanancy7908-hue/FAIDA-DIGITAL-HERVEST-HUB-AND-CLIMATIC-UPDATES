@@ -38,3 +38,4 @@ with open(path, 'w', encoding='utf-8') as f:
     f.write(content)
 
 print("All contact colors fixed to black!")
+

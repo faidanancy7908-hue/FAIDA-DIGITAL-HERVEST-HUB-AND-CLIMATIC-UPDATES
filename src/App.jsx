@@ -1211,7 +1211,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <Sparkles size={14} /> {activeRole} Portal
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-[1rem] overflow-hidden border border-white/10 shrink-0 shadow-lg relative bg-slate-900/50">
+                      <div className="w-16 h-16 rounded-[1rem] overflow-hidden border border-white/10 shrink-0 shadow-lg relative bg-slate-50">
                         <img 
                           src="farm_logo.png" 
                           alt="Digital Climate Hub Logo" 
@@ -1264,7 +1264,7 @@ Authorized Signature: Faida Nancy (General Director)
                     )}
                     <button 
                       onClick={() => setActiveRole('General')}
-                      className="shrink-0 flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold transition-all border border-slate-700"
+                      className="shrink-0 flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold transition-all border border-slate-200"
                     >
                       <Layout size={18} /> Return to Hub
                     </button>
@@ -1325,7 +1325,7 @@ Authorized Signature: Faida Nancy (General Director)
           {(activeRole === 'Farmer') && (
             <div id="weather-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-8">
               {/* NEW IoT Audio Assistant Dashboard */}
-              <section className="glass-panel p-5 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-slate-900 to-slate-800">
+              <section className="glass-panel p-5 lg:col-span-3 relative overflow-hidden border-l-4 border-l-amber-500 bg-gradient-to-br from-white to-slate-50">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
                 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-8 cursor-pointer group" onClick={() => toggleSection('weather')}>
@@ -1387,7 +1387,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {/* Soil pH Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'ph' ? null : 'ph')}
-                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                    className={`p-5 bg-slate-50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
                       selectedSensorForSimulation === 'ph' 
                         ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
                         : iotData.ph < 6.0 || iotData.ph > 7.5 
@@ -1420,7 +1420,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {/* Cloud Reading Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'cloud' ? null : 'cloud')}
-                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                    className={`p-5 bg-slate-50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
                       selectedSensorForSimulation === 'cloud' 
                         ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
                         : iotData.cloudCoverage > 70 
@@ -1453,7 +1453,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {/* Soil Moisture Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'moisture' ? null : 'moisture')}
-                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                    className={`p-5 bg-slate-50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
                       selectedSensorForSimulation === 'moisture' 
                         ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
                         : iotData.moisture < 50 || iotData.moisture > 80 
@@ -1486,7 +1486,7 @@ Authorized Signature: Faida Nancy (General Director)
                   {/* Immediate Climate Sensor Card */}
                   <div 
                     onClick={() => setSelectedSensorForSimulation(selectedSensorForSimulation === 'climate' ? null : 'climate')}
-                    className={`p-5 bg-slate-900/50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
+                    className={`p-5 bg-slate-50 rounded-2xl border transition-all cursor-pointer hover:scale-[1.03] select-none ${
                       selectedSensorForSimulation === 'climate' 
                         ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/5' 
                         : iotData.ambientTemp > 32 || iotData.ambientTemp < 18 
@@ -1521,14 +1521,14 @@ Authorized Signature: Faida Nancy (General Director)
                 )}
                 {/* 🛠️ Sensor Calibration & Simulation Terminal Panel */}
                 {selectedSensorForSimulation && (
-                  <div className="relative z-10 mt-6 p-6 bg-slate-900/80 rounded-2xl border border-amber-500/40 animate-fade-in space-y-4">
+                  <div className="relative z-10 mt-6 p-6 bg-white/90 rounded-2xl border border-amber-500/40 animate-fade-in space-y-4">
                     <div className="flex justify-between items-center pb-3 border-b border-slate-800">
                       <h3 className="text-sm font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
                         <span>🛠️ Sensor Calibration & Simulation Terminal</span>
                       </h3>
                       <button 
                         onClick={() => setSelectedSensorForSimulation(null)}
-                        className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700 transition-all"
+                        className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-200 transition-all"
                       >
                         Close
                       </button>
@@ -1538,7 +1538,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <label className="text-xs font-bold text-slate-300">Soil pH Simulator</label>
-                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.ph}</span>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-200">{iotData.ph}</span>
                         </div>
                         <input 
                           type="range" 
@@ -1565,7 +1565,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <label className="text-xs font-bold text-slate-300">Cloud Coverage Simulator</label>
-                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.cloudCoverage}%</span>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-200">{iotData.cloudCoverage}%</span>
                         </div>
                         <input 
                           type="range" 
@@ -1592,7 +1592,7 @@ Authorized Signature: Faida Nancy (General Director)
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <label className="text-xs font-bold text-slate-300">Soil Moisture Simulator</label>
-                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{iotData.moisture}%</span>
+                          <span className="text-sm font-black font-mono text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-200">{iotData.moisture}%</span>
                         </div>
                         <input 
                           type="range" 
@@ -1677,7 +1677,7 @@ Authorized Signature: Faida Nancy (General Director)
                     </div>
 
                     {!uploadedImage ? (
-                      <div className="border-2 border-dashed border-slate-700 rounded-2xl p-8 text-center hover:bg-slate-800/50 hover:border-purple-500/50 transition-all cursor-pointer relative">
+                      <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:bg-slate-100 hover:border-purple-500/50 transition-all cursor-pointer relative">
                         <input 
                           type="file" 
                           accept="image/*" 
@@ -1690,10 +1690,10 @@ Authorized Signature: Faida Nancy (General Director)
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        <div className="relative h-48 rounded-2xl overflow-hidden border border-slate-700">
+                        <div className="relative h-48 rounded-2xl overflow-hidden border border-slate-200">
                           <img src={uploadedImage} alt="Uploaded for analysis" className="w-full h-full object-cover" />
                           {isAnalyzing && (
-                            <div className="absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center">
+                            <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center">
                               <Activity size={32} className="text-purple-400 animate-bounce mb-2" />
                               <div className="text-sm font-bold text-purple-400 tracking-widest uppercase animate-pulse">Running AI IoT Scan...</div>
                             </div>
@@ -1710,7 +1710,7 @@ Authorized Signature: Faida Nancy (General Director)
                   </div>
 
                   <div className="flex-1">
-                    <div className="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 flex flex-col justify-center">
+                    <div className="h-full bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col justify-center">
                       {!uploadedImage ? (
                         <div className="text-center text-slate-500 flex flex-col items-center gap-3">
                           <ShieldCheck size={40} className="opacity-20" />
@@ -1780,25 +1780,25 @@ Authorized Signature: Faida Nancy (General Director)
                   <form onSubmit={handleCalculate} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-1">Crop Type</label>
-                      <select value={cropType} onChange={(e) => setCropType(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-slate-200">
+                      <select value={cropType} onChange={(e) => setCropType(e.target.value)} className="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-2 text-slate-200">
                         {marketData.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         <option value="other">Other Crop</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-1">Size (Hectares)</label>
-                      <input type="number" value={landSize} onChange={(e) => setLandSize(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-slate-200" required />
+                      <input type="number" value={landSize} onChange={(e) => setLandSize(e.target.value)} className="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-2 text-slate-200" required />
                     </div>
                     <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg transition-colors">Forecast Profit</button>
                   </form>
                   <div className="flex flex-col justify-center">
                     {forecast ? (
-                      <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 relative overflow-hidden">
+                      <div className="bg-slate-100 border border-slate-200/50 rounded-xl p-4 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
                         <div className="text-sm text-slate-400">Net Profit</div>
                         <div className="text-3xl font-bold text-emerald-400 font-mono">Shs {forecast.profit.toLocaleString()}</div>
                       </div>
-                    ) : <div className="text-slate-500 text-sm text-center border border-dashed border-slate-700 p-8 rounded-xl">Enter parameters for forecast.</div>}
+                    ) : <div className="text-slate-500 text-sm text-center border border-dashed border-slate-300 p-8 rounded-xl">Enter parameters for forecast.</div>}
                   </div>
                 </div>
                 )}
@@ -1824,7 +1824,7 @@ Authorized Signature: Faida Nancy (General Director)
                     { title: 'Integrated Pest Control', desc: 'Monitor for early signs of Fall Armyworm. Use organic biological controls before resorting to chemical sprays.', icon: ShieldCheck },
                     { title: 'High-Value Cash Crops', desc: 'Prioritize planting Hass Avocados, Macadamia Nuts, Cocoa, Coffee, and Vanilla for maximum market profitability and export demand.', icon: TrendingUp }
                   ].map((g, i) => (
-                    <div key={i} className="flex gap-6 p-6 bg-slate-950/40 rounded-[2rem] border border-slate-800/50 hover:border-emerald-500/30 transition-all group">
+                    <div key={i} className="flex gap-6 p-6 bg-slate-950/40 rounded-[2rem] border border-slate-200/50 hover:border-emerald-500/30 transition-all group">
                       <div className="shrink-0 w-14 h-14 bg-emerald-500/5 rounded-2xl flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/10 transition-colors">
                         <g.icon size={28} />
                       </div>
@@ -1867,7 +1867,7 @@ Authorized Signature: Faida Nancy (General Director)
                         className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
                           diseaseTab === tab.id
                             ? 'bg-red-500/20 border-red-500/50 text-red-300'
-                            : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-500'
+                            : 'bg-slate-100 border-slate-700 text-slate-600 hover:border-slate-500'
                         }`}
                       >{tab.label}</button>
                     ))}
@@ -1884,9 +1884,9 @@ Authorized Signature: Faida Nancy (General Director)
                         <div key={i} className="p-5 bg-orange-500/5 rounded-2xl border border-orange-500/20 space-y-3">
                           <h3 className="font-black text-orange-400 text-sm uppercase tracking-wider">{d.name}</h3>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">{d.signs}</p></div>
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">{d.symptoms}</p></div>
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">{d.prevention}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">🔍 Signs</div><p className="text-slate-700 leading-relaxed">{d.signs}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">⚠️ Symptoms</div><p className="text-slate-700 leading-relaxed">{d.symptoms}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-700 leading-relaxed">{d.prevention}</p></div>
                           </div>
                         </div>
                       ))}
@@ -1916,9 +1916,9 @@ Authorized Signature: Faida Nancy (General Director)
                         <div key={i} className="p-5 bg-yellow-500/5 rounded-2xl border border-yellow-500/20 space-y-3">
                           <h3 className="font-black text-yellow-400 text-sm uppercase tracking-wider">{d.name}</h3>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">{d.signs}</p></div>
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">{d.symptoms}</p></div>
-                            <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">{d.prevention}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-yellow-400 mb-1">🔍 Signs</div><p className="text-slate-700 leading-relaxed">{d.signs}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-700 leading-relaxed">{d.symptoms}</p></div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-700 leading-relaxed">{d.prevention}</p></div>
                           </div>
                         </div>
                       ))}
@@ -1930,9 +1930,9 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="p-5 bg-purple-500/5 rounded-2xl border border-purple-500/20 space-y-3">
                       <h3 className="font-black text-purple-400 text-sm uppercase tracking-wider">Mosaic Viruses & Yellow Leaf Curl (TMV, TSWV, CMV)</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-purple-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">Viruses have no direct visible signs (microscopic only). Vector insects — aphids, whiteflies, thrips — are often visibly present.</p></div>
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">Light and dark green "mosaic" patterns, leaf distortion/curling, shoe-stringing, ring spots, severe stunting, deformed fruit.</p></div>
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">Uproot and burn infected plants immediately (roguing). Control vectors with sticky traps or neem oil. Keep fields weed-free. Use certified virus-tested seeds.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-purple-400 mb-1">🔍 Signs</div><p className="text-slate-700 leading-relaxed">Viruses have no direct visible signs (microscopic only). Vector insects — aphids, whiteflies, thrips — are often visibly present.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-700 leading-relaxed">Light and dark green "mosaic" patterns, leaf distortion/curling, shoe-stringing, ring spots, severe stunting, deformed fruit.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-700 leading-relaxed">Uproot and burn infected plants immediately (roguing). Control vectors with sticky traps or neem oil. Keep fields weed-free. Use certified virus-tested seeds.</p></div>
                       </div>
                     </div>
                   )}
@@ -1942,9 +1942,9 @@ Authorized Signature: Faida Nancy (General Director)
                     <div className="p-5 bg-pink-500/5 rounded-2xl border border-pink-500/20 space-y-3">
                       <h3 className="font-black text-pink-400 text-sm uppercase tracking-wider">Root-Knot Nematodes (Meloidogyne spp.)</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-pink-400 mb-1">🔍 Signs</div><p className="text-slate-300 leading-relaxed">Swollen knots, galls, or abnormal swellings directly on root systems — visible when plant is uprooted.</p></div>
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-300 leading-relaxed">Above-ground yellowing, unresponsiveness to water and fertilizer, severe wilting during hot afternoons.</p></div>
-                        <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-700"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-300 leading-relaxed">Apply heavy organic mulch. Plant Marigolds (Tagetes) to suppress nematodes. Rotate with non-host grass crops. Apply bio-nematicides.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-pink-400 mb-1">🔍 Signs</div><p className="text-slate-700 leading-relaxed">Swollen knots, galls, or abnormal swellings directly on root systems — visible when plant is uprooted.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-1">⚠️ Symptoms</div><p className="text-slate-700 leading-relaxed">Above-ground yellowing, unresponsiveness to water and fertilizer, severe wilting during hot afternoons.</p></div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200"><div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-1">✅ Prevention</div><p className="text-slate-700 leading-relaxed">Apply heavy organic mulch. Plant Marigolds (Tagetes) to suppress nematodes. Rotate with non-host grass crops. Apply bio-nematicides.</p></div>
                       </div>
                     </div>
                   )}
@@ -1962,7 +1962,7 @@ Authorized Signature: Faida Nancy (General Director)
                         { crop: '🍌 Bananas',          diseases: ['Banana Bacterial Wilt (BXW) – yellowing leaves, brown ooze in pseudostems, unseasonal bud die-off.', 'Fusarium Wilt (TR4) – stem splitting, internal vascular discoloration.'], control: 'Sterilize tools with 20% bleach after each mat. Debudding technique for BXW. Use tissue-culture clean plantlets. Apply single-stem removal (SSR).' },
                         { crop: '🌾 Rice',             diseases: ['Rice Blast – spindle-shaped leaf lesions and broken panicle necks (Neck Rot).', 'Bacterial Leaf Blight (BLB) – yellow-to-white wavy lesions along leaf margins.'], control: 'Soak seeds in Carbendazim before nursery preparation. Apply copper for BLB, Tricyclazole for blast. Split nitrogen fertilizer into 3 equal doses.' },
                       ].map((c, i) => (
-                        <div key={i} className="p-5 bg-slate-900/40 rounded-2xl border border-slate-700 space-y-3 hover:border-emerald-500/30 transition-all">
+                        <div key={i} className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 hover:border-emerald-500/30 transition-all">
                           <h3 className="font-black text-white text-base">{c.crop}</h3>
                           <div className="space-y-1">
                             {c.diseases.map((d, j) => (
@@ -1989,7 +1989,7 @@ Authorized Signature: Faida Nancy (General Director)
                         { condition: '🌫️ Cool & Wet / Foggy',         risk: 'Downy mildew, Botrytis grey mold, damping-off.', actions: ['Increase plant spacing to maximize canopy airflow.', 'Prune excess inner foliage and side shoots.', 'Delay nitrogen fertilization — excess leafy growth encourages fungal establishment.'] },
                         { condition: '💨 High Winds',                  risk: 'Mechanical crop damage, rapid airborne spread of fungal spores (rusts/mildews).', actions: ['Establish windbreaks or living fences (vetiver grass, agroforestry trees).', 'Stake or trellis tall crops (tomatoes, peppers, beans) to prevent stem breakage.', 'Scout windward field borders early for incoming spore infections.'] },
                       ].map((w, i) => (
-                        <div key={i} className="p-5 bg-slate-900/40 rounded-2xl border border-slate-700 space-y-3">
+                        <div key={i} className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
                           <div className="flex flex-col md:flex-row md:items-center gap-3">
                             <h3 className="font-black text-white text-sm flex-1">{w.condition}</h3>
                             <span className="text-[10px] bg-red-500/10 text-red-400 px-3 py-1 rounded-full font-bold border border-red-500/20 shrink-0">⚠️ {w.risk}</span>
