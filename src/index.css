@@ -43,24 +43,110 @@ html.light .glass-panel:hover {
   border-color: rgba(16,185,129,0.30);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   GLOBAL TEXT VISIBILITY — force all text dark on light bg
+══════════════════════════════════════════════════════════════ */
+
+/* Base: every element in the app gets dark text by default */
+body {
+  color: #0f172a !important;
+}
+
+/* ALL slate/white text classes → dark on light backgrounds */
+.text-white,
+.text-slate-100,
+.text-slate-200,
+.text-slate-300 {
+  color: #1e293b !important;
+}
+.text-slate-400,
+.text-slate-500 {
+  color: #475569 !important;
+}
+.text-slate-600 { color: #334155 !important; }
+
+/* headings */
+h1, h2, h3, h4, h5, h6 { color: #0f172a !important; }
+
+/* paragraphs and spans */
+p, span, label, li, td, th { color: inherit; }
+
+/* ── EXCEPTIONS: white text must stay white on coloured buttons/badges ── */
+button[class*="bg-emerald"],
+button[class*="bg-amber"],
+button[class*="bg-red"],
+button[class*="bg-purple"],
+button[class*="bg-slate-9"],
+a[class*="bg-emerald"],
+a[class*="bg-amber"] {
+  color: #ffffff !important;
+}
+
+/* Keep icon/accent colours */
+.text-emerald-400, .text-emerald-500, .text-emerald-600, .text-emerald-700 { color: inherit; }
+.text-amber-400,   .text-amber-500,   .text-amber-600,   .text-amber-700   { color: inherit; }
+.text-red-400,     .text-red-500      { color: inherit; }
+
+/* Header stays dark-themed (slate-950 bg) */
+header .text-white,
+header .text-slate-300,
+header .text-slate-400 {
+  color: #e2e8f0 !important;
+}
+header h1, header h2, header h3 {
+  color: #ffffff !important;
+}
+
+/* Drawer sidebar stays dark */
+.sidebar-drawer .text-white,
+.sidebar-drawer .text-slate-300 {
+  color: #e2e8f0 !important;
+}
+
+/* FANCY AI chat bubbles — keep white text on dark bubbles */
+.bg-emerald-600\/20 .text-white,
+.bg-white\/15 .text-white,
+[class*="bg-slate-9"] .text-white {
+  color: #e2e8f0 !important;
+}
+
+/* glass-panel light overrides */
+html.light .glass-panel,
+.glass-panel {
+  color: #0f172a;
+}
+
+/* Emerald/amber/red accent text: keep coloured */
+.text-emerald-400 { color: #34d399 !important; }
+.text-emerald-500 { color: #10b981 !important; }
+.text-emerald-600 { color: #059669 !important; }
+.text-emerald-700 { color: #047857 !important; }
+.text-amber-400   { color: #fbbf24 !important; }
+.text-amber-500   { color: #f59e0b !important; }
+.text-amber-600   { color: #d97706 !important; }
+.text-red-400     { color: #f87171 !important; }
+.text-red-500     { color: #ef4444 !important; }
+.text-purple-400  { color: #c084fc !important; }
+
+/* Input fields: always readable */
+input, select, textarea {
+  color: #0f172a !important;
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
 /* ── Light mode text overrides ─────────────────────────────── */
 html.light .text-slate-100,
 html.light .text-slate-200,
-html.light .text-slate-300 { color: #1e293b; }
+html.light .text-slate-300 { color: #1e293b !important; }
 html.light .text-slate-400,
-html.light .text-slate-500 { color: #475569; }
-html.light .text-white     { color: #0f172a; }
+html.light .text-slate-500 { color: #475569 !important; }
+html.light .text-white     { color: #0f172a !important; }
 
 /* ── Button text — always readable on colored backgrounds ───── */
-[class*="bg-emerald-"] .text-white,
-[class*="bg-amber-"]   .text-white,
-[class*="bg-red-"]     .text-white,
-[class*="bg-purple-"]  .text-white,
-[class*="bg-white/"]   .text-white { color: #ffffff !important; }
-
-html.light [class*="bg-emerald-"] .text-white,
-html.light [class*="bg-amber-"]   .text-white { color: #ffffff !important; }
-
 button[class*="bg-emerald"],
 button[class*="bg-amber"],
 button[class*="bg-red"],

@@ -2686,23 +2686,34 @@ Authorized Signature: Faida Nancy (General Director)
               </div>
 
               {/* FANCY AI Assistant Section */}
-              <section id="magoba-ai-section" className="glass-panel p-5 border-l-4 border-l-white/40 relative overflow-hidden group">
-                <div className="flex items-center justify-between cursor-pointer mb-4" onClick={() => toggleSection('magoba')}>
-                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0">
-                    <Bot className="text-white" /> FANCY AI Assistant ✨
+              <section id="magoba-ai-section" className="rounded-2xl border-l-4 border-l-emerald-500 overflow-hidden shadow-xl" style={{background:'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)'}}>
+                <div className="flex items-center justify-between cursor-pointer p-5 pb-3" onClick={() => toggleSection('magoba')}>
+                  <h2 className="text-xl font-bold flex items-center gap-3 mb-0" style={{color:'#ffffff'}}>
+                    <Bot className="text-emerald-400" /> FANCY AI Assistant ✨
+                    <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Gemini Powered</span>
                   </h2>
-                  <ChevronDown className="transition-transform" />
+                  <ChevronDown className="text-slate-400 transition-transform" style={{transform: expandedSections.magoba ? 'rotate(180deg)' : 'rotate(0deg)'}} />
                 </div>
-                
+
                 {expandedSections.magoba && (
-                  <div className="flex flex-col h-[400px]">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 rounded-2xl border border-slate-800 custom-scrollbar mb-4">
+                  <div className="flex flex-col px-5 pb-5" style={{height:'420px'}}>
+                    {/* Chat messages */}
+                    <div className="flex-1 overflow-y-auto space-y-3 mb-3 custom-scrollbar pr-1">
                       {magobaMessages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user' ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 rounded-tr-sm' : 'bg-white/15 border border-white/20 text-white rounded-tl-sm'}`}>
-                            <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                            
-                            {/* Render Images if present */}
+                          {msg.sender !== 'user' && (
+                            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 mr-2 mt-1">
+                              <Bot size={14} className="text-emerald-400" />
+                            </div>
+                          )}
+                          <div className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
+                            msg.sender === 'user'
+                              ? 'bg-emerald-600 text-white rounded-tr-sm'
+                              : 'bg-slate-700/80 border border-slate-600/50 text-slate-100 rounded-tl-sm'
+                          }`}>
+                            <p className="leading-relaxed whitespace-pre-wrap" style={{color: msg.sender === 'user' ? '#ffffff' : '#e2e8f0'}}>{msg.text}</p>
+
+                            {/* Images */}
                             {msg.images && msg.images.length > 0 && (
                               <div className="flex flex-col gap-2 mt-3">
                                 {msg.images.map((imgUrl, i) => (
@@ -2710,37 +2721,63 @@ Authorized Signature: Faida Nancy (General Director)
                                 ))}
                               </div>
                             )}
-
-                            {/* Render Action Button if present */}
+                            {/* Download action */}
                             {msg.action && (
-                              <button 
+                              <button
                                 onClick={() => handleMagobaAction(msg.action)}
-                                className="mt-4 flex items-center justify-center gap-2 w-full bg-white/20 hover:bg-white/20 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg active:scale-95"
+                                className="mt-3 flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-xl transition-all active:scale-95 text-xs"
                               >
-                                <Download size={16} /> Download Procedures Guide
+                                <Download size={14} /> Download Procedures Guide
                               </button>
                             )}
                           </div>
+                          {msg.sender === 'user' && (
+                            <div className="w-7 h-7 rounded-full bg-emerald-600 flex items-center justify-center shrink-0 ml-2 mt-1">
+                              <User size={14} className="text-white" />
+                            </div>
+                          )}
                         </div>
                       ))}
+
+                      {/* Typing indicator */}
+                      {isMagobaLoading && (
+                        <div className="flex justify-start">
+                          <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 mr-2 mt-1">
+                            <Bot size={14} className="text-emerald-400" />
+                          </div>
+                          <div className="bg-slate-700/80 border border-slate-600/50 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+                            <span className="text-xs text-slate-400 italic">FANCY AI is thinking</span>
+                            <span className="flex gap-1">
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'0ms'}} />
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}} />
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}} />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={magobaEndRef} />
                     </div>
-                    
-                    <form onSubmit={handleMagobaSend} className="relative flex items-center">
-                      <input 
-                        type="text" 
+
+                    {/* Input box */}
+                    <form onSubmit={handleMagobaSend} className="relative flex items-center gap-2">
+                      <input
+                        type="text"
                         value={magobaInput}
                         onChange={(e) => setMagobaInput(e.target.value)}
-                        placeholder="Ask FANCY AI about crop diseases, pests, weather, or anything farming..." 
-                        className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-white/50 transition-colors"
+                        placeholder="Ask FANCY AI about crop diseases, pests, weather, soil health..."
+                        disabled={isMagobaLoading}
+                        className="flex-1 bg-slate-800 border border-slate-600 rounded-xl pl-4 pr-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors disabled:opacity-60"
+                        style={{color:'#f1f5f9', backgroundColor:'#1e293b', borderColor:'#475569'}}
                       />
-                      <button 
-                        type="submit" 
-                        disabled={!magobaInput.trim()}
-                        className="absolute right-2 p-2 bg-white/20 hover:bg-white/20 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      <button
+                        type="submit"
+                        disabled={!magobaInput.trim() || isMagobaLoading}
+                        className="shrink-0 p-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Send size={16} />
                       </button>
                     </form>
+                    <p className="text-[10px] text-slate-500 mt-2 text-center">Powered by Google Gemini · FAIDA Digital Climate Response</p>
                   </div>
                 )}
               </section>
